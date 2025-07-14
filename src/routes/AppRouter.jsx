@@ -6,7 +6,7 @@ import { useAuth } from "../utils/idb";
 import { useEffect } from "react";
 import Dashboard from "../pages/Dashboard";
 import Login from "../pages/Login";
-import Users from "../pages/Users";
+import Users from "../pages/manageuser/Users";
 import DomainPref from "../pages/Domainpref";
 
 

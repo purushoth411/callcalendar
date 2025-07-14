@@ -2,20 +2,18 @@ import React, { useEffect, useState, useRef } from "react";
 import DataTable from "datatables.net-react";
 import DT from "datatables.net-dt";
 import $ from "jquery";
-import { useAuth } from "../utils/idb.jsx";
+import { useAuth } from "../../utils/idb.jsx";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-hot-toast";
+import AddUser from "./AddUser.jsx";
+import EditUser from "./EditUser.jsx";
 
 export default function Users() {
   const { user, logout } = useAuth();
   const [allUsers, setAllUsers] = useState([]);
   DataTable.use(DT);
   const [filteredUsers, setFilteredUsers] = useState([]);
-  const [selectedUserType, setSelectedUserType] = useState(
-    user.fld_admin_type == "SUPERADMIN"
-      ? "EXECUTIVE"
-      : user.fld_admin_type || "EXECUTIVE"
-  );
+  const [selectedUserType, setSelectedUserType] = useState("EXECUTIVE");
   const [userCount, setUserCount] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -23,7 +21,7 @@ export default function Users() {
   const [teams, setTeams] = useState([]);
   const tableRef = useRef(null);
   const [formData, setFormData] = useState({
-    team_id: "",
+    team_id: formType === "EXECUTIVE" ? "" : [],
     username: "",
     name: "",
     email: "",
@@ -192,6 +190,14 @@ export default function Users() {
     return `<span class="${baseClasses} ${statusClass}">${status}</span>`;
   };
 
+  const [editData, setEditData] = useState(null);
+  const [showEditForm, setShowEditForm] = useState(false);
+  const handleEditButtonClick = (data) => {
+    setFormType(data.fld_admin_type);
+    setEditData(data)
+    setShowEditForm(true);
+  };
+
   const columns = [
     {
       title: "Name",
@@ -233,6 +239,16 @@ export default function Users() {
       data: "status",
       orderable: true,
       render: (data) => getStatusBadge(data),
+    },
+    {
+      title: "Actions",
+      data: null,
+      orderable: false,
+      render: (data) => `
+        <button class="edit-btn vd mx-1 p-1  text-dark" style="font-size:10px;border-radius:3px;     white-space: nowrap;" data-id="${data.id}">
+            Edit
+        </button>
+      `,
     },
   ];
 
@@ -347,6 +363,11 @@ export default function Users() {
       infoEmpty: "No entries available",
       infoFiltered: "(filtered from _MAX_ total entries)",
     },
+    createdRow: (row, data) => {
+      $(row)
+        .find(".edit-btn")
+        .on("click", () => handleEditButtonClick(data));
+    },
     drawCallback: function () {
       const container = $(this.api().table().container());
       container
@@ -421,7 +442,7 @@ export default function Users() {
                 {selectedUserType === "EXECUTIVE" && (
                   <button
                     onClick={() => {
-                      setFormType("CRM");
+                      setFormType("EXECUTIVE");
                       setShowForm(true);
                     }}
                     className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
@@ -511,217 +532,23 @@ export default function Users() {
         </div>
         <AnimatePresence>
           {showForm && (
-            <motion.div
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="fixed top-0 right-0 w-full h-full bg-white shadow-xl z-50 overflow-y-auto"
-            >
-              <div className="flex justify-between items-center px-6 py-4 border-b">
-                <h2 className="text-xl font-semibold">
-                  {formType === "CRM" && "Add CRM"}
-                  {formType === "CONSULTANT" && "Add Consultant"}
-                  {formType === "SUBADMIN" && "Add Subadmin"}
-                  {formType === "OPSADMIN" && "Add OPS Admin"}
-                </h2>
-                <button
-                  onClick={() => setShowForm(false)}
-                  className="text-gray-600 hover:text-black text-2xl"
-                >
-                  &times;
-                </button>
-              </div>
+            <AddUser
+              setShowForm={setShowForm}
+              formData={formData}
+              setFormData={setFormData}
+              teams={teams}
+              formType={formType}
+              handleSave={handleSave}
+            />
+          )}
 
-              <div className="p-6 space-y-4">
-                {(formType === "CRM" ||
-                  formType === "CONSULTANT" ||
-                  formType === "SUBADMIN") && (
-                  <div>
-                    <label className="block mb-1 font-medium">
-                      Select Team
-                    </label>
-                    <select
-                      className="w-full border px-3 py-2 rounded"
-                      value={formData.team_id}
-                      onChange={(e) =>
-                        setFormData({ ...formData, team_id: e.target.value })
-                      }
-                    >
-                      <option value="">Select Team</option>
-                      {teams.length > 0 &&
-                        teams.map((team) => (
-                          <option key={team.id} value={team.id}>
-                            {team.fld_title}
-                          </option>
-                        ))}
-                    </select>
-                  </div>
-                )}
-
-                <div>
-                  <label className="block mb-1 font-medium">Username</label>
-                  <input
-                    type="text"
-                    className="w-full border px-3 py-2 rounded"
-                    value={formData.username}
-                    onChange={(e) =>
-                      setFormData({ ...formData, username: e.target.value })
-                    }
-                  />
-                </div>
-
-                <div>
-                  <label className="block mb-1 font-medium">Name</label>
-                  <input
-                    type="text"
-                    className="w-full border px-3 py-2 rounded"
-                    value={formData.name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, name: e.target.value })
-                    }
-                  />
-                </div>
-
-                <div>
-                  <label className="block mb-1 font-medium">Email ID</label>
-                  <input
-                    type="email"
-                    className="w-full border px-3 py-2 rounded"
-                    value={formData.email}
-                    onChange={(e) =>
-                      setFormData({ ...formData, email: e.target.value })
-                    }
-                  />
-                </div>
-
-                <div>
-                  <label className="block mb-1 font-medium">Phone</label>
-                  <input
-                    type="text"
-                    className="w-full border px-3 py-2 rounded"
-                    value={formData.phone}
-                    onChange={(e) =>
-                      setFormData({ ...formData, phone: e.target.value })
-                    }
-                  />
-                </div>
-
-                {/* Consultant Type */}
-                {formType === "CONSULTANT" && (
-                  <select
-                    className="w-full border px-3 py-2 rounded"
-                    value={formData.consultant_type}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        consultant_type: e.target.value,
-                      })
-                    }
-                  >
-                    <option value="">Select Type</option>
-                    <option value="Service Provider">Service Provider</option>
-                  </select>
-                )}
-
-                {/* SubAdmin Type */}
-                {formType === "SUBADMIN" && (
-                  <select
-                    className="w-full border px-3 py-2 rounded"
-                    value={formData.subadmin_type}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        subadmin_type: e.target.value,
-                      })
-                    }
-                  >
-                    <option value="">Select Type</option>
-                    <option value="General">General</option>
-                  </select>
-                )}
-
-                <div>
-                  <label className="block mb-1 font-medium">Password</label>
-                  <input
-                    type="password"
-                    className="w-full border px-3 py-2 rounded"
-                    value={formData.password}
-                    onChange={(e) =>
-                      setFormData({ ...formData, password: e.target.value })
-                    }
-                  />
-                </div>
-
-                <div>
-                  <label className="block mb-1 font-medium">
-                    Confirm Password
-                  </label>
-                  <input
-                    type="password"
-                    className="w-full border px-3 py-2 rounded"
-                    value={formData.confirmPassword}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        confirmPassword: e.target.value,
-                      })
-                    }
-                  />
-                </div>
-
-                {/* Permissions */}
-                {(formType === "SUBADMIN" || formType === "CONSULTANT") && (
-                  <div className="space-y-2">
-                    <label className="block font-medium">Permissions</label>
-                    <div className="flex gap-4 flex-wrap">
-                      <label>
-                        <input
-                          type="checkbox"
-                          className="mr-1"
-                          checked={formData.permissions.reassign}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              permissions: {
-                                ...formData.permissions,
-                                reassign: e.target.checked,
-                              },
-                            })
-                          }
-                        />
-                        Reassign
-                      </label>
-                      {formType === "SUBADMIN" && (
-                        <input
-                          type="checkbox"
-                          className="mr-1"
-                          checked={formData.permissions.approve_call}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              permissions: {
-                                ...formData.permissions,
-                                approve_call: e.target.checked,
-                              },
-                            })
-                          }
-                        />
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                <div className="pt-6 flex justify-end">
-                  <button
-                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                    onClick={handleSave}
-                  >
-                    Save
-                  </button>
-                </div>
-              </div>
-            </motion.div>
+          {showEditForm && (
+            <EditUser
+              setShowForm={setShowEditForm}
+              teams={teams}
+              formType={formType}
+              editData={editData}
+            />
           )}
         </AnimatePresence>
       </div>
