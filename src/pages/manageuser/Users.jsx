@@ -176,19 +176,28 @@ export default function Users() {
     return date.toLocaleDateString("en-GB", options).toLowerCase();
   };
 
-  const getStatusBadge = (status) => {
-    const statusClasses = {
-      ACTIVE: "bg-green-100 text-green-800 border-green-200",
-      INACTIVE: "bg-red-100 text-red-800 border-red-200",
-      PENDING: "bg-yellow-100 text-yellow-800 border-yellow-200",
-      SUSPENDED: "bg-gray-100 text-gray-800 border-gray-200",
-    };
+  const updateUserStatus = async (userId, status) => {
+  try {
+    const res = await fetch(`http://localhost:5000/api/users/update-status/${userId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ status }),
+    });
 
-    const baseClasses = "px-2 py-1 text-xs font-medium rounded-full border";
-    const statusClass = statusClasses[status] || statusClasses["PENDING"];
+    const data = await res.json();
+    if (data.status) {
+      toast.success("Status updated");
+    } else {
+      toast.error(data.message || "Status update failed");
+    }
+  } catch (err) {
+    console.error(err);
+    toast.error("Error updating status");
+  }
+};
 
-    return `<span class="${baseClasses} ${statusClass}">${status}</span>`;
-  };
 
   const [editData, setEditData] = useState(null);
   const [showEditForm, setShowEditForm] = useState(false);
@@ -234,12 +243,22 @@ export default function Users() {
       render: (data) =>
         `<div class="text-gray-500 text-sm">${formatDate(data)}</div>`,
     },
+    
     {
-      title: "Status",
-      data: "status",
-      orderable: true,
-      render: (data) => getStatusBadge(data),
-    },
+  title: "Status",
+  data: "status",
+  orderable: false,
+  render: function (data, type, row) {
+    const checked = data === "Active" ? "checked" : "";
+    return `
+      <label class="inline-flex items-center cursor-pointer">
+        <input type="checkbox" class="status-toggle" data-id="${row.id}" ${checked}>
+        <span class="ml-2 text-sm">${data === "Active" ? "Active" : "Inactive"}</span>
+      </label>
+    `;
+  },
+},
+
     {
       title: "Actions",
       data: null,
@@ -367,6 +386,13 @@ export default function Users() {
       $(row)
         .find(".edit-btn")
         .on("click", () => handleEditButtonClick(data));
+      $(row)
+    .find(".status-toggle")
+    .on("change", function () {
+      const userId = $(this).data("id");
+      const newStatus = this.checked ? "ACTIVE" : "INACTIVE";
+      updateUserStatus(userId, newStatus);
+    });
     },
     drawCallback: function () {
       const container = $(this.api().table().container());
@@ -548,6 +574,7 @@ export default function Users() {
               teams={teams}
               formType={formType}
               editData={editData}
+               fetchAllUsers={fetchAllUsers}
             />
           )}
         </AnimatePresence>

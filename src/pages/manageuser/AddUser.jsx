@@ -38,7 +38,7 @@ const AddUser = ({
         {(formType === "EXECUTIVE" ||
           formType === "CONSULTANT" ||
           formType === "SUBADMIN") && (
-          <div className="col-md-3">
+          <div className="col-md-4">
             <label className="block mb-1 font-medium">Select Team</label>
             <Select
               className="react-select-container"
@@ -84,7 +84,7 @@ const AddUser = ({
           </div>
         )}
 
-        <div>
+        <div className="col-md-4">
           <label className="block mb-1 font-medium">Username</label>
           <input
             type="text"
@@ -96,7 +96,7 @@ const AddUser = ({
           />
         </div>
 
-        <div>
+        <div className="col-md-4">
           <label className="block mb-1 font-medium">Name</label>
           <input
             type="text"
@@ -106,7 +106,7 @@ const AddUser = ({
           />
         </div>
 
-        <div>
+        <div className="col-md-4">
           <label className="block mb-1 font-medium">Email ID</label>
           <input
             type="email"
@@ -118,7 +118,7 @@ const AddUser = ({
           />
         </div>
 
-        <div>
+        <div className="col-md-4">
           <label className="block mb-1 font-medium">Phone</label>
           <input
             type="text"
@@ -164,7 +164,7 @@ const AddUser = ({
           </select>
         )}
 
-        <div>
+        <div className="col-md-4">
           <label className="block mb-1 font-medium">Password</label>
           <input
             type="password"
@@ -176,7 +176,7 @@ const AddUser = ({
           />
         </div>
 
-        <div>
+        <div className="col-md-4">
           <label className="block mb-1 font-medium">Confirm Password</label>
           <input
             type="password"
@@ -193,7 +193,7 @@ const AddUser = ({
 
         {/* Permissions */}
         {(formType === "SUBADMIN" || formType === "CONSULTANT") && (
-          <div className="space-y-2">
+          <div className="space-y-2 col-md-4">
             <label className="block font-medium">Permissions</label>
             <div className="flex gap-4 flex-wrap">
               <label>

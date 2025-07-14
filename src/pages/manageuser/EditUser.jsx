@@ -4,10 +4,12 @@ import { XIcon } from "lucide-react";
 import Select from "react-select";
 import { set } from "idb-keyval";
 import {useState} from "react";
+import {toast} from "react-hot-toast";
 
-const EditUser = ({ setShowForm, formType, teams,editData }) => {
+const EditUser = ({ setShowForm, formType, teams,editData,fetchAllUsers }) => {
 
   const [formData, setFormData] = useState({
+    user_id: editData.id || null,
     team_id: formType === "EXECUTIVE" ? "" : [],
     username: "",
     name: "",
@@ -26,6 +28,7 @@ const EditUser = ({ setShowForm, formType, teams,editData }) => {
 useEffect(() => {
     if (editData) {
       setFormData({
+        user_id: editData.id || null,
         team_id:
           formType === "EXECUTIVE"
             ? editData.fld_team_id || ""
@@ -50,9 +53,63 @@ useEffect(() => {
     }
   }, [editData, formType]);
 
-  const handleSave = ()=>{
+ const handleSave = async () => {
+  const {
+    user_id,
+    team_id,
+    username,
+    name,
+    email,
+    phone,
+   
+    consultant_type,
+    subadmin_type,
+    permissions,
+  } = formData;
 
+  if (!username || !name || !email || !phone) {
+    alert("Please fill all required fields");
+    return;
   }
+
+  
+
+  const payload = {
+    user_id,
+    team_id: formType === "EXECUTIVE" ? team_id : team_id.join(","),
+    username,
+    name,
+    email,
+    phone,
+    
+    consultant_type,
+    subadmin_type,
+    permissions,
+  };
+
+  try {
+    const res = await fetch(`http://localhost:5000/api/users/update/${user_id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await res.json();
+    if (data.status) {
+      toast.success("User updated successfully!");
+      setShowForm(false);
+       fetchAllUsers();
+    } else {
+      toast.error(data.message || "Update failed");
+    }
+  }  catch (error) {
+    console.error(error);
+    toast("Something went wrong");
+  }
+};
+
 
   return (
     <motion.div
@@ -81,7 +138,7 @@ useEffect(() => {
         {(formType === "EXECUTIVE" ||
           formType === "CONSULTANT" ||
           formType === "SUBADMIN") && (
-          <div className="col-md-3">
+          <div className="col-md-4">
             <label className="block mb-1 font-medium">Select Team</label>
             <Select
   className="react-select-container"
@@ -127,7 +184,7 @@ useEffect(() => {
           </div>
         )}
 
-        <div>
+        <div className="col-md-4">
           <label className="block mb-1 font-medium">Username</label>
           <input
             type="text"
@@ -139,7 +196,7 @@ useEffect(() => {
           />
         </div>
 
-        <div>
+        <div className="col-md-4">
           <label className="block mb-1 font-medium">Name</label>
           <input
             type="text"
@@ -149,7 +206,7 @@ useEffect(() => {
           />
         </div>
 
-        <div>
+        <div className="col-md-4">
           <label className="block mb-1 font-medium">Email ID</label>
           <input
             type="email"
@@ -161,7 +218,7 @@ useEffect(() => {
           />
         </div>
 
-        <div>
+        <div className="col-md-4">
           <label className="block mb-1 font-medium">Phone</label>
           <input
             type="text"
@@ -211,7 +268,7 @@ useEffect(() => {
 
         {/* Permissions */}
         {(formType === "SUBADMIN" || formType === "CONSULTANT") && (
-          <div className="space-y-2">
+          <div className="space-y-2 col-md-4">
             <label className="block font-medium">Permissions</label>
             <div className="flex gap-4 flex-wrap">
               <label>

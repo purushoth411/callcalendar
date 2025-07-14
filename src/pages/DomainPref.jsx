@@ -258,6 +258,61 @@ const tableOptions = {
     setShowForm(false);
   };
   
+  const SkeletonLoader = () => (
+  <div className="animate-pulse">
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+      {/* Table Header */}
+      <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
+        <div className="flex space-x-4">
+          {Array(6)
+            .fill(0)
+            .map((_, index) => (
+              <div
+                key={index}
+                className="h-4 bg-gray-300 rounded flex-1"
+              ></div>
+            ))}
+        </div>
+      </div>
+
+      {/* Table Rows */}
+      {Array(8)
+        .fill(0)
+        .map((_, rowIndex) => (
+          <div key={rowIndex} className="px-6 py-4 border-b border-gray-100">
+            <div className="flex space-x-4">
+              {Array(6)
+                .fill(0)
+                .map((_, colIndex) => (
+                  <div
+                    key={colIndex}
+                    className="h-4 bg-gray-200 rounded flex-1"
+                  ></div>
+                ))}
+            </div>
+          </div>
+        ))}
+
+      {/* Pagination Skeleton */}
+      <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
+        <div className="flex justify-between items-center">
+          <div className="h-4 bg-gray-300 rounded w-48"></div>
+          <div className="flex space-x-2">
+            {Array(4)
+              .fill(0)
+              .map((_, index) => (
+                <div
+                  key={index}
+                  className="h-8 w-8 bg-gray-300 rounded"
+                ></div>
+              ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -274,17 +329,18 @@ const tableOptions = {
           </button>
         </div>
 
-        {!isLoading && domains.length > 0 && (
-          <DataTable
-            data={domains}
-            columns={columns}
-            className="display w-full"
-            options={tableOptions}
-          />
-        )}
-        {!isLoading && domains.length === 0 && (
-          <div className="text-center text-gray-600">No data available.</div>
-        )}
+        {isLoading ? (
+  <SkeletonLoader />
+) : domains.length > 0 ? (
+  <DataTable
+    data={domains}
+    columns={columns}
+    className="display w-full"
+    options={tableOptions}
+  />
+) : (
+  <div className="text-center text-gray-600">No data available.</div>
+)}
       </div>
 
       {/* Animated Side Form */}
