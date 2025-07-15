@@ -124,6 +124,17 @@ export default function Header() {
       <Users2 className="mr-1" size={16} />
       Teams
     </NavLink>
+    <NavLink
+      to="/bookings"
+      className={({ isActive }) =>
+        isActive
+          ? "flex items-center text-white underline font-semibold"
+          : "flex items-center text-white hover:text-gray-300"
+      }
+    >
+      <Users2 className="mr-1" size={16} />
+      Bookings
+    </NavLink>
      <NavLink
       to="/domainpref"
       className={({ isActive }) =>
