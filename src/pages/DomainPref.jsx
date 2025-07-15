@@ -4,6 +4,9 @@ import DataTable from "datatables.net-react";
 import DT from "datatables.net-dt";
 import { toast } from "react-hot-toast";
 import $ from "jquery";
+import { X } from "lucide-react";
+import Select from "react-select";
+import SkeletonLoader from "../components/SkeletonLoader";
 
 DataTable.use(DT);
 
@@ -11,7 +14,8 @@ export default function DomainPref() {
   const [domains, setDomains] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [allConsultants, setAllConsultants] = useState([]);
-  const [showForm, setShowForm] = useState(false);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [showEditForm, setShowEditForm] = useState(false);
   const [editId, setEditId] = useState(null);
 
   const [formData, setFormData] = useState({
@@ -32,7 +36,9 @@ export default function DomainPref() {
   const getAllDomains = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch("http://localhost:5000/api/helpers/getAllDomains");
+      const response = await fetch(
+        "http://localhost:5000/api/helpers/getAllDomains"
+      );
       const result = await response.json();
       if (result.status) {
         setDomains(result.data);
@@ -49,17 +55,20 @@ export default function DomainPref() {
 
   const getConsultants = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/users/getallusers", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          filters: {
-            usertype: ["CONSULTANT"],
-            keyword: "",
-            status: "Active"
-          },
-        }),
-      });
+      const response = await fetch(
+        "http://localhost:5000/api/users/getallusers",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            filters: {
+              usertype: ["CONSULTANT"],
+              keyword: "",
+              status: "Active",
+            },
+          }),
+        }
+      );
       const result = await response.json();
       if (result.status) {
         setAllConsultants(result.data);
@@ -80,10 +89,8 @@ export default function DomainPref() {
     }
 
     try {
-      const method = editId ? "PUT" : "POST";
-      const url = editId
-        ? `http://localhost:5000/api/domains/${editId}`
-        : "http://localhost:5000/api/domains";
+      const method = "POST";
+      const url = "http://localhost:5000/api/domains";
 
       const response = await fetch(url, {
         method,
@@ -93,7 +100,48 @@ export default function DomainPref() {
 
       const result = await response.json();
       if (result.status) {
-        toast.success(`Domain ${editId ? "updated" : "added"} successfully`);
+        toast.success(`Domain added successfully`);
+        setFormData({
+          domain: "",
+          pref_1: "",
+          pref_2: "",
+          pref_3: "",
+          pref_4: "",
+          pref_5: "",
+          pref_6: "",
+        });
+
+        setShowAddForm(false);
+        getAllDomains();
+      } else {
+        toast.error(result.message);
+      }
+    } catch (err) {
+      console.error("Save error:", err);
+      toast.error("Failed to save");
+    }
+  };
+
+  const handleUpdate = async () => {
+    const { domain } = formData;
+    if (!domain) {
+      toast.error("Domain name is required");
+      return;
+    }
+
+    try {
+      const method = "PUT";
+      const url = `http://localhost:5000/api/domains/${editId}`;
+
+      const response = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json();
+      if (result.status) {
+        toast.success(`Domain updated successfully`);
         setFormData({
           domain: "",
           pref_1: "",
@@ -104,7 +152,7 @@ export default function DomainPref() {
           pref_6: "",
         });
         setEditId(null);
-        setShowForm(false);
+        setShowEditForm(false);
         getAllDomains();
       } else {
         toast.error(result.message);
@@ -127,7 +175,7 @@ export default function DomainPref() {
       pref_6: prefs[5] || "",
     });
     setEditId(item.id);
-    setShowForm(true);
+    setShowEditForm(true);
   };
 
   const handleDelete = async (id) => {
@@ -155,40 +203,40 @@ export default function DomainPref() {
     {
       title: "Pref 1",
       data: "cosultantId",
-      render: (data) => (data?.split(",")[0]?.trim() || "")
+      render: (data) => data?.split(",")[0]?.trim() || "",
     },
     {
       title: "Pref 2",
       data: "cosultantId",
-      render: (data) => (data?.split(",")[1]?.trim() || "")
+      render: (data) => data?.split(",")[1]?.trim() || "",
     },
     {
       title: "Pref 3",
       data: "cosultantId",
-      render: (data) => (data?.split(",")[2]?.trim() || "")
+      render: (data) => data?.split(",")[2]?.trim() || "",
     },
     {
       title: "Pref 4",
       data: "cosultantId",
-      render: (data) => (data?.split(",")[3]?.trim() || "")
+      render: (data) => data?.split(",")[3]?.trim() || "",
     },
     {
       title: "Pref 5",
       data: "cosultantId",
-      render: (data) => (data?.split(",")[4]?.trim() || "")
+      render: (data) => data?.split(",")[4]?.trim() || "",
     },
     {
       title: "Pref 6",
       data: "cosultantId",
-      render: (data) => (data?.split(",")[5]?.trim() || "")
+      render: (data) => data?.split(",")[5]?.trim() || "",
     },
     {
       title: "Actions",
       data: null,
       orderable: false,
       render: (data, type, row) => `
-        <button class="edit-btn text-blue-600 mr-2" data-id="${row.id}">Edit</button>
-        <button class="delete-btn text-red-600" data-id="${row.id}">Delete</button>
+        <button class="edit-btn bg-blue-600 px-2 py-1 rounded text-white leading-none text-[11px] mr-1" data-id="${row.id}">Edit</button>
+        <button class="delete-btn bg-red-600 px-2 py-1 rounded text-white leading-none text-[11px]" data-id="${row.id}">Delete</button>
       `,
     },
   ];
@@ -211,7 +259,7 @@ export default function DomainPref() {
     };
   }, [domains]);
 
-const tableOptions = {
+  const tableOptions = {
     responsive: true,
     pageLength: 25,
     lengthMenu: [5, 10, 25, 50, 100],
@@ -240,7 +288,7 @@ const tableOptions = {
     },
   };
 
-  const openForm = () => {
+  const openAddForm = () => {
     setFormData({
       domain: "",
       pref_1: "",
@@ -250,102 +298,54 @@ const tableOptions = {
       pref_5: "",
       pref_6: "",
     });
-    setEditId(null);
-    setShowForm(true);
+
+    setShowAddForm(true);
   };
 
   const closeForm = () => {
-    setShowForm(false);
+    setShowAddForm(false);
+    setShowEditForm(false);
   };
-  
-  const SkeletonLoader = () => (
-  <div className="animate-pulse">
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-      {/* Table Header */}
-      <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
-        <div className="flex space-x-4">
-          {Array(6)
-            .fill(0)
-            .map((_, index) => (
-              <div
-                key={index}
-                className="h-4 bg-gray-300 rounded flex-1"
-              ></div>
-            ))}
-        </div>
-      </div>
 
-      {/* Table Rows */}
-      {Array(8)
-        .fill(0)
-        .map((_, rowIndex) => (
-          <div key={rowIndex} className="px-6 py-4 border-b border-gray-100">
-            <div className="flex space-x-4">
-              {Array(6)
-                .fill(0)
-                .map((_, colIndex) => (
-                  <div
-                    key={colIndex}
-                    className="h-4 bg-gray-200 rounded flex-1"
-                  ></div>
-                ))}
-            </div>
-          </div>
-        ))}
-
-      {/* Pagination Skeleton */}
-      <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
-        <div className="flex justify-between items-center">
-          <div className="h-4 bg-gray-300 rounded w-48"></div>
-          <div className="flex space-x-2">
-            {Array(4)
-              .fill(0)
-              .map((_, index) => (
-                <div
-                  key={index}
-                  className="h-8 w-8 bg-gray-300 rounded"
-                ></div>
-              ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-);
 
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-5xl mx-auto">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-gray-800">
-            Domain Preferences
-          </h2>
-          <button
-            onClick={openForm}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
-          >
-            Add New
-          </button>
-        </div>
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-[1250px] mx-auto py-5">
+        <div className="p-3 bg-gray-100 rounded shadow text-[13px]">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-bold text-gray-800">
+              Domain Preferences
+            </h2>
+            <button
+              onClick={openAddForm}
+              className="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 transition-colors text-[11px] "
+            >
+              Add New
+            </button>
+          </div>
 
-        {isLoading ? (
-  <SkeletonLoader />
-) : domains.length > 0 ? (
-  <DataTable
-    data={domains}
-    columns={columns}
-    className="display w-full"
-    options={tableOptions}
-  />
-) : (
-  <div className="text-center text-gray-600">No data available.</div>
-)}
+          {isLoading ? (
+                          <SkeletonLoader
+  rows={6}
+  columns={["Domain", "Pref 1","Pref 2","Pref 3","Pref 4","Pref 5","Pref 6", "Actions"]}
+/>
+          ) : domains.length > 0 ? (
+            <DataTable
+              data={domains}
+              columns={columns}
+              className="display w-full text-[13px]"
+              options={tableOptions}
+            />
+          ) : (
+            <div className="text-center text-gray-600">No domains available.</div>
+          )}
+        </div>
       </div>
 
       {/* Animated Side Form */}
       <AnimatePresence>
-        {showForm && (
+        {showAddForm && (
           <>
             {/* Backdrop */}
             <motion.div
@@ -362,17 +362,17 @@ const tableOptions = {
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
-              transition={{ 
-                type: "spring", 
-                stiffness: 300, 
+              transition={{
+                type: "spring",
+                stiffness: 300,
                 damping: 30,
-                duration: 0.4 
+                duration: 0.4,
               }}
-              className="fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl z-50 overflow-y-auto"
+              className="fixed top-0 right-0 h-full w-full bg-white shadow-2xl z-50 overflow-y-auto"
             >
               <div className="p-6">
                 {/* Header */}
-                <div className="flex justify-between items-center mb-6 border-b pb-4">
+                <div className="flex justify-between items-center mb-6 pb-4">
                   <h3 className="text-xl font-semibold text-gray-800">
                     {editId ? "Edit Domain" : "Add New Domain"}
                   </h3>
@@ -380,7 +380,7 @@ const tableOptions = {
                     onClick={closeForm}
                     className="text-gray-500 hover:text-gray-700 text-2xl font-bold"
                   >
-                    ×
+                    <X size={15} />
                   </button>
                 </div>
 
@@ -404,47 +404,160 @@ const tableOptions = {
 
                   {/* Consultant Preferences */}
                   <div className="space-y-4">
-                    <h4 className="text-lg font-medium text-gray-800 border-b pb-2">
+                    <h4 className="text-lg font-medium text-gray-800 pb-2">
                       Consultant Preferences
                     </h4>
-                    {[1, 2, 3, 4, 5, 6].map((n) => (
-                      <div key={n}>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Preference {n}
-                        </label>
-                        <select
-                          className="w-full border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          value={formData[`pref_${n}`] || ""}
-                          onChange={(e) =>
-                            setFormData({ ...formData, [`pref_${n}`]: e.target.value })
-                          }
-                        >
-                          <option value="">Select Consultant</option>
-                          {allConsultants.length > 0 &&
-                            allConsultants.map((consultant) => (
-                              <option key={consultant.id} value={consultant.fld_name}>
-                                {consultant.fld_name}
-                              </option>
-                            ))}
-                        </select>
-                      </div>
-                    ))}
+                    <div className="grid grid-cols-3 gap-4">
+                      {[1, 2, 3, 4, 5, 6].map((n) => (
+                        <div key={n}>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Preference {n}
+                          </label>
+                         <Select
+  className="react-select-container"
+  classNamePrefix="react-select"
+  options={allConsultants.map((consultant) => ({
+    value: consultant.fld_name,
+    label: consultant.fld_name,
+  }))}
+  value={
+    allConsultants
+      .map((consultant) => ({
+        value: consultant.fld_name,
+        label: consultant.fld_name,
+      }))
+      .find((option) => option.value === formData[`pref_${n}`]) || null
+  }
+  onChange={(selected) =>
+    setFormData({
+      ...formData,
+      [`pref_${n}`]: selected ? selected.value : "",
+    })
+  }
+  placeholder="Select Consultant"
+/>
+
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
 
                 {/* Action Buttons */}
                 <div className="flex justify-end gap-3 mt-8 pt-6 border-t">
                   <button
-                    onClick={closeForm}
-                    className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
-                  >
-                    Cancel
-                  </button>
-                  <button
                     onClick={handleSave}
                     className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
                   >
-                    {editId ? "Update" : "Save"}
+                    Save
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+        {showEditForm && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="fixed inset-0 bg-black bg-opacity-50 z-40"
+              onClick={closeForm}
+            />
+
+            {/* Side Form */}
+            <motion.div
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{
+                type: "spring",
+                stiffness: 300,
+                damping: 30,
+                duration: 0.4,
+              }}
+              className="fixed top-0 right-0 h-full w-full bg-white shadow-2xl z-50 overflow-y-auto"
+            >
+              <div className="p-6">
+                {/* Header */}
+                <div className="flex justify-between items-center mb-6 pb-4">
+                  <h3 className="text-xl font-semibold text-gray-800">
+                    {editId ? "Edit Domain" : "Add New Domain"}
+                  </h3>
+                  <button
+                    onClick={closeForm}
+                    className="text-gray-500 hover:text-gray-700 text-2xl font-bold"
+                  >
+                    <X size={15} />
+                  </button>
+                </div>
+
+                {/* Form Content */}
+                <div className="space-y-6">
+                  {/* Domain Input */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Domain Name *
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Enter domain name"
+                      value={formData.domain}
+                      onChange={(e) =>
+                        setFormData({ ...formData, domain: e.target.value })
+                      }
+                      className="w-full border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+
+                  {/* Consultant Preferences */}
+                  <div className="space-y-4">
+                    <h4 className="text-lg font-medium text-gray-800 pb-2">
+                      Consultant Preferences
+                    </h4>
+                    <div className="grid grid-cols-3 gap-4">
+                      {[1, 2, 3, 4, 5, 6].map((n) => (
+                        <div key={n}>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Preference {n}
+                          </label>
+                          <select
+                            className="w-full border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            value={formData[`pref_${n}`] || ""}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                [`pref_${n}`]: e.target.value,
+                              })
+                            }
+                          >
+                            <option value="">Select Consultant</option>
+                            {allConsultants.length > 0 &&
+                              allConsultants.map((consultant) => (
+                                <option
+                                  key={consultant.id}
+                                  value={consultant.fld_name}
+                                >
+                                  {consultant.fld_name}
+                                </option>
+                              ))}
+                          </select>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex justify-end gap-3 mt-8 pt-6 border-t">
+                  <button
+                    onClick={handleUpdate}
+                    className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+                  >
+                    Update
                   </button>
                 </div>
               </div>

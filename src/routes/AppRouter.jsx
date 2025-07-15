@@ -8,6 +8,8 @@ import Dashboard from "../pages/Dashboard";
 import Login from "../pages/Login";
 import Users from "../pages/manageuser/Users";
 import DomainPref from "../pages/Domainpref";
+import Teams from "../pages/Teams";
+import Bookings from "../pages/managebooking/Bookings";
 
 
 
@@ -23,6 +25,8 @@ export default function AppRouter() {
           <Route element={<Layout />}>
             <Route path="/" element={<Dashboard />} />
             <Route path="/users" element={<Users />} />
+            <Route path="/teams" element={<Teams />} />
+            <Route path="/bookings" element={<Bookings />} />
             <Route path="/domainpref" element={<DomainPref />} />
           </Route>
         </Route>

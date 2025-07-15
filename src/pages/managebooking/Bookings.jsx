@@ -10,46 +10,24 @@ import EditUser from "./EditUser.jsx";
 import { formatDate } from "../../helpers/CommonHelper.jsx";
 import SkeletonLoader from "../../components/SkeletonLoader.jsx";
 
-export default function Users() {
+export default function Bookings() {
   const { user, logout } = useAuth();
-  const [allUsers, setAllUsers] = useState([]);
+
   DataTable.use(DT);
-  const [filteredUsers, setFilteredUsers] = useState([]);
-  const [selectedUserType, setSelectedUserType] = useState("EXECUTIVE");
-  const [userCount, setUserCount] = useState({});
+  
   const [isLoading, setIsLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
-  const [formType, setFormType] = useState("");
-  const [teams, setTeams] = useState([]);
+ 
   const tableRef = useRef(null);
-  const [formData, setFormData] = useState({
-    team_id: formType === "EXECUTIVE" ? "" : [],
-    username: "",
-    name: "",
-    email: "",
-    phone: "",
-    password: "",
-    confirmPassword: "",
-    consultant_type: "",
-    subadmin_type: "",
-    permissions: [],
-  });
+ 
 
   useEffect(() => {
-    fetchAllUsers();
-    getAllTeams();
-    getUserCount();
+    fetchAllBookings();
+    
   }, []);
 
-  useEffect(() => {
-    // Filter users based on selected type
-    const filtered = allUsers.filter(
-      (user) => user.fld_admin_type === selectedUserType
-    );
-    setFilteredUsers(filtered);
-  }, [selectedUserType, allUsers]);
 
-  const fetchAllUsers = async () => {
+
+  const fetchAllBookings = async () => {
     try {
       setIsLoading(true);
       const filters = {
@@ -80,146 +58,7 @@ export default function Users() {
     }
   };
 
-  const getAllTeams = async () => {
-    try {
-      const response = await fetch(
-        "http://localhost:5000/api/helpers/getAllActiveTeams",
-        {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-      const result = await response.json();
-      if (result.status) {
-        setTeams(result.data);
-        console.log("Teams fetched successfully:", result.data);
-      } else {
-        setTeams([]);
-        console.error("Failed to fetch teams:", result.message);
-      }
-    } catch (error) {
-      console.error("Error fetching teams:", error);
-    }
-  };
 
-  const handleSave = async () => {
-    // Validation
-    if (
-      (formType === "EXECUTIVE" ||
-        formType === "SUBADMIN" ||
-        formType === "CONSULTANT") &&
-      ((formType === "EXECUTIVE" && !formData.team_id) ||
-        ((formType === "SUBADMIN" || formType === "CONSULTANT") &&
-          (!formData.team_id || formData.team_id.length === 0))) // empty array
-    ) {
-      toast.error("Please select Team.");
-      return;
-    }
-
-    if (
-      !formData.username ||
-      !formData.name ||
-      !formData.password ||
-      !formData.confirmPassword
-    ) {
-      toast.error("Please fill all mandatory fields.");
-      return;
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-      toast.error("Passwords do not match.");
-      return;
-    }
-
-    if (formType === "CONSULTANT" && !formData.consultant_type) {
-      toast.error("Consultant Type is required");
-      return;
-    }
-
-    if (formType === "SUBADMIN" && !formData.subadmin_type) {
-      toast.error("Subadmin Type is required");
-      return;
-    }
-
-    const payload = {
-      ...formData,
-      usertype: formType,
-    };
-
-    try {
-      const response = await fetch("http://localhost:5000/api/users/addUser", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      const result = await response.json();
-      if (result.status) {
-        alert("User added successfully");
-        setShowForm(false);
-        fetchAllUsers(); // reload users
-      } else {
-        alert(result.message || "Something went wrong");
-      }
-    } catch (err) {
-      console.error("Error:", err);
-      alert("Server error");
-    }
-  };
-
-  const getUserCount = async () => {
-    try {
-      const response = await fetch(
-        "http://localhost:5000/api/users/getusercount",
-        {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-      const result = await response.json();
-      if (result.status) {
-        setUserCount(result.data);
-        console.log("User count fetched successfully:", result.data);
-      } else {
-        console.error("Failed to fetch user count:", result.message);
-      }
-    } catch (error) {
-      console.error("Error fetching user count:", error);
-    }
-  };
-
-  const updateUserStatus = async (userId, status) => {
-    try {
-      const res = await fetch(
-        `http://localhost:5000/api/users/update-status/${userId}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ status }),
-        }
-      );
-
-      const data = await res.json();
-      if (data.status) {
-        toast.success("Status updated");
-      } else {
-        toast.error(data.message || "Status update failed");
-      }
-    } catch (err) {
-      console.error(err);
-      toast.error("Error updating status");
-    }
-  };
-
-  const [editData, setEditData] = useState(null);
-  const [showEditForm, setShowEditForm] = useState(false);
-  const handleEditButtonClick = (data) => {
-    setFormType(data.fld_admin_type);
-    setEditData(data);
-    setShowEditForm(true);
-  };
 
   const columns = [
     {
@@ -285,47 +124,7 @@ export default function Users() {
     },
   ];
 
-  const userTabs = [
-    {
-      key: "EXECUTIVE",
-      label: "CRM",
-      count: userCount.EXECUTIVE || 0,
-      color: "blue",
-    },
-    {
-      key: "SUBADMIN",
-      label: "SUBADMIN",
-      count: userCount.SUBADMIN || 0,
-      color: "purple",
-    },
-    {
-      key: "CONSULTANT",
-      label: "CONSULTANT",
-      count: userCount.CONSULTANT || 0,
-      color: "green",
-    },
-    {
-      key: "OPERATIONSADMIN",
-      label: "OPS ADMIN",
-      count: userCount.OPERATIONSADMIN || 0,
-      color: "orange",
-    },
-  ];
 
-  const handleTabClick = (userType) => {
-    setSelectedUserType(userType);
-  };
-
-  const executiveUsers = allUsers.filter(
-    (u) => u.fld_admin_type === "EXECUTIVE"
-  );
-  const subadminUsers = allUsers.filter((u) => u.fld_admin_type === "SUBADMIN");
-  const consultantUsers = allUsers.filter(
-    (u) => u.fld_admin_type === "CONSULTANT"
-  );
-  const opsAdminUsers = allUsers.filter(
-    (u) => u.fld_admin_type === "OPERATIONSADMIN"
-  );
   const tableOptions = {
     responsive: true,
     pageLength: 25,
@@ -372,42 +171,9 @@ export default function Users() {
       <div className="max-w-[1250px] mx-auto py-5">
         {/* Header */}
         <div className="mb-8">
-          <h4 className="text-xl font-bold text-gray-900">User Management</h4>
+          <h4 className="text-xl font-bold text-gray-900">Booking Management</h4>
         </div>
 
-        {/* Navigation Tabs */}
-        <div className="mb-8">
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-1">
-            <nav className="flex space-x-1">
-              {userTabs.map((tab) => (
-                <button
-                  key={tab.key}
-                  onClick={() => handleTabClick(tab.key)}
-                  className={`flex-1 px-4 py-3 text-sm font-medium rounded-md transition-all duration-200 ${
-                    selectedUserType === tab.key
-                      ? "prime-bg text-white shadow-sm"
-                      : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-                  }`}
-                >
-                  <div className="flex items-center justify-center space-x-2">
-                    <span>{tab.label}</span>
-                    <span
-                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        selectedUserType === tab.key
-                          ? "secondary-bg text-white"
-                          : "bg-gray-100 text-gray-800"
-                      }`}
-                    >
-                      {tab.count}
-                    </span>
-                  </div>
-                </button>
-              ))}
-            </nav>
-          </div>
-        </div>
-
-        {/* Content Area */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200">
           {/* Header */}
           <div className="px-6 py-4 border-b border-gray-200">
@@ -525,28 +291,7 @@ export default function Users() {
             )}
           </div>
         </div>
-        <AnimatePresence>
-          {showForm && (
-            <AddUser
-              setShowForm={setShowForm}
-              formData={formData}
-              setFormData={setFormData}
-              teams={teams}
-              formType={formType}
-              handleSave={handleSave}
-            />
-          )}
-
-          {showEditForm && (
-            <EditUser
-              setShowForm={setShowEditForm}
-              teams={teams}
-              formType={formType}
-              editData={editData}
-              fetchAllUsers={fetchAllUsers}
-            />
-          )}
-        </AnimatePresence>
+       
       </div>
 
       {/* Custom Styles */}

@@ -32,7 +32,7 @@ export default function Header() {
     <>
       {/* Top Header */}
       <header className="bg-white text-[#092e46] shadow-md">
-        <div className="mx-auto flex items-center justify-between px-4 py-3">
+        <div className="mx-auto flex items-center justify-between px-4 py-2">
           {/* Logo */}
           <div className="flex items-center cursor-pointer" onClick={() => navigate("/")}>
             <img src={logo} alt="Logo" className="h-10 w-auto mr-2" />
@@ -43,10 +43,10 @@ export default function Header() {
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="flex items-center px-3 py-2 rounded-md bg-gray-100 text-black transition hover:bg-gray-200"
+                className="flex items-center px-2 py-1 rounded-md bg-gray-100 text-black transition hover:bg-gray-200"
               >
-                <CircleUserRound className="mr-1" size={20} />
-                <span className="capitalize font-medium">{user.fld_name}</span>
+                <CircleUserRound className="mr-1" size={15} />
+                <span className="capitalize font-[10px]">{user.fld_name}</span>
               </button>
 
               <AnimatePresence>
@@ -68,8 +68,8 @@ export default function Header() {
               </AnimatePresence>
             </div>
 
-            <button className="relative p-2 bg-gray-100 rounded-full hover:bg-gray-200">
-              <Bell size={20} />
+            <button className="relative px-2 py-2 bg-gray-100 rounded-full hover:bg-gray-200">
+              <Bell size={15} />
             </button>
           </div>
         </div>
@@ -112,6 +112,17 @@ export default function Header() {
     >
       <Users2 className="mr-1" size={16} />
       Users
+    </NavLink>
+    <NavLink
+      to="/teams"
+      className={({ isActive }) =>
+        isActive
+          ? "flex items-center text-white underline font-semibold"
+          : "flex items-center text-white hover:text-gray-300"
+      }
+    >
+      <Users2 className="mr-1" size={16} />
+      Teams
     </NavLink>
      <NavLink
       to="/domainpref"

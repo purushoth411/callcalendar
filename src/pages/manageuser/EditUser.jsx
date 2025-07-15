@@ -3,11 +3,16 @@ import { motion } from "framer-motion";
 import { XIcon } from "lucide-react";
 import Select from "react-select";
 import { set } from "idb-keyval";
-import {useState} from "react";
-import {toast} from "react-hot-toast";
+import { useState } from "react";
+import { toast } from "react-hot-toast";
 
-const EditUser = ({ setShowForm, formType, teams,editData,fetchAllUsers }) => {
-
+const EditUser = ({
+  setShowForm,
+  formType,
+  teams,
+  editData,
+  fetchAllUsers,
+}) => {
   const [formData, setFormData] = useState({
     user_id: editData.id || null,
     team_id: formType === "EXECUTIVE" ? "" : [],
@@ -19,97 +24,119 @@ const EditUser = ({ setShowForm, formType, teams,editData,fetchAllUsers }) => {
     confirmPassword: "",
     consultant_type: "",
     subadmin_type: "",
-    permissions: {
-      reassign: false,
-      approve_call: false,
-    },
+    permissions: [],
   });
 
-useEffect(() => {
+  useEffect(() => {
     if (editData) {
+      const parsedPermissions = editData.fld_permission
+        ? JSON.parse(editData.fld_permission)
+        : [];
+
       setFormData({
         user_id: editData.id || null,
         team_id:
           formType === "EXECUTIVE"
             ? editData.fld_team_id || ""
-            : (editData.fld_team_id || "")
-                .split(",")
-                .map((id) => parseInt(id)), 
+            : (editData.fld_team_id || "").split(",").map((id) => parseInt(id)),
         username: editData.fld_username || "",
         name: editData.fld_name || "",
         email: editData.fld_email || "",
         phone: editData.fld_phone || "",
-       
+        password: "",
+        confirmPassword: "",
         consultant_type: editData.fld_consultant_type || "",
         subadmin_type: editData.fld_subadmin_type || "",
-        permissions: editData.fld_permission
-          ? JSON.parse(editData.fld_permission)
-          : {
-              reassign: false,
-              approve_call: false,
-            },
+        permissions: {
+          reassign: parsedPermissions.includes("Reassign"),
+          approve_call: parsedPermissions.includes("Approve_Add_Call_Request"),
+        },
       });
-      console.log("Team Id",editData.fld_team_id);
     }
   }, [editData, formType]);
 
- const handleSave = async () => {
-  const {
-    user_id,
-    team_id,
-    username,
-    name,
-    email,
-    phone,
-   
-    consultant_type,
-    subadmin_type,
-    permissions,
-  } = formData;
+  const handleSave = async () => {
+    const {
+      user_id,
+      team_id,
+      username,
+      name,
+      email,
+      phone,
+      consultant_type,
+      subadmin_type,
+      permissions,
+    } = formData;
 
-  if (!username || !name || !email || !phone) {
-    alert("Please fill all required fields");
-    return;
-  }
-
-  
-
-  const payload = {
-    user_id,
-    team_id: formType === "EXECUTIVE" ? team_id : team_id.join(","),
-    username,
-    name,
-    email,
-    phone,
-    
-    consultant_type,
-    subadmin_type,
-    permissions,
-  };
-
-  try {
-    const res = await fetch(`http://localhost:5000/api/users/update/${user_id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
-
-    const data = await res.json();
-    if (data.status) {
-      toast.success("User updated successfully!");
-      setShowForm(false);
-       fetchAllUsers();
-    } else {
-      toast.error(data.message || "Update failed");
+    if (!username || !name) {
+      toast.error("Please fill all required fields");
+      return;
     }
-  }  catch (error) {
-    console.error(error);
-    toast("Something went wrong");
-  }
-};
 
+    if (
+      (formType === "EXECUTIVE" ||
+        formType === "SUBADMIN" ||
+        formType === "CONSULTANT") &&
+      ((formType === "EXECUTIVE" && !team_id) ||
+        ((formType === "SUBADMIN" || formType === "CONSULTANT") &&
+          (!team_id || team_id.length === 0))) // empty array
+    ) {
+      toast.error("Please select Team.");
+      return;
+    }
+
+     if(formType === "CONSULTANT" && !consultant_type){
+          toast.error("Consultant Type is required")
+    return;
+        }
+    
+        if(formType === "SUBADMIN" && !subadmin_type){
+          toast.error("Subadmin Type is required")
+    return;
+        }
+
+    const permissionArray = [];
+    if (permissions.reassign) permissionArray.push("Reassign");
+    if (permissions.approve_call)
+      permissionArray.push("Approve_Add_Call_Request");
+
+    const payload = {
+      user_id,
+      team_id: formType === "EXECUTIVE" ? team_id : team_id.join(","),
+      username,
+      name,
+      email,
+      phone,
+      consultant_type,
+      subadmin_type,
+      permissions: permissionArray, // ✅ pass array to backend
+    };
+
+    try {
+      const res = await fetch(
+        `http://localhost:5000/api/users/update/${user_id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      const data = await res.json();
+      if (data.status) {
+        toast.success("User updated successfully!");
+        setShowForm(false);
+        fetchAllUsers();
+      } else {
+        toast.error(data.message || "Update failed");
+      }
+    } catch (error) {
+      console.error(error);
+      toast("Something went wrong");
+    }
+  };
 
   return (
     <motion.div
@@ -141,46 +168,50 @@ useEffect(() => {
           <div className="col-md-4">
             <label className="block mb-1 font-medium">Select Team</label>
             <Select
-  className="react-select-container"
-  classNamePrefix="react-select"
-  options={teams.map((team) => ({
-    value: team.id,
-    label: team.fld_title,
-  }))}
-  value={
-    formType === "EXECUTIVE"
-      ? teams
-          .map((team) => ({
-            value: team.id,
-            label: team.fld_title,
-          }))
-          .find((option) => String(option.value) === String(formData.team_id)) || null
-      : teams
-          .map((team) => ({
-            value: team.id,
-            label: team.fld_title,
-          }))
-          .filter((option) =>
-            (formData.team_id || []).map(String).includes(String(option.value))
-          )
-  }
-  isMulti={formType !== "EXECUTIVE"}
-  onChange={(selected) => {
-    if (formType === "EXECUTIVE") {
-      setFormData({
-        ...formData,
-        team_id: selected ? selected.value : "",
-      });
-    } else {
-      setFormData({
-        ...formData,
-        team_id: selected ? selected.map((s) => s.value) : [],
-      });
-    }
-  }}
-  placeholder="Select Team"
-/>
-
+              className="react-select-container"
+              classNamePrefix="react-select"
+              options={teams.map((team) => ({
+                value: team.id,
+                label: team.fld_title,
+              }))}
+              value={
+                formType === "EXECUTIVE"
+                  ? teams
+                      .map((team) => ({
+                        value: team.id,
+                        label: team.fld_title,
+                      }))
+                      .find(
+                        (option) =>
+                          String(option.value) === String(formData.team_id)
+                      ) || null
+                  : teams
+                      .map((team) => ({
+                        value: team.id,
+                        label: team.fld_title,
+                      }))
+                      .filter((option) =>
+                        (formData.team_id || [])
+                          .map(String)
+                          .includes(String(option.value))
+                      )
+              }
+              isMulti={formType !== "EXECUTIVE"}
+              onChange={(selected) => {
+                if (formType === "EXECUTIVE") {
+                  setFormData({
+                    ...formData,
+                    team_id: selected ? selected.value : "",
+                  });
+                } else {
+                  setFormData({
+                    ...formData,
+                    team_id: selected ? selected.map((s) => s.value) : [],
+                  });
+                }
+              }}
+              placeholder="Select Team"
+            />
           </div>
         )}
 
@@ -231,40 +262,47 @@ useEffect(() => {
         </div>
 
         {/* Consultant Type */}
-        {formType === "CONSULTANT" && (
-          <select
-            className="w-full border px-3 py-2 rounded"
-            value={formData.consultant_type}
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                consultant_type: e.target.value,
-              })
-            }
-          >
-            <option value="">Select Type</option>
-            <option value="Service Provider">Service Provider</option>
-          </select>
+         {formType === "CONSULTANT" && (
+          <div className="col-md-3">
+            <label className="block mb-1 font-medium">Consultant Type</label>
+            <select
+              className="w-full border px-3 py-2 rounded"
+              value={formData.consultant_type}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  consultant_type: e.target.value,
+                })
+              }
+            >
+              <option value="">Select Type</option>
+              <option value="Presales">Presales</option>
+              <option value="Postsales">Postsales</option>
+              <option value="Both">Both</option>
+            </select>
+          </div>
         )}
 
         {/* SubAdmin Type */}
         {formType === "SUBADMIN" && (
-          <select
-            className="w-full border px-3 py-2 rounded"
-            value={formData.subadmin_type}
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                subadmin_type: e.target.value,
-              })
-            }
-          >
-            <option value="">Select Type</option>
-            <option value="General">General</option>
-          </select>
+          <div className="col-md-3">
+            <label className="block mb-1 font-medium">Subadmin Type</label>
+            <select
+              className="w-full border px-3 py-2 rounded"
+              value={formData.subadmin_type}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  subadmin_type: e.target.value,
+                })
+              }
+            >
+              <option value="">Select Type</option>
+              <option value="consultant_sub">Consultant</option>
+              <option value="crm_sub">CRM </option>
+            </select>
+          </div>
         )}
-
-       
 
         {/* Permissions */}
         {(formType === "SUBADMIN" || formType === "CONSULTANT") && (
@@ -289,20 +327,23 @@ useEffect(() => {
                 Reassign
               </label>
               {formType === "SUBADMIN" && (
-                <input
-                  type="checkbox"
-                  className="mr-1"
-                  checked={formData.permissions.approve_call}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      permissions: {
-                        ...formData.permissions,
-                        approve_call: e.target.checked,
-                      },
-                    })
-                  }
-                />
+                <label>
+                  <input
+                    type="checkbox"
+                    className="mr-1"
+                    checked={formData.permissions.approve_call}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        permissions: {
+                          ...formData.permissions,
+                          approve_call: e.target.checked,
+                        },
+                      })
+                    }
+                  />
+                  Approve Add Call Request
+                </label>
               )}
             </div>
           </div>
