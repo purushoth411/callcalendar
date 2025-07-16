@@ -302,7 +302,7 @@ const fetchBookingHistory = async (bookingId) => {
       <AnimatePresence>
      {showForm && (
           <div className="mb-6">
-            <AddBooking user={user} fetchAllBookings={fetchAllBookings} />
+            <AddBooking user={user} fetchAllBookings={fetchAllBookings} setShowForm={setShowForm}/>
           </div>
         )}
 </AnimatePresence>
