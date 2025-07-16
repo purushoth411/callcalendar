@@ -124,7 +124,7 @@ export default function Header() {
       <Users2 className="mr-1" size={16} />
       Teams
     </NavLink>
-    <NavLink
+    {/* <NavLink
       to="/bookings"
       className={({ isActive }) =>
         isActive
@@ -134,8 +134,8 @@ export default function Header() {
     >
       <Users2 className="mr-1" size={16} />
       Bookings
-    </NavLink>
-     <NavLink
+    </NavLink> */}
+     {/* <NavLink
       to="/domainpref"
       className={({ isActive }) =>
         isActive
@@ -145,7 +145,7 @@ export default function Header() {
     >
       <Globe2 className="mr-1" size={16} />
       Domain Pref
-    </NavLink>
+    </NavLink> */}
   </div>
 </nav>
 

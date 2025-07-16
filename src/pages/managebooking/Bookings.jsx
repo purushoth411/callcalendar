@@ -8,6 +8,8 @@ import {
   formatDate,
 } from "../../helpers/CommonHelper.jsx";
 import SkeletonLoader from "../../components/SkeletonLoader.jsx";
+import AddBooking from "./AddBooking.jsx";
+import { AnimatePresence } from "framer-motion";
 
 export default function Bookings() {
   const { user } = useAuth();
@@ -19,6 +21,12 @@ export default function Bookings() {
   const [expandedRows, setExpandedRows] = useState(new Set());
   const [historyData, setHistoryData] = useState({}); // Store history for each booking
   const [loadingHistory, setLoadingHistory] = useState(new Set());
+  const [showAddForm,setShowAddForm] =useState(false);
+  const [showForm, setShowForm] = useState(false);
+
+  const handleAddNewClick = () => {
+    setShowForm(true);
+  };
 
   const tableRef = useRef(null);
 
@@ -108,80 +116,6 @@ const fetchBookingHistory = async (bookingId) => {
   }
 };
 
-
-  const toggleHistoryRow = (bookingId) => {
-    const newExpandedRows = new Set(expandedRows);
-    
-    if (newExpandedRows.has(bookingId)) {
-      newExpandedRows.delete(bookingId);
-    } else {
-      newExpandedRows.add(bookingId);
-      fetchBookingHistory(bookingId);
-    }
-    
-    setExpandedRows(newExpandedRows);
-  };
-
-  const renderHistoryRow = (bookingId) => {
-    const history = historyData[bookingId] || [];
-    const isLoadingThis = loadingHistory.has(bookingId);
-
-    if (isLoadingThis) {
-      return `
-        <tr class="history-row bg-blue-50">
-          <td colspan="6" class="p-4">
-            <div class="flex items-center justify-center space-x-2">
-              <div class="animate-spin rounded-full h-4 w-4 border-2 border-blue-600 border-t-transparent"></div>
-              <span class="text-sm text-blue-600">Loading history...</span>
-            </div>
-          </td>
-        </tr>
-      `;
-    }
-
-    if (history.length === 0) {
-      return `
-        <tr class="history-row bg-gray-50">
-          <td colspan="6" class="p-4 text-center text-gray-500 text-sm">
-            No history found for this booking.
-          </td>
-        </tr>
-      `;
-    }
-
-    const historyItems = history.map(item => `
-      <div class="bg-white p-3 rounded-lg shadow-sm border border-gray-200 mb-2">
-        <div class="text-sm text-gray-700 mb-2">
-          ${item.fld_comment}
-        </div>
-        <div class="text-xs text-gray-500 flex items-center">
-          <span class="mr-2">📅</span>
-          ${formatDate(item.fld_addedon)}
-        </div>
-      </div>
-    `).join('');
-
-    return `
-      <tr class="history-row bg-blue-50">
-        <td colspan="6" class="p-4">
-          <div class="space-y-2">
-            <div class="flex items-center justify-between mb-3">
-              <h4 class="font-semibold text-gray-800 text-sm">
-                📋 Booking History (${history.length} entries)
-              </h4>
-              <button class="close-history-btn text-gray-500 hover:text-red-600 text-sm px-2 py-1" 
-                      data-booking-id="${bookingId}">
-                ✕ Close
-              </button>
-            </div>
-            <div class="max-h-64 overflow-y-auto">
-              ${historyItems}
-            </div>
-          </div>
-        </td>
-      </tr>
-    `;
-  };
   const generateHistoryHTML = (history) => {
   if (!history || history.length === 0) {
     return `<div class="p-3 text-sm text-gray-500">No history found.</div>`;
@@ -200,9 +134,7 @@ const fetchBookingHistory = async (bookingId) => {
 };
 
 
-  const formatDateTime = (dateString) => {
-    return formatDate(dateString);
-  };
+
 
   const columns = [
     {
@@ -319,6 +251,12 @@ const fetchBookingHistory = async (bookingId) => {
           <h4 className="text-xl font-bold text-gray-900">
             Booking Management
           </h4>
+          <button
+     onClick={handleAddNewClick}
+      className="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 transition-colors text-[11px]"
+    >
+      Add New
+    </button>
         </div>
 
         <div className="bg-white rounded-lg shadow-sm border border-gray-200">
@@ -361,7 +299,13 @@ const fetchBookingHistory = async (bookingId) => {
           </div>
         </div>
       </div>
-
+      <AnimatePresence>
+     {showForm && (
+          <div className="mb-6">
+            <AddBooking user={user} fetchAllBookings={fetchAllBookings} />
+          </div>
+        )}
+</AnimatePresence>
       <style jsx>{`
         .history-row {
           border-left: 4px solid #3b82f6;
