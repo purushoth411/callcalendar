@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { XIcon } from "lucide-react";
-import Select from 'react-select';
+import Select from "react-select";
 
 export default function AddBooking({ user, fetchAllBookings, setShowForm }) {
   const [formData, setFormData] = useState({
@@ -26,36 +26,27 @@ export default function AddBooking({ user, fetchAllBookings, setShowForm }) {
     internal_comments: "",
     set_int_comments: false,
   });
-  const [projects,setProjects]=useState([]);
-const [milestones, setMilestones] = useState([]);
+  const [projects, setProjects] = useState([]);
+  const [milestones, setMilestones] = useState([]);
 
   const [consultants, setConsultants] = useState([]);
-  
+
   const [subjectAreas, setSubjectAreas] = useState([]);
-
-  useEffect(() => {
-    // fetch consultant list
-    fetch("/api/admins/list?type=BOTH")
-      .then((res) => res.json())
-      .then((data) => setConsultants(data));
-
-    // fetch subject areas
-    fetch("/api/subjectareas")
-      .then((res) => res.json())
-      .then((data) => setSubjectAreas(data));
-  }, []);
 
   useEffect(() => {
     const fetchClientDetails = async () => {
       if (formData.sale_type === "Presales" && formData.client_id.length > 3) {
         try {
-          const res = await fetch(`http://localhost:5000/api/bookings/getPresaleClientDetails/${formData.client_id}`, {
-            method: 'GET'
-          });
+          const res = await fetch(
+            `http://localhost:5000/api/bookings/getPresaleClientDetails/${formData.client_id}`,
+            {
+              method: "GET",
+            }
+          );
           const data = await res.json();
 
           // Fix: Check if data.status is true AND data.client exists
-          if (data.status && data.data ) {
+          if (data.status && data.data) {
             setFormData((prev) => ({
               ...prev,
               name: data.data.name || "",
@@ -84,24 +75,37 @@ const [milestones, setMilestones] = useState([]);
         }
       }
       if (formData.sale_type === "Postsales" && formData.client_id.length > 3) {
-      try {
-        const res = await fetch(`http://localhost:5000/api/bookings/getPostsaleClientDetails/${formData.client_id}`, {
-          method: 'GET'
-        });
-        const data = await res.json();
+        try {
+          const res = await fetch(
+            `http://localhost:5000/api/bookings/getPostsaleClientDetails/${formData.client_id}`,
+            {
+              method: "GET",
+            }
+          );
+          const data = await res.json();
 
-        if (data.status && data.data) {
-          setFormData((prev) => ({
-            ...prev,
-            name: data.data.name || "",
-            email: data.data.email || "",
-            phone: data.data.phone || "",
-          }));
+          if (data.status && data.data) {
+            setFormData((prev) => ({
+              ...prev,
+              name: data.data.name || "",
+              email: data.data.email || "",
+              phone: data.data.phone || "",
+            }));
 
-          // Set project list
-          setProjects(data.data.projects || []);
-        } else {
-          console.warn("Client not found or invalid response");
+            // Set project list
+            setProjects(data.data.projects || []);
+          } else {
+            console.warn("Client not found or invalid response");
+            setFormData((prev) => ({
+              ...prev,
+              name: "",
+              email: "",
+              phone: "",
+            }));
+            setProjects([]);
+          }
+        } catch (err) {
+          console.error("Error fetching client", err);
           setFormData((prev) => ({
             ...prev,
             name: "",
@@ -110,17 +114,7 @@ const [milestones, setMilestones] = useState([]);
           }));
           setProjects([]);
         }
-      } catch (err) {
-        console.error("Error fetching client", err);
-        setFormData((prev) => ({
-          ...prev,
-          name: "",
-          email: "",
-          phone: "",
-        }));
-        setProjects([]);
       }
-    }
     };
 
     fetchClientDetails();
@@ -137,11 +131,14 @@ const [milestones, setMilestones] = useState([]);
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const response = await fetch("http://localhost:5000/api/bookings/addBooking", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    });
+    const response = await fetch(
+      "http://localhost:5000/api/bookings/addBooking",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      }
+    );
 
     const result = await response.json();
     if (result.status) {
@@ -190,7 +187,8 @@ const [milestones, setMilestones] = useState([]);
           </select>
         </div>
 
-        {(formData.sale_type === "Presales" || formData.sale_type === "Postsales") && (
+        {(formData.sale_type === "Presales" ||
+          formData.sale_type === "Postsales") && (
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Insta CRM RefId
@@ -206,86 +204,66 @@ const [milestones, setMilestones] = useState([]);
           </div>
         )}
 
-        {formData.sale_type === "Postsales" && projects.length > 0 && (
-  <div className="mt-4">
-    <label className="block text-sm font-medium text-gray-700 mb-2">
-      Project
-    </label>
-    <Select
-  options={projects.map((project) => ({
-    value: project.id,
-    label: `${project.id} - ${project.project_title}`,
-  }))}
-  onChange={async (selectedOption) => {
-    setFormData((prev) => ({
-      ...prev,
-      project_id: selectedOption.value,
-    }));
+        {formData.sale_type === "Postsales" && formData.client_id && (
+          <div className="mt-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Project
+            </label>
+            <Select
+              options={projects.map((project) => ({
+                value: project.id,
+                label: `${project.id} - ${project.project_title}`,
+              }))}
+              onChange={async (selectedOption) => {
+                setFormData((prev) => ({
+                  ...prev,
+                  project_id: selectedOption.value,
+                }));
 
-    // Fetch milestones for the selected project
-    try {
-      const res = await fetch(`http://localhost:5000/api/bookings/getProjectMilestones/${selectedOption.value}`);
-      const data = await res.json();
+                // Fetch milestones for the selected project
+                try {
+                  const res = await fetch(
+                    `http://localhost:5000/api/bookings/getProjectMilestones/${selectedOption.value}`
+                  );
+                  const data = await res.json();
 
-      if (data.status && Array.isArray(data.data)) {
-        setMilestones(data.data);
-      } else {
-        setMilestones([]);
-      }
-    } catch (error) {
-      console.error("Error fetching milestones", error);
-      setMilestones([]);
-    }
-  }}
-  placeholder="Select a project"
-/>
+                  if (data.status && Array.isArray(data.data)) {
+                    setMilestones(data.data);
+                  } else {
+                    setMilestones([]);
+                  }
+                } catch (error) {
+                  console.error("Error fetching milestones", error);
+                  setMilestones([]);
+                }
+              }}
+              placeholder="Select a project"
+            />
+          </div>
+        )}
 
-  </div>
-)}
-
-{milestones.length > 0 && (
-  <div className="mt-4">
-    <label className="block text-sm font-medium text-gray-700 mb-2">
-      Milestone
-    </label>
-    <Select
-      options={milestones.map((milestone) => ({
-        value: milestone.id,
-        label: milestone.segment_title,
-      }))}
-      onChange={(selected) => {
-       
-        setFormData((prev) => ({
-          ...prev,
-          milestone_id: selected.value,
-        }));
-      }}
-      placeholder="Select milestone"
-      className="react-select-container"
-      classNamePrefix="react-select"
-    />
-  </div>
-)}
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Primary Consultant
-          </label>
-          <select
-            name="consultant_id"
-            value={formData.consultant_id}
-            onChange={handleChange}
-            className="w-full border px-3 py-2 rounded"
-            required
-          >
-            <option value="">Select Consultant</option>
-            {consultants.map((con) => (
-              <option key={con.id} value={con.id}>
-                {con.fld_name}
-              </option>
-            ))}
-          </select>
-        </div>
+        {formData.projectid && (
+          <div className="mt-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Milestone
+            </label>
+            <Select
+              options={milestones.map((milestone) => ({
+                value: milestone.id,
+                label: milestone.segment_title,
+              }))}
+              onChange={(selected) => {
+                setFormData((prev) => ({
+                  ...prev,
+                  milestone_id: selected.value,
+                }));
+              }}
+              placeholder="Select milestone"
+              className="react-select-container"
+              classNamePrefix="react-select"
+            />
+          </div>
+        )}
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -327,6 +305,26 @@ const [milestones, setMilestones] = useState([]);
             </select>
           </div>
         )}
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Primary Consultant
+          </label>
+          <select
+            name="consultant_id"
+            value={formData.consultant_id}
+            onChange={handleChange}
+            className="w-full border px-3 py-2 rounded"
+            required
+          >
+            <option value="">Select Consultant</option>
+            {consultants.map((con) => (
+              <option key={con.id} value={con.id}>
+                {con.fld_name}
+              </option>
+            ))}
+          </select>
+        </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
