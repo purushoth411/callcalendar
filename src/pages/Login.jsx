@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import logo from '../assets/images/callcalendar-logo.png'; 
+import logo from '../assets/images/callcalendar-logo.png';
 import { toast } from 'react-hot-toast';
 import { useAuth } from '../utils/idb';
-
 
 function Login() {
   const [username, setUsername] = useState('');
@@ -11,7 +10,7 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const navigate = useNavigate();
-  const {login} = useAuth();
+  const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -25,83 +24,95 @@ function Login() {
 
       const result = await response.json();
       if (result.status) {
-        toast.success('Login successfull');
-        login(result.user)
+        toast.success('Login successful');
+        login(result.user);
         navigate('/');
       } else {
-        toast.error(result.message || 'Invalid credentials', {icon : '🚫'});
-       setErrorMsg(result.message || 'Invalid credentials');
+        toast.error(result.message || 'Invalid credentials', { icon: '🚫' });
+        setErrorMsg(result.message || 'Invalid credentials');
       }
     } catch (error) {
-        toast.error('Unable to connect to server');
-     // setErrorMsg('Unable to connect to server.'+error);
+      toast.error('Unable to connect to server');
     }
   };
 
   return (
-    <div className="d-flex align-items-center justify-content-center min-vh-100 bg-light">
-      <div className="card shadow-lg border-0 rounded-4 p-4" style={{ maxWidth: '420px', width: '100%' }}>
-        <div className="text-center mb-4">
-          <img src={logo} alt="Logo" style={{ width: '370px' }} />
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="bg-white shadow-lg rounded-2xl w-full max-w-md p-6">
+        <div className="text-center mb-6">
+          <img src={logo} alt="Logo" className="mx-auto w-72" />
         </div>
-        <h4 className="text-center mb-3 text-prime fw-bold">Sign into your account</h4>
+        <h2 className="text-xl font-bold text-center prime-text mb-4">
+          Sign into your account
+        </h2>
 
         {errorMsg && (
-          <div className="alert alert-danger alert-dismissible fade show" role="alert">
-            <strong>Error!</strong> {errorMsg}
-            <button type="button" className="btn-close" onClick={() => setErrorMsg('')} aria-label="Close"></button>
+          <div className="bg-red-100 text-red-700 px-4 py-2 rounded relative mb-4">
+            <strong className="font-semibold">Error:</strong> {errorMsg}
+            <button
+              onClick={() => setErrorMsg('')}
+              className="absolute right-2 top-2 text-red-500 hover:text-red-700"
+            >
+              &times;
+            </button>
           </div>
         )}
 
         <form onSubmit={handleSubmit}>
-          <div className="mb-3">
-            <label htmlFor="username" className="form-label fw-medium">Username</label>
-            <div className="input-group">
+          <div className="mb-4">
+            <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
+              Username
+            </label>
+            <div className="relative">
               <input
                 type="text"
                 id="username"
-                className="form-control"
                 required
                 placeholder="Enter username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
+                className="w-full pl-4 pr-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
               />
-              <span className="input-group-text">
-                <i className="fa fa-user text-muted"></i>
-              </span>
+              <div className="absolute right-3 top-2.5 text-gray-400">
+                <i className="fa fa-user"></i>
+              </div>
             </div>
           </div>
 
-          <div className="mb-3">
-            <label htmlFor="userpass" className="form-label fw-medium">Password</label>
-            <div className="input-group">
+          <div className="mb-4">
+            <label htmlFor="userpass" className="block text-sm font-medium text-gray-700 mb-1">
+              Password
+            </label>
+            <div className="relative">
               <input
                 type={showPassword ? 'text' : 'password'}
                 id="userpass"
-                className="form-control"
                 required
                 placeholder="********"
                 value={userpass}
                 onChange={(e) => setUserpass(e.target.value)}
+                className="w-full pl-4 pr-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
               />
-              <span
-                className="input-group-text"
-                style={{ cursor: 'pointer' }}
+              <div
+                className="absolute right-3 top-2.5 text-gray-400 cursor-pointer"
                 onClick={() => setShowPassword(!showPassword)}
               >
                 <i className="fa fa-eye"></i>
-              </span>
+              </div>
             </div>
           </div>
 
-          <div className="d-grid mb-3">
-            <button type="submit" className="btn btn-prime btn-block fw-semibold">
+          <div className="mb-4">
+            <button
+              type="submit"
+              className="w-full btn-prime font-semibold py-2 px-4 rounded-md "
+            >
               Login
             </button>
           </div>
 
           <div className="text-center">
-            <a href="/reset_password" className="text-decoration-none text-secondary">
+            <a href="/reset_password" className="text-sm text-gray-600 hover:underline">
               Forgot password?
             </a>
           </div>

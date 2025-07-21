@@ -265,17 +265,19 @@ const handleCrmStatusUpdate = (id, status) => {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-[1250px] mx-auto py-5">
-        <div className="mb-8">
-          <h4 className="text-xl font-bold text-gray-900">
-            Booking Management
-          </h4>
-          <button
-     onClick={handleAddNewClick}
+        <div className="flex justify-between items-center mb-6">
+    <h2 className="text-xl font-bold text-gray-800">
+      Booking Management
+    </h2>
+    <button
+      onClick={handleAddNewClick}
       className="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 transition-colors text-[11px]"
     >
       Add New
     </button>
-        </div>
+  </div>
+
+
 
         <div className="bg-white rounded-lg shadow-sm border border-gray-200">
           <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
@@ -305,13 +307,13 @@ const handleCrmStatusUpdate = (id, status) => {
               />
             ) : (
               <div className="overflow-hidden">
-                <DataTable
+                {/* <DataTable
                   ref={tableRef}
                   data={bookings}
                   columns={columns}
                   className="display table table-auto w-full text-[13px]"
                   options={tableOptions}
-                />
+                /> */}
               </div>
             )}
           </div>

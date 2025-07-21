@@ -9,5 +9,5 @@ export default function PrivateRoute() {
 
 
   // Regular auth check
-  return user ? <Outlet /> : <Navigate to="/login" />;
+  return user && user.appKey=="CallCalendarApp"? <Outlet /> : <Navigate to="/login" />;
 }

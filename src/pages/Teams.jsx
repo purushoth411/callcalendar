@@ -207,7 +207,7 @@ const columns = [
     dom: '<"flex justify-between items-center mb-4"lf>rt<"flex justify-between items-center mt-4"ip>',
     language: {
       search: "",
-      searchPlaceholder: "Search users...",
+      searchPlaceholder: "Search teams...",
       lengthMenu: "Show _MENU_ entries",
       info: "Showing _START_ to _END_ of _TOTAL_ entries",
       infoEmpty: "No entries available",

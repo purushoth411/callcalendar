@@ -1,8 +1,8 @@
 import { useAuth } from "../utils/idb.jsx";
 import { useNavigate, NavLink } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
-import { LogOut, CircleUserRound, Bell,LayoutDashboard, BarChart2, Users2, Globe2 } from "lucide-react";
-import { AnimatePresence } from "framer-motion";
+import { LogOut, CircleUserRound, Bell,LayoutDashboard, BarChart2, Users2, Globe2,CalendarCheckIcon } from "lucide-react";
+import { AnimatePresence,motion } from "framer-motion";
 import logo from '../assets/images/callcalendar-logo.png';
 
 export default function Header() {
@@ -132,7 +132,7 @@ export default function Header() {
           : "flex items-center text-white hover:text-gray-300"
       }
     >
-      <Users2 className="mr-1" size={16} />
+      <CalendarCheckIcon className="mr-1" size={16} />
       Bookings
     </NavLink>
      {/* <NavLink

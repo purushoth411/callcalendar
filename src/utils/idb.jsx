@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect } from "react";
 import { set, get, del } from "idb-keyval"; // Import IndexedDB helper
 
 const AuthContext = createContext();
+  const appKey = "CallCalendarApp";
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -20,8 +21,12 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (userData) => {
-    setUser(userData);
-    await set("LoggedInUser", userData);
+    const updatedUserData = {
+    ...userData,
+    appKey,
+  };
+    setUser(updatedUserData);
+    await set("LoggedInUser", updatedUserData);
   };
 
   const logout = async () => {

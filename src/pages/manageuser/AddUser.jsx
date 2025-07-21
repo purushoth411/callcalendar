@@ -149,6 +149,7 @@ const AddUser = ({
         {/* Consultant Type */}
         {formType === "CONSULTANT" && (
           <div className="col-md-3">
+            <label className="block mb-1 font-medium">Consultant Type</label>
             <select
               className="w-full border px-3 py-2 rounded"
               value={formData.consultant_type}
