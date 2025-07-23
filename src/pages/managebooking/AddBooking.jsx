@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { XIcon } from "lucide-react";
 import Select from "react-select";
+import { fetchAllConsultants, fetchAllSubjectAreas } from "../../helpers/CommonApi";
 
 export default function AddBooking({ user, fetchAllBookings, setShowForm }) {
   const [formData, setFormData] = useState({
@@ -32,6 +33,18 @@ export default function AddBooking({ user, fetchAllBookings, setShowForm }) {
   const [consultants, setConsultants] = useState([]);
 
   const [subjectAreas, setSubjectAreas] = useState([]);
+
+  useEffect(()=>{
+ 
+
+  fetchData();
+  },[]);
+   const fetchData = async () => {
+    const consultantsData = await fetchAllConsultants();
+    const subjectAreasData = await fetchAllSubjectAreas();
+    setConsultants(consultantsData.data || []);
+    setSubjectAreas(subjectAreasData.data || []);
+  };
 
   useEffect(() => {
     const fetchClientDetails = async () => {
@@ -118,6 +131,7 @@ export default function AddBooking({ user, fetchAllBookings, setShowForm }) {
     };
 
     fetchClientDetails();
+   
   }, [formData.client_id, formData.sale_type]);
 
   const handleChange = (e) => {
