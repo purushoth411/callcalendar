@@ -23,13 +23,14 @@ export default function AddBooking({ user, fetchAllBookings, setShowForm }) {
     subject_area: "",
     no_of_consultant: "1",
     consultant_id: "",
+    consultant_another_option: "",
     secondary_consultant_id: "",
     third_consultant_id: "",
-    name: user?.fld_name || "",
-    email: user?.fld_email || "",
-    phone: user?.fld_phone || "",
-    company_name: user?.fld_company_name || "",
-    insta_website: user?.fld_insta_website || "",
+    name: "",
+    email: "",
+    phone: "",
+    company_name: "",
+    insta_website: "",
     topic_of_research: "",
     call_regarding: "",
     asana_link: "",
@@ -43,6 +44,8 @@ export default function AddBooking({ user, fetchAllBookings, setShowForm }) {
 
   const [subjectAreas, setSubjectAreas] = useState([]);
   const [submitDisabled, setSubmitDisabled] = useState(false);
+  const [showReassignOptions, setShowReassignOptions] = useState(false);
+  const [selectedConsultantName, setSelectedConsultantName] = useState("");
 
   useEffect(() => {
     fetchData();
@@ -157,6 +160,8 @@ export default function AddBooking({ user, fetchAllBookings, setShowForm }) {
   const checkConsultantConditions = (consultantId, consultantName) => {
     checkConsultantWebsiteCondition(consultantId, consultantName);
     checkConsultantTeamCondition(consultantId, consultantName);
+    ("");
+
     //checkPresalesCall(consultantId, consultantName);
   };
 
@@ -593,6 +598,17 @@ export default function AddBooking({ user, fetchAllBookings, setShowForm }) {
                 const selectedLabel = selectedOption
                   ? selectedOption.label
                   : "";
+                setSelectedConsultantName(selectedLabel);
+
+                if (
+                  selectedValue &&
+                  selectedValue === formData.secondary_consultant_id
+                ) {
+                  toast.error(
+                    "Primary and Secondary Consultant cannot be the same."
+                  );
+                  return;
+                }
 
                 handleChange({
                   target: {
@@ -603,6 +619,25 @@ export default function AddBooking({ user, fetchAllBookings, setShowForm }) {
 
                 if (selectedValue) {
                   checkConsultantConditions(selectedValue, selectedLabel);
+
+                  const selectedConsultant = consultants.find(
+                    (c) => c.id === selectedValue
+                  );
+
+                  // Check if they have "Reassign" permission
+                  if (
+                    selectedConsultant &&
+                    selectedConsultant.fld_permission &&
+                    JSON.parse(selectedConsultant.fld_permission).includes(
+                      "Reassign"
+                    )
+                  ) {
+                    setShowReassignOptions(true);
+                  } else {
+                    setShowReassignOptions(false);
+                  }
+                } else {
+                  setShowReassignOptions(false);
                 }
               }}
               className="react-select-container"
@@ -611,6 +646,72 @@ export default function AddBooking({ user, fetchAllBookings, setShowForm }) {
               placeholder="Select Consultant"
               required
             />
+          </div>
+        )}
+
+        {formData.sale_type === "Postsales" &&
+          formData.call_related_to !== "I_am_not_sure" && (
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Secondary Consultant
+              </label>
+              <Select
+                name="secondary_consultant_id"
+                options={consultantOptions}
+                value={
+                  consultantOptions.find(
+                    (option) =>
+                      option.value === formData.secondary_consultant_id
+                  ) || null
+                }
+                onChange={(selectedOption) => {
+                  const selectedSecondaryValue = selectedOption
+                    ? selectedOption.value
+                    : "";
+
+                  // Prevent duplicate consultant selection
+                  if (
+                    selectedSecondaryValue &&
+                    selectedSecondaryValue === formData.consultant_id
+                  ) {
+                    toast.error(
+                      "Primary and Secondary Consultant cannot be the same."
+                    );
+                    return;
+                  }
+
+                  handleChange({
+                    target: {
+                      name: "secondary_consultant_id",
+                      value: selectedSecondaryValue,
+                    },
+                  });
+                }}
+                className="react-select-container"
+                classNamePrefix="react-select"
+                isClearable
+                placeholder="Select Secondary Consultant"
+              />
+            </div>
+          )}
+
+        {showReassignOptions && (
+          <div className="mt-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Sub Option
+            </label>
+            <select
+              name="consultant_another_option"
+              value={formData.consultant_another_option || ""}
+              onChange={handleChange}
+              className="block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            >
+              <option value="">Select Sub Option</option>
+              <option value="CONSULTANT">
+                Assign Call to {selectedConsultantName}
+              </option>
+              <option value="TEAM">Assign Call to Team Member</option>
+            </select>
           </div>
         )}
 
