@@ -3,6 +3,7 @@ import { set, get, del } from "idb-keyval"; // Import IndexedDB helper
 
 const AuthContext = createContext();
   const appKey = "CallCalendarApp";
+  const priceDiscoutUsernames = ["puneet", "gunjan"];
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -47,7 +48,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, login, logout, loading, setFavourites }}
+      value={{ user, login, logout, loading, setFavourites,priceDiscoutUsernames }}
     >
       {children}
     </AuthContext.Provider>

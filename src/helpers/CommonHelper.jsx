@@ -36,5 +36,23 @@ export const formatBookingDateTime = (dateStr, timeStr) => {
   return date.toLocaleString("en-US", options); // Output: Tue, 15 Jul, 2025, 10:00 AM
 };
 
+export const callRegardingOptions = {
+  Presales: {
+    1: "Understanding the client's requirements in detail",
+    2: "Client needs to talk to the expert",
+    3: "Brainstorming Call",
+    4: "Client asked for a discount and needed re-discussion",
+    5: "Understanding and giving confidence to the client",
+  },
+  Postsales: {
+    1: "Understanding the client's requirements in detail",
+    2: "Client needs to talk to the expert",
+    3: "Brainstorming Call",
+    4: "Client requested discussion on work provided",
+    5: "Understanding and giving confidence to the client",
+  },
+};
+
+
 
 

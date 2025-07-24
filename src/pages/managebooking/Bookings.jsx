@@ -33,7 +33,7 @@ export default function Bookings() {
   const tableRef = useRef(null);
 
   useEffect(() => {
-    fetchAllBookings();
+   // fetchAllBookings();
 
     // Cleanup function to destroy DataTable on unmount
     return () => {

@@ -2,9 +2,17 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { XIcon } from "lucide-react";
 import Select from "react-select";
-import { fetchAllConsultants, fetchAllSubjectAreas } from "../../helpers/CommonApi";
+import toast from "react-hot-toast";
+import {
+  fetchAllConsultants,
+  fetchAllSubjectAreas,
+} from "../../helpers/CommonApi";
+import { useAuth } from "../../utils/idb";
+import { callRegardingOptions } from "../../helpers/CommonHelper";
 
 export default function AddBooking({ user, fetchAllBookings, setShowForm }) {
+  const { user: loggedInUser, priceDiscoutUsernames } = useAuth();
+
   const [formData, setFormData] = useState({
     sale_type: "",
     client_id: "",
@@ -21,6 +29,7 @@ export default function AddBooking({ user, fetchAllBookings, setShowForm }) {
     email: user?.fld_email || "",
     phone: user?.fld_phone || "",
     company_name: user?.fld_company_name || "",
+    insta_website: user?.fld_insta_website || "",
     topic_of_research: "",
     call_regarding: "",
     asana_link: "",
@@ -33,13 +42,12 @@ export default function AddBooking({ user, fetchAllBookings, setShowForm }) {
   const [consultants, setConsultants] = useState([]);
 
   const [subjectAreas, setSubjectAreas] = useState([]);
+  const [submitDisabled, setSubmitDisabled] = useState(false);
 
-  useEffect(()=>{
- 
-
-  fetchData();
-  },[]);
-   const fetchData = async () => {
+  useEffect(() => {
+    fetchData();
+  }, []);
+  const fetchData = async () => {
     const consultantsData = await fetchAllConsultants();
     const subjectAreasData = await fetchAllSubjectAreas();
     setConsultants(consultantsData.data || []);
@@ -48,27 +56,56 @@ export default function AddBooking({ user, fetchAllBookings, setShowForm }) {
 
   useEffect(() => {
     const fetchClientDetails = async () => {
-      if (formData.sale_type === "Presales" && formData.client_id.length > 3) {
+      const clientId = formData.client_id;
+
+      if (formData.sale_type === "Presales" && clientId.length > 3) {
         try {
           const res = await fetch(
-            `http://localhost:5000/api/bookings/getPresaleClientDetails/${formData.client_id}`,
-            {
-              method: "GET",
-            }
+            `http://localhost:5000/api/bookings/getPresaleClientDetails/${clientId}`
           );
           const data = await res.json();
 
-          // Fix: Check if data.status is true AND data.client exists
           if (data.status && data.data) {
-            setFormData((prev) => ({
-              ...prev,
+            const clientData = {
               name: data.data.name || "",
               email: data.data.email || "",
               phone: data.data.phone || "",
+              insta_website: data.data.insta_website || "",
+              company_name: data.data.assigned_company || "",
+            };
+
+            // Update formData
+            setFormData((prev) => ({
+              ...prev,
+              ...clientData,
             }));
+
+            const recordingRes = await fetch(
+              `http://localhost:5000/api/bookings/checkCallrecording`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  email: clientData.email,
+                  ref_id: clientId,
+                }),
+              }
+            );
+
+            const recordingData = await recordingRes.json();
+
+            if (recordingData.status === false) {
+              toast.error(
+                "Previous call recording not uploaded for this client!"
+              );
+              setSubmitDisabled(true);
+            } else {
+              setSubmitDisabled(false);
+            }
           } else {
-            console.warn("Client not found or invalid response");
-            // Optional: Reset client fields if no client found
+            console.warn("Client not found or invalid response (Presales)");
             setFormData((prev) => ({
               ...prev,
               name: "",
@@ -77,23 +114,15 @@ export default function AddBooking({ user, fetchAllBookings, setShowForm }) {
             }));
           }
         } catch (err) {
-          console.error("Error fetching client", err);
-          // Optional: Reset client fields on error
-          setFormData((prev) => ({
-            ...prev,
-            name: "",
-            email: "",
-            phone: "",
-          }));
+          console.error("Presales error", err);
         }
       }
-      if (formData.sale_type === "Postsales" && formData.client_id.length > 3) {
+
+      // Postsales
+      if (formData.sale_type === "Postsales" && clientId.length > 3) {
         try {
           const res = await fetch(
-            `http://localhost:5000/api/bookings/getPostsaleClientDetails/${formData.client_id}`,
-            {
-              method: "GET",
-            }
+            `http://localhost:5000/api/bookings/getPostsaleClientDetails/${clientId}`
           );
           const data = await res.json();
 
@@ -105,10 +134,9 @@ export default function AddBooking({ user, fetchAllBookings, setShowForm }) {
               phone: data.data.phone || "",
             }));
 
-            // Set project list
             setProjects(data.data.projects || []);
           } else {
-            console.warn("Client not found or invalid response");
+            console.warn("Client not found or invalid response (Postsales)");
             setFormData((prev) => ({
               ...prev,
               name: "",
@@ -118,21 +146,139 @@ export default function AddBooking({ user, fetchAllBookings, setShowForm }) {
             setProjects([]);
           }
         } catch (err) {
-          console.error("Error fetching client", err);
-          setFormData((prev) => ({
-            ...prev,
-            name: "",
-            email: "",
-            phone: "",
-          }));
-          setProjects([]);
+          console.error("Postsales error", err);
         }
       }
     };
 
     fetchClientDetails();
-   
   }, [formData.client_id, formData.sale_type]);
+
+  const checkConsultantConditions = (consultantId, consultantName) => {
+    checkConsultantWebsiteCondition(consultantId, consultantName);
+    checkConsultantTeamCondition(consultantId, consultantName);
+    //checkPresalesCall(consultantId, consultantName);
+  };
+
+  const checkConsultantWebsiteCondition = (consultantId, consultantName) => {
+    try {
+      fetch(
+        `http://localhost:5000/api/bookings/checkConsultantWebsiteCondition`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            consultantid: consultantId,
+            email: formData.email,
+            insta_website: formData.insta_website,
+          }),
+        }
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.status === "success") {
+            if (data.webStatus == "DIFFERENT") {
+              setSubmitDisabled(true);
+              toast.error(
+                `Call already completed with ${consultantName} on ${data.bookingTime}`
+              );
+            } else {
+              setSubmitDisabled(false);
+            }
+          } else {
+            //toast.info("No previous call found.");
+            console.log("No previous call found.");
+          }
+        })
+        .catch((err) => {
+          console.error("Error checking consultant website:", err);
+          //  toast.error("Server error while checking consultant condition.");
+        });
+    } catch (err) {
+      console.error("Unexpected error:", err);
+      //toast.error("Unexpected error occurred.");
+    }
+  };
+
+  const checkConsultantTeamCondition = (consultantId, consultantName) => {
+    try {
+      fetch(`http://localhost:5000/api/bookings/checkConsultantTeamCondition`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          primaryconsultantid: consultantId,
+          clientemail: formData.email,
+          saletype: formData.sale_type,
+          login_crm_id: loggedInUser.id, // send login CRM ID
+        }),
+      })
+        .then((res) => res.text())
+        .then((result) => {
+          if (result === "call not completed") {
+            setSubmitDisabled(false);
+            // toast.info("No previous completed call.");
+            console.log("No previous completed call.");
+          } else if (result === "add call") {
+            setSubmitDisabled(false);
+            // toast.success("You can proceed with the call.");
+          } else {
+            const [displayMsg, displayConId, displayPrimaryConId] =
+              result.split("||");
+
+            if (displayPrimaryConId === displayConId) {
+              setSubmitDisabled(true);
+            } else {
+              setSubmitDisabled(false);
+            }
+
+            if (displayMsg) {
+              toast.error("You cannot add the call. " + displayMsg);
+            }
+          }
+        })
+        .catch((err) => {
+          console.error("Error:", err);
+          //toast.error("Something went wrong. Try again.");
+        });
+    } catch (err) {
+      console.error("Unexpected error:", err);
+      //toast.error("Unexpected error occurred.");
+    }
+  };
+
+  const checkPresalesCall = (consultantId, consultantName) => {
+    fetch("http://localhost:5000/api/bookings/checkPresalesCall", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        clientemail: formData.email, // match backend
+        saletype: formData.sale_type,
+        primaryconsultantid: consultantId,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.status) {
+          toast.error(
+            `Previous call is still pending with ${consultantName} on ${data.booking_time}`,
+            { autoClose: 5000 }
+          );
+          setSubmitDisabled(true);
+        } else {
+          setSubmitDisabled(false);
+        }
+      })
+      .catch((err) => {
+        console.error("Error checking presales call:", err);
+        //  toast.error("Unexpected error occurred.");
+      });
+  };
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -140,6 +286,77 @@ export default function AddBooking({ user, fetchAllBookings, setShowForm }) {
       ...prev,
       [name]: type === "checkbox" ? checked : value,
     }));
+  };
+
+  const handleCallRelatedToChange = async (selectedOptionValue) => {
+    const related_to = selectedOptionValue || "";
+
+    // Reset fields
+    setFormData((prev) => ({
+      ...prev,
+      call_related_to: related_to,
+      subject_area: "",
+      consultant_id: "",
+    }));
+
+    // If related_to is "subject_area_related", don't fetch consultants
+    if (related_to === "subject_area_related") {
+      setConsultants([]);
+      return;
+    }
+
+    // Fetch consultants for other options
+    const consultantsData = await fetchAllConsultants();
+    let filteredConsultants = consultantsData.results || [];
+
+    // If it's for price and discount, filter by allowed usernames
+    if (related_to === "price_and_discount_related") {
+      filteredConsultants = filteredConsultants.filter((c) =>
+        priceDiscoutUsernames.includes(c.fld_username)
+      );
+    }
+
+    // Set consultants to dropdown
+    setConsultants(filteredConsultants);
+  };
+
+  const handleSubjectAreaChange = async (selectedOption) => {
+    const subject_area = selectedOption?.value || "";
+
+    setFormData((prev) => ({
+      ...prev,
+      subject_area,
+      consultant_id: "",
+    }));
+
+    if (!subject_area) {
+      setConsultants([]);
+      return;
+    }
+
+    try {
+      const res = await fetch(
+        "http://localhost:5000/api/helpers/getConsultantsBySubjectArea",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ subject_area }),
+        }
+      );
+
+      const data = await res.json();
+      if (res.ok) {
+        setConsultants(data);
+      } else {
+        console.error("Error fetching consultants:", data.message);
+        setConsultants([]);
+      }
+    } catch (err) {
+      console.error("Network error:", err);
+      setConsultants([]);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -162,6 +379,15 @@ export default function AddBooking({ user, fetchAllBookings, setShowForm }) {
       alert("Failed to add booking.");
     }
   };
+
+  const consultantOptions = consultants.map((con) => ({
+    value: con.id, // or con.id
+    label: con.fld_name,
+  }));
+
+  useEffect(() => {
+    console.log("Form data updated:", formData);
+  }, [formData]);
 
   return (
     <motion.div
@@ -218,6 +444,21 @@ export default function AddBooking({ user, fetchAllBookings, setShowForm }) {
           </div>
         )}
 
+        {formData.sale_type === "Presales" && (
+          <>
+            <input
+              type="hidden"
+              name="insta_website"
+              value={formData.insta_website || ""}
+            />
+            <input
+              type="hidden"
+              name="company_name"
+              value={formData.company_name || ""}
+            />
+          </>
+        )}
+
         {formData.sale_type === "Postsales" && formData.client_id && (
           <div className="mt-4">
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -231,7 +472,7 @@ export default function AddBooking({ user, fetchAllBookings, setShowForm }) {
               onChange={async (selectedOption) => {
                 setFormData((prev) => ({
                   ...prev,
-                  project_id: selectedOption.value,
+                  projectid: selectedOption.value,
                 }));
 
                 // Fetch milestones for the selected project
@@ -286,16 +527,26 @@ export default function AddBooking({ user, fetchAllBookings, setShowForm }) {
           <select
             name="call_related_to"
             value={formData.call_related_to}
-            onChange={handleChange}
+            onChange={(e) => {
+              handleChange(e);
+              handleCallRelatedToChange(e.target.value);
+            }}
             className="w-full border px-3 py-2 rounded"
             required
           >
             <option value="">Select Option</option>
-            <option value="direct_call">Direct Call</option>
-            <option value="subject_area_related">Subject Area Related</option>
-            <option value="price_and_discount_related">
-              Price And Discount Related
-            </option>
+            {formData.sale_type === "Presales" && (
+              <>
+                <option value="direct_call">Direct Call</option>
+                <option value="subject_area_related">
+                  Subject Area Related
+                </option>
+                <option value="price_and_discount_related">
+                  Price And Discount Related
+                </option>
+              </>
+            )}
+            <option value="I_am_not_sure">I am not sure</option>
           </select>
         </div>
 
@@ -307,7 +558,10 @@ export default function AddBooking({ user, fetchAllBookings, setShowForm }) {
             <select
               name="subject_area"
               value={formData.subject_area}
-              onChange={handleChange}
+              onChange={(e) => {
+                handleChange(e);
+                handleSubjectAreaChange({ value: e.target.value });
+              }}
               className="w-full border px-3 py-2 rounded"
             >
               <option value="">Select Subject Area</option>
@@ -319,26 +573,46 @@ export default function AddBooking({ user, fetchAllBookings, setShowForm }) {
             </select>
           </div>
         )}
+        {formData.call_related_to !== "I_am_not_sure" && (
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Primary Consultant
+            </label>
+            <Select
+              name="consultant_id"
+              options={consultantOptions}
+              value={
+                consultantOptions.find(
+                  (option) => option.value === formData.consultant_id
+                ) || null
+              }
+              onChange={(selectedOption) => {
+                const selectedValue = selectedOption
+                  ? selectedOption.value
+                  : "";
+                const selectedLabel = selectedOption
+                  ? selectedOption.label
+                  : "";
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Primary Consultant
-          </label>
-          <select
-            name="consultant_id"
-            value={formData.consultant_id}
-            onChange={handleChange}
-            className="w-full border px-3 py-2 rounded"
-            required
-          >
-            <option value="">Select Consultant</option>
-            {consultants.map((con) => (
-              <option key={con.id} value={con.id}>
-                {con.fld_name}
-              </option>
-            ))}
-          </select>
-        </div>
+                handleChange({
+                  target: {
+                    name: "consultant_id",
+                    value: selectedValue,
+                  },
+                });
+
+                if (selectedValue) {
+                  checkConsultantConditions(selectedValue, selectedLabel);
+                }
+              }}
+              className="react-select-container"
+              classNamePrefix="react-select"
+              isClearable
+              placeholder="Select Consultant"
+              required
+            />
+          </div>
+        )}
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -396,14 +670,22 @@ export default function AddBooking({ user, fetchAllBookings, setShowForm }) {
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Call Regarding
           </label>
-          <input
-            type="text"
+          <select
             name="call_regarding"
             value={formData.call_regarding}
             onChange={handleChange}
             className="w-full border px-3 py-2 rounded"
             required
-          />
+          >
+            <option value="">Select</option>
+            {Object.entries(callRegardingOptions[formData.sale_type] || {}).map(
+              ([key, label]) => (
+                <option key={key} value={label}>
+                  {label}
+                </option>
+              )
+            )}
+          </select>
         </div>
 
         <div>
@@ -444,9 +726,15 @@ export default function AddBooking({ user, fetchAllBookings, setShowForm }) {
 
         <div className="md:col-span-3 flex justify-end pt-4">
           <button
+            id="submitBtn"
             type="button"
             onClick={handleSubmit}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+            className={`bg-blue-600 text-white px-4 py-2 rounded transition ${
+              submitDisabled
+                ? "opacity-50 cursor-not-allowed"
+                : "hover:bg-blue-700"
+            }`}
+            disabled={submitDisabled}
           >
             Submit Booking
           </button>
