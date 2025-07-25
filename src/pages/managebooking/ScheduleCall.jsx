@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import SkeletonLoader from "../../components/SkeletonLoader.jsx";
+// import SkeletonLoader from "../../components/SkeletonLoader.jsx";
 import Calendar from "./Calendar";
 
 const ScheduleCall = ({ consultantId, saleType, bookingId, rcBookingDate, rcSlotTime, callRequestId }) => {
