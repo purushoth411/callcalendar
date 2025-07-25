@@ -1,3 +1,22 @@
+import toast from "react-hot-toast";
+export const toastInfo = (message) =>
+  toast(message, {
+    icon: "ℹ️",
+    style: {
+      background: "#3b82f6", // blue
+      color: "#fff",
+    },
+  });
+
+export const toastWarning = (message) =>
+  toast(message, {
+    icon: "⚠️",
+    style: {
+      background: "#facc15", // yellow
+      color: "#000",
+    },
+  });
+
 export const formatDate = (dateString) => {
   if (!dateString) return "";
 

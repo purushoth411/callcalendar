@@ -10,6 +10,7 @@ import Users from "../pages/manageuser/Users";
 import DomainPref from "../pages/Domainpref";
 import Teams from "../pages/Teams";
 import Bookings from "../pages/managebooking/Bookings";
+import ScheduleCall from "../pages/managebooking/ScheduleCall";
 
 
 
@@ -27,6 +28,7 @@ export default function AppRouter() {
             <Route path="/users" element={<Users />} />
             <Route path="/teams" element={<Teams />} />
             <Route path="/bookings" element={<Bookings />} />
+            <Route path="/schedulecall/:id" element={<ScheduleCall />} />
             <Route path="/domainpref" element={<DomainPref />} />
           </Route>
         </Route>

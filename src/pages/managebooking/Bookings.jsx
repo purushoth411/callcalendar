@@ -11,7 +11,7 @@ import {
 import SkeletonLoader from "../../components/SkeletonLoader.jsx";
 import AddBooking from "./AddBooking.jsx";
 import { AnimatePresence } from "framer-motion";
-import StatusBadges from "./StatusUpdate.jsx";
+ import StatusUpdate from "./StatusUpdate.jsx";//
 
 export default function Bookings() {
   const { user } = useAuth();
@@ -33,7 +33,7 @@ export default function Bookings() {
   const tableRef = useRef(null);
 
   useEffect(() => {
-   // fetchAllBookings();
+    fetchAllBookings();
 
     // Cleanup function to destroy DataTable on unmount
     return () => {
@@ -148,6 +148,15 @@ const handleCrmStatusUpdate = (id, status) => {
   });
 };
 
+const yourLogicVar = (id, status) => {
+  if (!status) return;
+  // Replace BASE_URL or use axios/fetch as needed
+  fetch(`/api/update-crm-status`, {
+    method: "POST",
+    body: JSON.stringify({ id, status }),
+  });
+};
+
 
 
 
@@ -201,7 +210,13 @@ const handleCrmStatusUpdate = (id, status) => {
   data: null,
   render: (data, type, row) => {
     return ReactDOMServer.renderToString(
-      <StatusBadges row={row} user={user} onCrmStatusChange={handleCrmStatusUpdate} />
+      <StatusUpdate
+  row={row} // your row object
+  user={user} // current user obj
+  onCrmStatusChange={handleCrmStatusUpdate}
+  call_status_updation_pending={yourLogicVar}
+/>
+      
     );
   }
 }
@@ -307,13 +322,13 @@ const handleCrmStatusUpdate = (id, status) => {
               />
             ) : (
               <div className="overflow-hidden">
-                {/* <DataTable
+                <DataTable
                   ref={tableRef}
                   data={bookings}
                   columns={columns}
                   className="display table table-auto w-full text-[13px]"
                   options={tableOptions}
-                /> */}
+                />
               </div>
             )}
           </div>
