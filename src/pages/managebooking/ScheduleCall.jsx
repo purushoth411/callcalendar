@@ -74,77 +74,67 @@ const ScheduleCall = ({
     setSelectedTimezone(e.target.value);
   };
 
-  // const handleDateSelect = async (dateStr, dayKey) => {
-  //   setSelectedDate(dateStr);
-  //   setSelectedSlot(""); // Reset on new date
-
-  //   if (!consultantSettings) return;
-
-  //   const dayFieldMap = {
-  //     sun: "fld_sun_time_data",
-  //     mon: "fld_mon_time_data",
-  //     tue: "fld_tue_time_data",
-  //     wed: "fld_wed_time_data",
-  //     thu: "fld_thu_time_data",
-  //     fri: "fld_fri_time_data",
-  //     sat: "fld_sat_time_data",
-  //   };
-
-  //   const timeData = consultantSettings[dayFieldMap[dayKey]];
-  //   if (!timeData) return setAvailableSlots([]);
-
-  //   const slotRanges = timeData.split("~");
-  //   const slots = [];
-
-  //   slotRanges.forEach((range) => {
-  //     const [start, end] = range.split("||");
-  //     if (!start || !end) return;
-
-  //     const [startHour, startMinute] = start.split(":").map(Number);
-  //     const [endHour, endMinute] = end.split(":").map(Number);
-
-  //     let current = new Date();
-  //     current.setHours(startHour, startMinute, 0, 0);
-
-  //     const endTime = new Date();
-  //     endTime.setHours(endHour, endMinute, 0, 0);
-
-  //     while (current <= endTime) {
-  //       slots.push(
-  //         current.toLocaleTimeString([], {
-  //           hour: "2-digit",
-  //           minute: "2-digit",
-  //           hour12: true,
-  //         })
-  //       );
-  //       current = new Date(current.getTime() + 30 * 60 * 1000);
-  //     }
-  //   });
-
-  //   setAvailableSlots(slots);
-  // };
-
   const handleDateSelect = async (dateStr, dayKey) => {
   setSelectedDate(dateStr);
-  setSelectedSlot(""); // Reset slot on new date
+  setSelectedSlot(""); // Reset on new date
 
   if (!consultantSettings) return;
 
+  const dayFieldMap = {
+    sun: "fld_sun_time_data",
+    mon: "fld_mon_time_data",
+    tue: "fld_tue_time_data",
+    wed: "fld_wed_time_data",
+    thu: "fld_thu_time_data",
+    fri: "fld_fri_time_data",
+    sat: "fld_sat_time_data",
+  };
+
+  const timeData = consultantSettings[dayFieldMap[dayKey]];
+  if (!timeData) return setAvailableSlots([]);
+
+  const slotRanges = timeData.split("~");
+  let generatedSlots = [];
+
+  slotRanges.forEach((range) => {
+    const [start, end] = range.split("||");
+    if (!start || !end) return;
+
+    const [startHour, startMinute] = start.split(":").map(Number);
+    const [endHour, endMinute] = end.split(":").map(Number);
+
+    let current = new Date();
+    current.setHours(startHour, startMinute, 0, 0);
+
+    const endTime = new Date();
+    endTime.setHours(endHour, endMinute, 0, 0);
+
+    while (current <= endTime) {
+      const slot = current.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      });
+      generatedSlots.push(slot);
+      current = new Date(current.getTime() + 30 * 60 * 1000); // 30-min step
+    }
+  });
+
   try {
-    // First API call: getBookingData
+    // 🔶 API Call 1 - getBookingData
     const res1 = await fetch("http://localhost:5000/api/helpers/getBookingData", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        consultantId,
+        consultantId: 8,
         selectedDate: dateStr,
-        status: "Reject", 
-        hideSubOption:"HIDE_SUB_OPT",
-        callExternalAssign:"No",
-        showAcceptedCall:"Yes",
-        checkType:"CHECK_BOTH"
+        status: "Reject",
+        hideSubOption: "HIDE_SUB_OPT",
+        callExternalAssign: "No",
+        showAcceptedCall: "Yes",
+        checkType: "CHECK_BOTH",
       }),
     });
 
@@ -154,78 +144,43 @@ const ScheduleCall = ({
       return;
     }
 
-    // Second API call: getRcCallBookingRequest
+    // 🔶 API Call 2 - getRcCallBookingRequest
     const res2 = await fetch("http://localhost:5000/api/helpers/getRcCallBookingRequest", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        consultantId,
+        consultantId: 8,
         selectedDate: dateStr,
-      
       }),
     });
 
     const data2 = await res2.json();
-    if (!data2.status) {
-      setAvailableSlots([]);
-      return;
+
+    // 🔴 Extract booked slots from both APIs
+    const bookedSlots = [];
+
+    if (data1.data) {
+      data1.data.forEach((item) => {
+        if (item.slot_time) bookedSlots.push(item.slot_time);
+      });
     }
 
-    // Combine booked slots from both APIs
-    const bookedSlots1 = data1.data.map(b => b.fld_booking_slot);
-    const bookedSlots2 = data2.data.map(b => b.slot_time);
-    const existingSlots = [...bookedSlots1, ...bookedSlots2];
+    if (data2.data) {
+      data2.data.forEach((item) => {
+        if (item.slot_time) bookedSlots.push(item.slot_time);
+      });
+    }
 
-    // Get consultant time slots for the selected day
-    const dayFieldMap = {
-      sun: "fld_sun_time_data",
-      mon: "fld_mon_time_data",
-      tue: "fld_tue_time_data",
-      wed: "fld_wed_time_data",
-      thu: "fld_thu_time_data",
-      fri: "fld_fri_time_data",
-      sat: "fld_sat_time_data",
-    };
+    // 🔵 Filter generatedSlots to exclude booked ones
+    const available = generatedSlots.filter(
+      (slot) => !bookedSlots.includes(slot)
+    );
 
-    const timeData = consultantSettings[dayFieldMap[dayKey]];
-    if (!timeData) return setAvailableSlots([]);
-
-    const slotRanges = timeData.split("~");
-    const slots = [];
-
-    slotRanges.forEach((range) => {
-      const [start, end] = range.split("||");
-      if (!start || !end) return;
-
-      const [startHour, startMinute] = start.split(":").map(Number);
-      const [endHour, endMinute] = end.split(":").map(Number);
-
-      let current = new Date();
-      current.setHours(startHour, startMinute, 0, 0);
-
-      const endTime = new Date();
-      endTime.setHours(endHour, endMinute, 0, 0);
-
-      while (current < endTime) {
-        const slot = current.toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: true,
-        });
-
-        if (!existingSlots.includes(slot)) {
-          slots.push(slot);
-        }
-
-        current = new Date(current.getTime() + 30 * 60 * 1000); // +30 mins
-      }
-    });
-
-    setAvailableSlots(slots);
-  } catch (err) {
-    console.error("Error fetching bookings:", err);
+    setAvailableSlots(available);
+  } catch (error) {
+    console.error("Error fetching booking data:", error);
     setAvailableSlots([]);
   }
 };
