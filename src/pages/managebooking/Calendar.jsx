@@ -1,91 +1,125 @@
-import React, { useRef, useState, useEffect } from "react";
-import FullCalendar from "@fullcalendar/react";
-import dayGridPlugin from "@fullcalendar/daygrid";
-import interactionPlugin from "@fullcalendar/interaction";
+import React, { useEffect, useState } from "react";
+import "./calendar.css"; // For CSS styles
 
-const Calendar = () => {
-  const calendarRef = useRef(null);
+const CustomCalendar = ({ consultantSettings, onDateClick }) => {
+  const today = new Date();
+  const [currentMonth, setCurrentMonth] = useState(today.getMonth());
+  const [currentYear, setCurrentYear] = useState(today.getFullYear());
+  const [selectedDate, setSelectedDate] = useState(null);
 
-  const currentDate = new Date();
-  const currentMonth = currentDate.getMonth();
-  const currentYear = currentDate.getFullYear();
+  // Extract exclusions and selected weekdays
+  const excludedDates = consultantSettings.fld_days_exclusion
+    .split("|~|")
+    .map((d) => d.trim());
 
-  const [selectedMonth, setSelectedMonth] = useState(currentMonth);
-  const [selectedYear, setSelectedYear] = useState(currentYear);
+  const allowedWeekDays = consultantSettings.fld_selected_week_days
+    .split(",")
+    .map((d) => parseInt(d));
 
-  const yearOptions = Array.from({ length: 21 }, (_, i) => currentYear - 10 + i);
-
-  useEffect(() => {
-    const calendarApi = calendarRef.current.getApi();
-    const newDate = new Date(selectedYear, selectedMonth, 1);
-    calendarApi.gotoDate(newDate);
-  }, [selectedMonth, selectedYear]);
-
-  // Style each day cell
-  const handleDayCell = (args) => {
-    const cellDate = new Date(args.date);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const dayOfWeek = cellDate.getDay(); // 0 = Sunday
-
-    if (dayOfWeek === 0) {
-      args.el.style.color = "#dc2626"; // Tailwind red-600
-    }
-
-    if (cellDate < today) {
-      args.el.style.backgroundColor = "#f3f4f6"; // Tailwind gray-100
-    } else if (cellDate.toDateString() === today.toDateString()) {
-      args.el.style.backgroundColor = "#dbeafe"; // Tailwind blue-100
-      args.el.style.fontWeight = "600";
-    } else {
-      args.el.style.backgroundColor = "#ffffff"; // Future
-    }
-
-    args.el.style.borderRadius = "6px";
-    args.el.style.padding = "4px";
+  const getDaysInMonth = (month, year) => {
+    return new Date(year, month + 1, 0).getDate();
   };
 
-  return (
-    <div className="p-4">
-      {/* Custom Header */}
-      <div className="flex items-center gap-4 mb-4">
-        <select
-          className="border px-2 py-1 rounded"
-          value={selectedMonth}
-          onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
-        >
-          {[
-            "January", "February", "March", "April", "May", "June",
-            "July", "August", "September", "October", "November", "December"
-          ].map((month, index) => (
-            <option key={index} value={index}>{month}</option>
-          ))}
-        </select>
+  const handlePrev = () => {
+    setCurrentMonth((prev) => (prev === 0 ? 11 : prev - 1));
+    if (currentMonth === 0) setCurrentYear(currentYear - 1);
+  };
 
-        <select
-          className="border px-2 py-1 rounded"
-          value={selectedYear}
-          onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-        >
-          {yearOptions.map((year) => (
-            <option key={year} value={year}>{year}</option>
-          ))}
-        </select>
+  const handleNext = () => {
+    setCurrentMonth((prev) => (prev === 11 ? 0 : prev + 1));
+    if (currentMonth === 11) setCurrentYear(currentYear + 1);
+  };
+
+  const renderCalendar = () => {
+  const days = [];
+  const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay(); // 0 = Sunday
+  const totalDays = getDaysInMonth(currentMonth, currentYear);
+
+  // Parse Saturday offs
+  const saturdayOffs = consultantSettings.fld_saturday_off
+    ? consultantSettings.fld_saturday_off.split(",").map((s) => parseInt(s))
+    : [];
+   
+
+  let saturdayCount = 0;
+
+  // Fill blank days before start
+  for (let i = 0; i < firstDayOfMonth; i++) {
+    days.push(<div key={"blank" + i} className="day blank"></div>);
+  }
+
+  for (let d = 1; d <= totalDays; d++) {
+    const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+    const dateObj = new Date(currentYear, currentMonth, d);
+    const dayOfWeek = dateObj.getDay(); // 0 = Sunday
+    const isExcluded = excludedDates.includes(dateStr);
+    const isAllowedDay = allowedWeekDays.includes(dayOfWeek + 1);
+
+    // Handle Saturday off logic
+    let isNthSaturdayOff = false;
+    if (dayOfWeek === 6) { // Saturday
+      saturdayCount++;
+      if (saturdayOffs.includes(saturdayCount)) {
+        isNthSaturdayOff = true;
+      }
+    }
+
+    let classNames = "day";
+    const isDisabled = isExcluded || !isAllowedDay || isNthSaturdayOff;
+
+    if (isExcluded) classNames += " excluded";
+    else if (!isAllowedDay || isNthSaturdayOff) classNames += " disabled";
+    else if (dayOfWeek === 0) classNames += " sunday";
+    if (selectedDate && selectedDate.toDateString() === dateObj.toDateString())
+      classNames += " selected";
+
+    days.push(
+      <div
+        key={d}
+        className={classNames}
+        onClick={() => {
+  if (!isDisabled) {
+  setSelectedDate(dateObj);
+  const formatted = `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+
+  const dayName = dateObj.toLocaleDateString("en-US", { weekday: "short" }).toLowerCase(); // "mon", "tue", etc.
+  
+  onDateClick && onDateClick(formatted, dayName); // ✅ Pass day name too
+}
+
+}}
+      >
+        {d}
       </div>
+    );
+  }
 
-      {/* FullCalendar */}
-      <FullCalendar
-        plugins={[dayGridPlugin, interactionPlugin]}
-        initialView="dayGridMonth"
-        ref={calendarRef}
-        headerToolbar={false}
-        height={600}
-        dateClick={(info) => console.log("Date clicked:", info.dateStr)}
-        dayCellDidMount={handleDayCell}
-      />
+  return days;
+};
+
+
+  return (
+    <div className="calendar-wrapper">
+      <div className="calendar-header">
+        <button type="button" onClick={handlePrev}>Prev</button>
+        <div className="month-label">
+          {new Date(currentYear, currentMonth).toLocaleString("default", {
+            month: "long",
+            year: "numeric",
+          })}
+        </div>
+        <button type="button" onClick={handleNext}>Next</button>
+      </div>
+      <div className="day-names">
+        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
+          <div key={d} className="day-name">
+            {d}
+          </div>
+        ))}
+      </div>
+      <div className="calendar-grid">{renderCalendar()}</div>
     </div>
   );
 };
 
-export default Calendar;
+export default CustomCalendar;

@@ -235,5 +235,34 @@ table.dataTable tbody tr:hover {
   padding: 2px 4px;
 }
 
+.fc .fc-button {
+  background-color: var(--secondary-color);
+  border: none;
+  color: white;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 6px;
+}
 
+.fc .fc-button:hover {
+  background-color: var(--prime-hover);
+}
+
+/* Calendar Title */
+.fc .fc-toolbar-title {
+  color: var(--secondary-color);
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+/* Sunday text styling (for safety - double coverage) */
+.fc-day-sun {
+  background-color: var(--prime-light);
+  color: var(--prime-color);
+}
+
+/* Selected date styling (optional, double coverage) */
+.fc-daygrid-day.fc-day-today {
+  border: 2px solid var(--prime-color);
+}
 /* ////////////callendar style  */

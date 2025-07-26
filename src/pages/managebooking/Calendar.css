@@ -1,0 +1,87 @@
+:root {
+  --prime-color: #fa713b;
+  --prime-hover: #e15c27;
+  --prime-light: #ffe3d9;
+  --secondary-color: #224d68;
+}
+
+.calendar-wrapper {
+  max-width: 400px;
+  margin: auto;
+  font-family: Arial, sans-serif;
+  user-select: none;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background: var(--secondary-color);
+  color: white;
+  font-weight: bold;
+  border-radius: 8px 8px 0 0;
+}
+
+.calendar-header button {
+  background: var(--prime-color);
+  border: none;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.calendar-header button:hover {
+  background: var(--prime-hover);
+}
+
+.day-names,
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.day-name,
+.day {
+  text-align: center;
+  padding: 10px;
+}
+
+.day {
+  border: 1px solid #ddd;
+  cursor: pointer;
+}
+
+.day:hover {
+  background: var(--prime-light);
+}
+
+.day.sunday {
+  color: var(--prime-color);
+  font-weight: bold;
+}
+
+.day.excluded {
+  background: #fdd;
+  color: #999;
+  pointer-events: none;
+}
+
+.day.disabled {
+  background: #eee;
+  color: #bbb;
+  pointer-events: none;
+}
+
+.day.selected {
+  background: var(--prime-color);
+  color: white;
+  font-weight: bold;
+}
+
+.day.blank {
+  background: transparent;
+  border: none;
+  cursor: default;
+}

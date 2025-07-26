@@ -168,7 +168,7 @@ const StatusUpdate = ({
       {(canScheduleCallExec || canScheduleCallSubadmin) && (
         <a
           className="inline-flex items-center gap-1 py-[1px] px-[6px] ml-1 rounded text-xs bg-blue-600 text-white"
-          href={`${baseUrl}admin/schedule_call/${row.id}`}
+          href={`${baseUrl}/schedulecall/${row.id}`}
           title="Schedule Call"
         >
           <Clock size={12} /> Schedule Call

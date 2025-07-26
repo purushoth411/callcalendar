@@ -433,7 +433,7 @@ export default function Bookings() {
             <h2 className="text-lg font-semibold text-gray-800">
               All Bookings
             </h2>
-            <button
+            {/* <button
             onClick={() => {
               setShowFilters(!showFilters);
               if (!showFilters) fetchConsultantsAndCrms();
@@ -441,7 +441,7 @@ export default function Bookings() {
             className="bg-gray-500 text-white px-2 py-1 rounded text-[11px] hover:bg-gray-600"
           >
             {showFilters ? "Hide Filters" : "Show Filters"}
-          </button>
+          </button> */}
             <div className="flex items-center space-x-2">
               <span className="text-sm text-gray-500">Total:</span>
               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
