@@ -151,6 +151,34 @@ export default function Bookings() {
     }
   };
 
+  const getCallStatusUpdationPending = (row) => {
+  if (row.fld_consultation_sts === "Accept") {
+    const bookingSlot = row.fld_booking_slot; // e.g., "03:30 PM"
+    const bookingDate = row.fld_booking_date; // e.g., "2024-07-26"
+
+    // Parse the booking slot and add 30 minutes
+    const slotDateTime = new Date(`${bookingDate} ${bookingSlot}`);
+    const callEndTime = new Date(slotDateTime.getTime() + 30 * 60000); // 30 mins later
+
+    // Add 1 hour to call end time
+    const oneHourAfterEndTime = new Date(callEndTime.getTime() + 60 * 60000);
+
+    const now = new Date();
+    const currentDate = now.toISOString().split("T")[0]; // e.g., "2024-07-26"
+
+    if (bookingDate < currentDate) {
+      return "Call status updation pending";
+    } else if (bookingDate === currentDate && now >= oneHourAfterEndTime) {
+      return "Call status updation pending";
+    } else {
+      return "";
+    }
+  }
+  return "";
+};
+
+
+
   const handleAddNewClick = () => {
     setShowForm(true);
   };
@@ -282,24 +310,22 @@ export default function Bookings() {
     });
   };
 
-  const yourLogicVar = (id, status) => {
-    if (!status) return;
-    // Replace BASE_URL or use axios/fetch as needed
-    fetch(`/api/update-crm-status`, {
-      method: "POST",
-      body: JSON.stringify({ id, status }),
-    });
-  };
+ 
 
   const columns = [
     {
-      title: "Client",
-      data: "client_name",
-      render: (data, type, row) =>
-        `<div class="font-medium text-gray-900">${data} - ${
-          row.fld_client_id || ""
-        }</div>`,
-    },
+  title: "Client",
+  data: "client_name",
+  render: (data, type, row) => {
+    const clientId = row.fld_client_id || "";
+    return `
+      <a href="/admin/booking_detail/${row.id}" class="font-medium text-blue-600 hover:underline">
+        ${data} - ${clientId}
+      </a>
+    `;
+  },
+},
+
     {
       title: "Consultant",
       data: "consultant_name",
@@ -336,19 +362,21 @@ export default function Bookings() {
         `<div class="text-indigo-700 font-medium text-sm">${data}</div>`,
     },
     {
-      title: "Status",
-      data: null,
-      render: (data, type, row) => {
-        return ReactDOMServer.renderToString(
-          <StatusUpdate
-            row={row} // your row object
-            user={user} // current user obj
-            onCrmStatusChange={handleCrmStatusUpdate}
-            call_status_updation_pending={yourLogicVar}
-          />
-        );
-      },
-    },
+  title: "Status",
+  data: null,
+  render: (data, type, row) => {
+    const call_status_updation_pending = getCallStatusUpdationPending(row);
+    return ReactDOMServer.renderToString(
+      <StatusUpdate
+        row={row}
+        user={user}
+        onCrmStatusChange={handleCrmStatusUpdate}
+        call_status_updation_pending={call_status_updation_pending}
+      />
+    );
+  },
+},
+
   ];
 
   const tableOptions = {
