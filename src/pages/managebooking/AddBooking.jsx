@@ -87,7 +87,7 @@ export default function AddBooking({ user, fetchAllBookings, setShowForm }) {
       if (formData.sale_type === "Presales" && clientId.length > 3) {
         try {
           const res = await fetch(
-            `https://callback-2suo.onrender.com/api/bookings/getPresaleClientDetails/${clientId}`
+            `http://localhost:5000/api/bookings/getPresaleClientDetails/${clientId}`
           );
           const data = await res.json();
 
@@ -107,7 +107,7 @@ export default function AddBooking({ user, fetchAllBookings, setShowForm }) {
             }));
 
             const recordingRes = await fetch(
-              `https://callback-2suo.onrender.com/api/bookings/checkCallrecording`,
+              `http://localhost:5000/api/bookings/checkCallrecording`,
               {
                 method: "POST",
                 headers: {
@@ -148,7 +148,7 @@ export default function AddBooking({ user, fetchAllBookings, setShowForm }) {
       if (formData.sale_type === "Postsales" && clientId.length > 3) {
         try {
           const res = await fetch(
-            `https://callback-2suo.onrender.com/api/bookings/getPostsaleClientDetails/${clientId}`
+            `http://localhost:5000/api/bookings/getPostsaleClientDetails/${clientId}`
           );
           const data = await res.json();
 
@@ -174,7 +174,7 @@ export default function AddBooking({ user, fetchAllBookings, setShowForm }) {
             setProjects(data.data.projects || []);
 
             const recordingRes = await fetch(
-              `https://callback-2suo.onrender.com/api/bookings/checkCallrecording`,
+              `http://localhost:5000/api/bookings/checkCallrecording`,
               {
                 method: "POST",
                 headers: {
@@ -226,7 +226,7 @@ export default function AddBooking({ user, fetchAllBookings, setShowForm }) {
   const checkConsultantWebsiteCondition = (consultantId, consultantName) => {
     try {
       fetch(
-        `https://callback-2suo.onrender.com/api/bookings/checkConsultantWebsiteCondition`,
+        `http://localhost:5000/api/bookings/checkConsultantWebsiteCondition`,
         {
           method: "POST",
           headers: {
@@ -267,7 +267,7 @@ export default function AddBooking({ user, fetchAllBookings, setShowForm }) {
 
   const checkConsultantTeamCondition = (consultantId, consultantName) => {
     try {
-      fetch(`https://callback-2suo.onrender.com/api/bookings/checkConsultantTeamCondition`, {
+      fetch(`http://localhost:5000/api/bookings/checkConsultantTeamCondition`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -314,7 +314,7 @@ export default function AddBooking({ user, fetchAllBookings, setShowForm }) {
   };
 
   const checkPresalesCall = (consultantId, consultantName) => {
-    fetch("https://callback-2suo.onrender.com/api/bookings/checkPresalesCall", {
+    fetch("http://localhost:5000/api/bookings/checkPresalesCall", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -399,7 +399,7 @@ export default function AddBooking({ user, fetchAllBookings, setShowForm }) {
 
     try {
       const res = await fetch(
-        "https://callback-2suo.onrender.com/api/helpers/getConsultantsBySubjectArea",
+        "http://localhost:5000/api/helpers/getConsultantsBySubjectArea",
         {
           method: "POST",
           headers: {
@@ -426,7 +426,7 @@ export default function AddBooking({ user, fetchAllBookings, setShowForm }) {
     // const allowedCalls=formData.allowedCalls;
     try {
       const response = await fetch(
-        `https://callback-2suo.onrender.com/api/bookings/checkPostsaleCompletedCalls`,
+        `http://localhost:5000/api/bookings/checkPostsaleCompletedCalls`,
         {
           method: "POST",
           headers: {
@@ -517,11 +517,15 @@ export default function AddBooking({ user, fetchAllBookings, setShowForm }) {
     }));
   };
 
+  const [submitting, setSubmitting] = useState(false)
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitting(true);
 
-    const response = await fetch(
-      "https://callback-2suo.onrender.com/api/bookings/addBooking",
+    try{
+     
+      const response = await fetch(
+      "http://localhost:5000/api/bookings/addBooking",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -547,6 +551,12 @@ export default function AddBooking({ user, fetchAllBookings, setShowForm }) {
       setShowForm(false);
     } else {
       toast.error("Something went wrong.");
+    }
+
+    }catch(e){
+      console.error(e)
+    }finally{
+       setSubmitting(false)
     }
   };
 
@@ -692,7 +702,7 @@ export default function AddBooking({ user, fetchAllBookings, setShowForm }) {
                   // Fetch milestones for the selected project
                   try {
                     const res = await fetch(
-                      `https://callback-2suo.onrender.com/api/bookings/getProjectMilestones/${selectedOption.value}`
+                      `http://localhost:5000/api/bookings/getProjectMilestones/${selectedOption.value}`
                     );
                     const data = await res.json();
 
@@ -1085,9 +1095,9 @@ export default function AddBooking({ user, fetchAllBookings, setShowForm }) {
                 ? "opacity-50 cursor-not-allowed"
                 : "hover:bg-blue-700"
             }`}
-            disabled={submitDisabled}
+            disabled={submitDisabled || submitting}
           >
-            {submitButtonText}
+            {submitting ? "Submitting..." : submitButtonText}
           </button>
         </div>
       </div>

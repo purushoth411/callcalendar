@@ -99,7 +99,7 @@ const CustomCalendar = ({ consultantSettings, onDateClick }) => {
                 .toLocaleDateString("en-US", { weekday: "short" })
                 .toLowerCase(); // "mon", "tue", etc.
 
-              onDateClick && onDateClick(formatted, dayName); // ✅ Pass day name too
+              onDateClick && onDateClick(formatted, dayName);
             }
           }}
         >

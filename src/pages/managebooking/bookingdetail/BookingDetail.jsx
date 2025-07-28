@@ -23,13 +23,16 @@ const BookingDetail = () => {
 
   const [alert, setAlert] = useState({ type: "", message: "" });
   const [statusByCrm, setStatusByCrm] = useState("");
- 
+
   const [reassignComment, setReassignComment] = useState("");
   const [showReassignForm, setShowReassignForm] = useState(false);
   const [showConvertForm, setShowConvertForm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showConvertModal, setShowConvertModal] = useState(false);
-  const [messageData,setMessageData]=useState([]);
+  const [messageData, setMessageData] = useState([]);
+  const [isMsgSending, setIsMsgSending] = useState(false);
+  const [otherBookings,setOtherBookings]=useState([]);
+  
 
   useEffect(() => {
     fetchBookingById(bookingId);
@@ -38,7 +41,7 @@ const BookingDetail = () => {
   const fetchBookingById = async (bookingId) => {
     try {
       const response = await fetch(
-        `https://callback-2suo.onrender.com/api/bookings/fetchBookingById`,
+        `http://localhost:5000/api/bookings/fetchBookingById`,
         {
           method: "POST",
           headers: {
@@ -58,15 +61,16 @@ const BookingDetail = () => {
       }
     } catch (error) {
       console.error("Error fetching booking:", error);
-    }finally{
+    } finally {
       fetchMsgData(bookingId);
+      getOtherBookings();
     }
   };
 
-   const fetchMsgData = async (bookingId) => {
+  const fetchMsgData = async (bookingId) => {
     try {
       const response = await fetch(
-        `https://callback-2suo.onrender.com/api/helpers/getMessageData?bookingId=${bookingId}`
+        `http://localhost:5000/api/helpers/getMessageData?bookingId=${bookingId}`
       );
       const data = await response.json();
       if (data.status) {
@@ -101,7 +105,7 @@ const BookingDetail = () => {
     }
 
     try {
-      const response = await fetch(`https://callback-2suo.onrender.com/bookings/delete`, {
+      const response = await fetch(`http://localhost:5000/bookings/delete`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -137,7 +141,7 @@ const BookingDetail = () => {
 
     try {
       const response = await fetch(
-        `https://callback-2suo.onrender.com/api/bookings/setAsConverted`,
+        `http://localhost:5000/api/bookings/setAsConverted`,
         {
           method: "POST",
           headers: {
@@ -176,45 +180,116 @@ const BookingDetail = () => {
   };
 
   const sendMessage = async (message) => {
-  try {
-    const response = await fetch("https://callback-2suo.onrender.com/api/sendMessage", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        sender_id: user.id,
-        message: message,
-        receiver_id: 2, 
-      }),
-    });
-
-    const data = await response.json();
-    if (data.success) {
-      // Refresh or append message to UI
-      fetchMessages(); // Reload messages from backend
-    } else {
-      alert("Failed to send message");
+    if (!message || message.trim() === "") {
+      toast.error("Enter a message before sending");
+      return;
     }
+    try {
+      setIsMsgSending(true);
+      const response = await fetch(
+        "http://localhost:5000/api/helpers/sendMessage",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            sender_id: user.id,
+            comment: message,
+            admin_type: user.fld_admin_type,
+            bookingid: bookingId,
+          }),
+        }
+      );
+
+      const data = await response.json();
+      if (data.success) {
+        toast.success("Message Sent");
+        fetchMsgData(bookingId);
+      } else {
+        toast.error("Failed to send message");
+      }
+    } catch (error) {
+      console.error("Error sending message:", error);
+    } finally {
+      setIsMsgSending(false);
+    }
+  };
+
+const handleStatusUpdate = async () => {
+  if (!statusByCrm) {
+    toast.error("Please select a status");
+    return;
+  }
+
+  try {
+    setIsSubmitting(true);
+    const response = await fetch(
+        "http://localhost:5000/api/bookings/updateStatusByCrm",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            bookingid: bookingId,
+            statusByCrm: statusByCrm,
+            
+          }),
+        }
+      );
+
+      const data = await response.json();
+      if (data.status) {
+       toast.success("Status updated successfully");
+        
+         setBookingData((prev) => ({
+      ...prev,
+      statusByCrm: statusByCrm,
+    }));
+      } else {
+        toast.error("Failed to update status");
+      }
+   
+
+    
   } catch (error) {
-    console.error("Error sending message:", error);
+    console.error("Status update failed:", error);
+    toast.error("Failed to update status");
+  }finally{
+    setIsSubmitting(false);
   }
 };
 
-  const handleStatusUpdate = async () => {
-    if (!statusByCrm) {
-      setAlert({ type: "danger", message: "Please select a status" });
-      return;
-    }
+const getOtherBookings = async () => {
+  try {
+    const queryParams = new URLSearchParams({
+     
+      consultantId: bookingData.fld_consultantid,
+      bookingDate: bookingData.fld_booking_date,
+      bookingSlot: bookingData.fld_booking_slot
+    });
 
-    try {
-      // API call would go here
-      setAlert({ type: "success", message: "Status updated successfully" });
-      setBookingData((prev) => ({ ...prev, statusByCrm }));
-    } catch (error) {
-      setAlert({ type: "danger", message: "Failed to update status" });
+    const response = await fetch(
+      `http://localhost:5000/api/bookings/getBookingData?${queryParams}`
+    );
+
+    const result = await response.json();
+
+    if (result.success) {
+      setOtherBookings(result.data);
+    } else {
+      console.error("Failed to fetch other bookings");
     }
-  };
+  } catch (err) {
+    console.error("Error fetching other bookings:", err);
+  }
+};
+
+
+
+
+
 
   // Handle mark as confirmed
   const handleMarkAsConfirmed = async () => {
@@ -225,17 +300,25 @@ const BookingDetail = () => {
     }
 
     try {
-      // API call would go here
-      setAlert({ type: "success", message: "Marked as confirmed by client" });
-      setBookingData((prev) => ({
-        ...prev,
-        fld_call_confirmation_status: "Call Confirmed by Client",
-      }));
+      const response=await fetch(`http://localhost:5000/api/bookings/markAsConfirmByClient`,{
+        method:"POST",
+        headers:{
+          "Content-type":"application/json"
+        },
+        body:JSON.stringify({
+          bookingId
+        })
+      })
+      const result =await response.json();
+      if(result.status){
+toast.success("Marked as confirmed by client" );
+      }else{
+
+      }
+      
+     
     } catch (error) {
-      setAlert({
-        type: "danger",
-        message: "Failed to update confirmation status",
-      });
+      
     }
   };
 
@@ -285,15 +368,30 @@ const BookingDetail = () => {
     bookingData.fld_consultantid < 1 &&
     bookingData.fld_call_related_to !== "I_am_not_sure";
 
-  const canMarkAsConfirmed =
-    (user.fld_admin_type === "SUBADMIN" &&
-      bookingData.fld_call_confirmation_status ===
-        "Call Confirmation Pending at Client End" &&
-      bookingData.fld_call_request_sts !== "Rescheduled") ||
-    (user.fld_admin_type === "SUBADMIN" &&
+const hasOtherConfirmedBooking = (otherBookings || []).some(
+  (row) =>
+    row.id !== bookingData.id &&
+    row.fld_call_confirmation_status === "Call Confirmed by Client" &&
+    row.fld_consultation_sts === "Accept"
+);
+
+const canMarkAsConfirmed =
+  user.fld_admin_type === "EXECUTIVE" &&
+  (
+    (
+      bookingData.fld_call_confirmation_status === "Call Confirmation Pending at Client End" &&
+      (bookingData.fld_call_request_sts !== "Rescheduled" || bookingData.fld_call_request_sts === "Call Rescheduled") &&
+      !hasOtherConfirmedBooking &&
+      bookingData.fld_call_related_to !== "I_am_not_sure"
+    ) ||
+    (
+      bookingData.fld_booking_date &&
+      bookingData.fld_booking_slot &&
       bookingData.fld_call_related_to === "I_am_not_sure" &&
       bookingData.fld_call_external_assign === "Yes" &&
-      bookingData.fld_call_request_sts === "Accept");
+      bookingData.fld_call_request_sts === "Accept"
+    )
+  );
 
   const canUpdateStatus =
     (user.fld_admin_type === "SUBADMIN" ||
@@ -380,15 +478,26 @@ const BookingDetail = () => {
                 <ViewCommentModal user={user} bookingData={bookingData} />
 
                 {/* View Chat */}
-                <button
+                {/* <button
                   onClick={scrollToChat}
                   className="bg-blue-500 hover:bg-blue-600 text-white px-2 rounded-md flex items-center space-x-2 transition-colors"
                 >
                   <ArrowDown size={16} />
                   <span>View Chat</span>
-                </button>
+                </button> */}
 
                 {/* Back Button */}
+                {/* Mark as Confirmed Button */}
+            {canMarkAsConfirmed && (
+              <div className="mb-6 flex justify-end">
+                <button
+                  onClick={handleMarkAsConfirmed}
+                  className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-md transition-colors"
+                >
+                  Mark as Confirmed by Client
+                </button>
+              </div>
+            )}
                 <button
                   onClick={() => navigate(-1)}
                   className="bg-gray-500 hover:bg-gray-600 text-white px-2 rounded-md flex items-center space-x-2 transition-colors"
@@ -409,31 +518,22 @@ const BookingDetail = () => {
                     className="border border-gray-300 rounded px-3 py-2 min-w-48"
                   >
                     <option value="">Update Call Status</option>
-                    <option value="Completed">Mark As Completed</option>
-                    <option value="Not Join">Client Did Not Join</option>
-                    <option value="Postponed">Postponed</option>
+                    <option value="Completed">✔️ Completed</option>
+                    <option value="Not Join">❌ Client Did Not Join</option>
+                    <option value="Postponed">⏳ Postponed</option>
                   </select>
                   <button
                     onClick={handleStatusUpdate}
-                    className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-md transition-colors"
+                    className={`${isSubmitting ? "bg-blue-300 hover:bg-blue-400":"bg-blue-500 hover:bg-blue-600"} text-white px-6 py-2 rounded-md transition-colors`}
+                    disabled={isSubmitting}
                   >
-                    Submit
+                    {isSubmitting ? "Submitting..":"Submit"}
                   </button>
                 </div>
               </div>
             )}
 
-            {/* Mark as Confirmed Button */}
-            {canMarkAsConfirmed && (
-              <div className="mb-6 flex justify-end">
-                <button
-                  onClick={handleMarkAsConfirmed}
-                  className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-md transition-colors"
-                >
-                  Mark as Confirmed by Client
-                </button>
-              </div>
-            )}
+            
 
             {/* Reassign Comment Form */}
             {user.fld_admin_type === "EXECUTIVE" &&
@@ -586,13 +686,14 @@ const BookingDetail = () => {
             </div>
 
             {/* Chat Box Placeholder */}
-<ChatBox
-  user={user }
-  messageData={messageData}
-  onSend={(message) => {
-    sendMessage(message); 
-  }}
-/>
+            <ChatBox
+              user={user}
+              messageData={messageData}
+              onSend={(message) => {
+                sendMessage(message);
+              }}
+              isMsgSending={isMsgSending}
+            />
           </div>
         </div>
       </div>

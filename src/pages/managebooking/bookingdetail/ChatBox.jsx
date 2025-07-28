@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { MessageCircle } from "lucide-react";
+import toast from "react-hot-toast";
 
-const ChatBox = ({ bookingId, user, messageData, onSend }) => {
+const ChatBox = ({ bookingId, user, messageData, onSend,isMsgSending }) => {
   const [newMsg, setNewMsg] = useState("");
   const maxMessages = 5;
 
@@ -17,9 +18,19 @@ const ChatBox = ({ bookingId, user, messageData, onSend }) => {
       hour12: true,
     });
   };
+  
 
   const handleSend = () => {
-    if (newMsg.trim() && messageData.length < maxMessages) {
+    
+   
+       if (!newMsg || newMsg.trim() === "") {
+    toast.error("Enter a message before sending");
+    return;
+  }if (messageData.length > maxMessages) {
+    toast.error("Maximum message limit reached");
+    return;
+  }
+   if (newMsg.trim() && messageData.length < maxMessages) {
       onSend(newMsg.trim(), bookingId);
       setNewMsg("");
     }
@@ -88,12 +99,13 @@ const ChatBox = ({ bookingId, user, messageData, onSend }) => {
                 placeholder="Type your message..."
                 className="flex-1 border border-gray-300 rounded p-2 text-sm resize-none"
               />
-              {/* <button
+              <button
                 onClick={handleSend}
-                className="bg-blue-600 text-white px-4 py-2 rounded"
+                disabled={isMsgSending}
+                className={`${isMsgSending? "bg-blue-400" : "bg-blue-600"} text-white px-4 py-2 rounded`}
               >
-                Send
-              </button> */}
+                {isMsgSending ?"Sending...":"Send"}
+              </button>
             </div>
           ) : (
             <div className="text-sm text-red-600">
