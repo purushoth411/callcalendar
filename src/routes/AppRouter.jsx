@@ -11,6 +11,7 @@ import Teams from "../pages/Teams";
 import Bookings from "../pages/managebooking/Bookings";
 import ScheduleCall from "../pages/managebooking/ScheduleCall";
 import BookingDetail from "../pages/managebooking/bookingdetail/BookingDetail";
+import CallRequestsFromRc from "../pages/additional/CallRequestsFromRc";
 
 
 
@@ -32,6 +33,10 @@ export default function AppRouter() {
             <Route path="/schedulecall/:id" element={<ScheduleCall />} />
             <Route path="/admin/booking_detail/:bookingId" element={<BookingDetail />} />
              <Route path="/admin/booking_detail/:bookingId/convert" element={<BookingDetail />} />
+            <Route path="/call_request_from_rc" element={<CallRequestsFromRc />} />
+            <Route path="/admin/add_call_request/:bookingid/enq" element={<Bookings />} />
+
+
             
           </Route>
         </Route>

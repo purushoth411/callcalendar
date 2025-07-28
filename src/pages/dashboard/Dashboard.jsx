@@ -66,14 +66,15 @@ function Dashboard() {
     <div className="p-4 max-w-6xl mx-auto">
 
     <ConsultantTimings />
+    <hr className="my-3 text-gray-200"/>
 
       {(user?.fld_admin_type === "SUPERADMIN" || user?.fld_admin_type === "EXECUTIVE") && (
         <div className="w-full">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center  mb-4">
             <h4 className="text-lg font-semibold">Call Status Summary</h4>
             <button
               onClick={fetchAllStatuses}
-              className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-sm"
+              className="bg-blue-600 text-white px-2 py-0.5 rounded hover:bg-blue-700 text-sm ml-2"
               disabled={loading}
             >
               {loading ? "Refreshing..." : "Refresh"}

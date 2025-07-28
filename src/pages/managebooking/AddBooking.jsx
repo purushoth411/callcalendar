@@ -11,8 +11,15 @@ import {
 import { useAuth } from "../../utils/idb";
 import { callRegardingOptions, toastWarning } from "../../helpers/CommonHelper";
 
-export default function AddBooking({ user, fetchAllBookings, setShowForm }) {
+export default function AddBooking({
+  user,
+  fetchAllBookings,
+  setShowForm,
+  bookingId,
+}) {
   const { user: loggedInUser, priceDiscoutUsernames } = useAuth();
+
+  const decodedBookingId = atob(bookingId);
 
   const [formData, setFormData] = useState({
     user: loggedInUser,
@@ -79,6 +86,62 @@ export default function AddBooking({ user, fetchAllBookings, setShowForm }) {
     setSubjectAreas(subjectAreasData.data || []);
     setPlanDetails(planDetails.results || []);
   };
+
+  const [pageLoading, setPageLoading] = useState(false);
+
+  useEffect(() => {
+    if (decodedBookingId) {
+      const fetchCallRequestData = async () => {
+        try {
+          setPageLoading(true);
+          const response = await fetch(
+            "http://localhost:5000/api/additional/callrequestrc",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ id: decodedBookingId }),
+            }
+          );
+          const result = await response.json();
+          if (result.status) {
+            // TODO: handle result.data, e.g., populate formData or other state
+            console.log("Call Request Data:", result.data);
+            setFormData((prev) => ({
+              ...prev,
+              rc_call_request_id: decodedBookingId,
+              sale_type: "Postsales",
+              client_id: result.data?.student_code || "",
+              projectid: result.data?.project_id || "",
+              project_milestone : result.data?.milestone_id || "",
+              project_milestone_name : result.data?.milestone_title || "",
+              call_regarding : result.data?.call_regarding || "",
+              
+            }));
+
+            const consultantsData = await fetchAllConsultants();
+            let filteredConsultants = consultantsData.results || [];
+
+
+            // Set consultants to dropdown
+            setConsultants(filteredConsultants);
+          } else {
+            toast.error(result.message || "No Calls Found");
+          }
+        } catch (error) {
+          console.error("Error fetching call request data:", error);
+          toast.error("Something went wrong while fetching call request data.");
+        } finally {
+          setPageLoading(false);
+        }
+      };
+
+      fetchCallRequestData();
+    }
+  }, [decodedBookingId]);
+
+  useEffect(()=>{
+    console.log(consultants)
+  },[consultants]);
 
   useEffect(() => {
     const fetchClientDetails = async () => {
@@ -163,8 +226,8 @@ export default function AddBooking({ user, fetchAllBookings, setShowForm }) {
               email: data.data.email || "",
               phone: data.data.phone || "",
               client_plan_id: data.data.plan_type || "",
-              client_plan_name: plan ? plan.plan : "",
-              allowedCalls: plan ? plan.allowedCalls : "",
+              client_plan_name: plan ? plan.plan : (data.data.plan_type == "1" ? "Basic" : data.data.plan_type == "2" ? "Standard" : "Advanced" ),
+              allowedCalls: plan ? plan.allowedCalls : (data.data.plan_type == "1" ? "1" : data.data.plan_type == "2" ? "2" : "3" ),
             };
             setFormData((prev) => ({
               ...prev,
@@ -472,6 +535,7 @@ export default function AddBooking({ user, fetchAllBookings, setShowForm }) {
       await handlePostsalesChanges();
     } else {
       setConsultants([]);
+      console.log("542")
       await handlePresalesChanges();
     }
   };
@@ -485,7 +549,7 @@ export default function AddBooking({ user, fetchAllBookings, setShowForm }) {
     setFormData((prev) => ({
       ...prev,
       client_id: "",
-      projectid: "",
+      // projectid: "",
       project_milestone: "",
       call_related_to: "",
       subject_area: "",
@@ -517,46 +581,50 @@ export default function AddBooking({ user, fetchAllBookings, setShowForm }) {
     }));
   };
 
-  const [submitting, setSubmitting] = useState(false)
+  const [submitting, setSubmitting] = useState(false);
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
 
-    try{
-     
+    try {
       const response = await fetch(
-      "http://localhost:5000/api/bookings/addBooking",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        "http://localhost:5000/api/bookings/addBooking",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        }
+      );
+
+      const result = await response.json();
+      if (
+        result.status &&
+        result.message === "Call Request Added Successfully"
+      ) {
+        toast.success(result.message);
+        fetchAllBookings();
+        setShowForm(false);
+      } else if (
+        result.status &&
+        result.message === "Add Call Request Already Sent!"
+      ) {
+        toast.error(result.message);
+        fetchAllBookings();
+        setShowForm(false);
+      } else if (
+        !result.status &&
+        result.message === "Booking already exists"
+      ) {
+        toast.error(result.message);
+        fetchAllBookings();
+        setShowForm(false);
+      } else {
+        toast.error("Something went wrong.");
       }
-    );
-
-    const result = await response.json();
-    if (result.status && result.message === "Call Request Added Successfully") {
-      toast.success(result.message);
-      fetchAllBookings();
-      setShowForm(false);
-    } else if (
-      result.status &&
-      result.message === "Add Call Request Already Sent!"
-    ) {
-      toast.error(result.message);
-      fetchAllBookings();
-      setShowForm(false);
-    } else if (!result.status && result.message === "Booking already exists") {
-      toast.error(result.message);
-      fetchAllBookings();
-      setShowForm(false);
-    } else {
-      toast.error("Something went wrong.");
-    }
-
-    }catch(e){
-      console.error(e)
-    }finally{
-       setSubmitting(false)
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -567,8 +635,31 @@ export default function AddBooking({ user, fetchAllBookings, setShowForm }) {
 
   useEffect(() => {
     console.log("Form data updated:", formData);
-    console.log("consultantOprtions:", consultantOptions);
   }, [formData]);
+
+  useEffect(() => {
+    const fetchMileStones = async () => {
+      if(!formData.projectid){
+        return;
+      }
+      try {
+        const res = await fetch(
+          `http://localhost:5000/api/bookings/getProjectMilestones/${formData.projectid}`
+        );
+        const data = await res.json();
+
+        if (data.status && Array.isArray(data.data)) {
+          setMilestones(data.data);
+        } else {
+          setMilestones([]);
+        }
+      } catch (error) {
+        console.error("Error fetching milestones", error);
+        setMilestones([]);
+      }
+    };
+    fetchMileStones()
+  }, [formData.projectid]);
 
   return (
     <motion.div
@@ -630,7 +721,7 @@ export default function AddBooking({ user, fetchAllBookings, setShowForm }) {
                   client_id: value,
                   client_plan_id: "",
                   client_plan_name: "",
-                  projectid: "",
+                  // projectid: "",
                   project_milestone: "",
                   project_milestone_name: "",
                   allowedCalls: "",
@@ -688,36 +779,27 @@ export default function AddBooking({ user, fetchAllBookings, setShowForm }) {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Project
               </label>
-              <Select
-                options={projects.map((project) => ({
-                  value: project.id,
-                  label: `${project.id} - ${project.project_title}`,
-                }))}
-                onChange={async (selectedOption) => {
+              <select
+                value={formData.projectid}
+                onChange={async (e) => {
+                  const selectedProjectId = e.target.value;
+
                   setFormData((prev) => ({
                     ...prev,
-                    projectid: selectedOption.value,
+                    projectid: selectedProjectId,
                   }));
 
                   // Fetch milestones for the selected project
-                  try {
-                    const res = await fetch(
-                      `http://localhost:5000/api/bookings/getProjectMilestones/${selectedOption.value}`
-                    );
-                    const data = await res.json();
-
-                    if (data.status && Array.isArray(data.data)) {
-                      setMilestones(data.data);
-                    } else {
-                      setMilestones([]);
-                    }
-                  } catch (error) {
-                    console.error("Error fetching milestones", error);
-                    setMilestones([]);
-                  }
                 }}
-                placeholder="Select a project"
-              />
+                className="border border-gray-300 rounded px-2 py-1 text-sm w-full"
+              >
+                <option value="">Select a project</option>
+                {projects.map((project) => (
+                  <option key={project.id} value={project.id}>
+                    {project.id} - {project.project_title}
+                  </option>
+                ))}
+              </select>
             </div>
           )}
 
@@ -726,31 +808,38 @@ export default function AddBooking({ user, fetchAllBookings, setShowForm }) {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Milestone
             </label>
-            <Select
-              options={milestones.map((milestone) => ({
-                value: milestone.id,
-                label: milestone.segment_title,
-              }))}
-              onChange={async (selected) => {
-                // First update form data
+            <select
+              value={formData.project_milestone}
+              onChange={async (e) => {
+                const selectedMilestoneId = e.target.value;
+                const selectedMilestone = milestones.find(
+                  (m) => String(m.id) === selectedMilestoneId
+                );
+
                 const updatedForm = {
                   ...formData,
-                  project_milestone: selected.value,
-                  project_milestone_name: selected.label,
+                  project_milestone: selectedMilestoneId,
+                  project_milestone_name:
+                    selectedMilestone?.segment_title || "",
                 };
+
                 setFormData(updatedForm);
 
-                // Then call API using updated values
                 await checkPostsaleCompletedCalls(
                   updatedForm.email,
-                  selected.value,
+                  selectedMilestoneId,
                   updatedForm.allowedCalls
                 );
               }}
-              placeholder="Select milestone"
-              className="react-select-container"
-              classNamePrefix="react-select"
-            />
+              className="border border-gray-300 rounded px-2 py-1 text-sm w-full"
+            >
+              <option value="">Select milestone</option>
+              {milestones.map((milestone) => (
+                <option key={milestone.id} value={milestone.id}>
+                  {milestone.segment_title}
+                </option>
+              ))}
+            </select>
           </div>
         )}
 
