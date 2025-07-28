@@ -7,7 +7,6 @@ import { useEffect } from "react";
 import Dashboard from "../pages/dashboard/Dashboard";
 import Login from "../pages/Login";
 import Users from "../pages/manageuser/Users";
-import DomainPref from "../pages/Domainpref";
 import Teams from "../pages/Teams";
 import Bookings from "../pages/managebooking/Bookings";
 import ScheduleCall from "../pages/managebooking/ScheduleCall";
@@ -33,7 +32,7 @@ export default function AppRouter() {
             <Route path="/schedulecall/:id" element={<ScheduleCall />} />
             <Route path="/admin/booking_detail/:bookingId" element={<BookingDetail />} />
              <Route path="/admin/booking_detail/:bookingId/convert" element={<BookingDetail />} />
-            <Route path="/domainpref" element={<DomainPref />} />
+            
           </Route>
         </Route>
         
