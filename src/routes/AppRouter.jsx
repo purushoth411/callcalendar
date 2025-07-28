@@ -4,7 +4,7 @@ import Layout from "../layouts/Layout";
 import ScrollToTop from "../components/ScrollToTop";
 import { useAuth } from "../utils/idb";
 import { useEffect } from "react";
-import Dashboard from "../pages/Dashboard";
+import Dashboard from "../pages/dashboard/Dashboard";
 import Login from "../pages/Login";
 import Users from "../pages/manageuser/Users";
 import DomainPref from "../pages/Domainpref";
@@ -29,6 +29,7 @@ export default function AppRouter() {
             <Route path="/users" element={<Users />} />
             <Route path="/teams" element={<Teams />} />
             <Route path="/bookings" element={<Bookings />} />
+            <Route path="/bookings/:dashboard_status" element={<Bookings />} />
             <Route path="/schedulecall/:id" element={<ScheduleCall />} />
             <Route path="/admin/booking_detail/:bookingId" element={<BookingDetail />} />
              <Route path="/admin/booking_detail/:bookingId/convert" element={<BookingDetail />} />

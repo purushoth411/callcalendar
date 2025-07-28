@@ -10,11 +10,13 @@ import {
 } from "../../helpers/CommonHelper.jsx";
 import SkeletonLoader from "../../components/SkeletonLoader.jsx";
 import AddBooking from "./AddBooking.jsx";
-import { AnimatePresence,motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import StatusUpdate from "./StatusUpdate.jsx"; //
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Select from "react-select";
+import { useNavigate, useParams } from "react-router-dom";
+
 
 export default function Bookings() {
   const { user } = useAuth();
@@ -35,6 +37,8 @@ export default function Bookings() {
   const [selectedCRM, setSelectedCRM] = useState(null);
   const [selectedConsultant, setSelectedConsultant] = useState(null);
   const [consultantType, setConsultantType] = useState("ACTIVE");
+  const { dashboard_status } = useParams();
+  const navigate = useNavigate();
 
   const [filters, setFilters] = useState({
     sale_type: "",
@@ -152,32 +156,30 @@ export default function Bookings() {
   };
 
   const getCallStatusUpdationPending = (row) => {
-  if (row.fld_consultation_sts === "Accept") {
-    const bookingSlot = row.fld_booking_slot; // e.g., "03:30 PM"
-    const bookingDate = row.fld_booking_date; // e.g., "2024-07-26"
+    if (row.fld_consultation_sts === "Accept") {
+      const bookingSlot = row.fld_booking_slot; // e.g., "03:30 PM"
+      const bookingDate = row.fld_booking_date; // e.g., "2024-07-26"
 
-    // Parse the booking slot and add 30 minutes
-    const slotDateTime = new Date(`${bookingDate} ${bookingSlot}`);
-    const callEndTime = new Date(slotDateTime.getTime() + 30 * 60000); // 30 mins later
+      // Parse the booking slot and add 30 minutes
+      const slotDateTime = new Date(`${bookingDate} ${bookingSlot}`);
+      const callEndTime = new Date(slotDateTime.getTime() + 30 * 60000); // 30 mins later
 
-    // Add 1 hour to call end time
-    const oneHourAfterEndTime = new Date(callEndTime.getTime() + 60 * 60000);
+      // Add 1 hour to call end time
+      const oneHourAfterEndTime = new Date(callEndTime.getTime() + 60 * 60000);
 
-    const now = new Date();
-    const currentDate = now.toISOString().split("T")[0]; // e.g., "2024-07-26"
+      const now = new Date();
+      const currentDate = now.toISOString().split("T")[0]; // e.g., "2024-07-26"
 
-    if (bookingDate < currentDate) {
-      return "Call status updation pending";
-    } else if (bookingDate === currentDate && now >= oneHourAfterEndTime) {
-      return "Call status updation pending";
-    } else {
-      return "";
+      if (bookingDate < currentDate) {
+        return "Call status updation pending";
+      } else if (bookingDate === currentDate && now >= oneHourAfterEndTime) {
+        return "Call status updation pending";
+      } else {
+        return "";
+      }
     }
-  }
-  return "";
-};
-
-
+    return "";
+  };
 
   const handleAddNewClick = () => {
     setShowForm(true);
@@ -220,6 +222,7 @@ export default function Bookings() {
             userType: user?.fld_admin_type,
             assigned_team: user?.fld_team || "",
             filters: {},
+            dashboard_status,
           }),
         }
       );
@@ -227,6 +230,7 @@ export default function Bookings() {
       const result = await response.json();
       if (result.status) {
         setBookings(result.data);
+        navigate("/bookings");
       } else {
         setBookings([]);
       }
@@ -310,21 +314,19 @@ export default function Bookings() {
     });
   };
 
- 
-
   const columns = [
     {
-  title: "Client",
-  data: "client_name",
-  render: (data, type, row) => {
-    const clientId = row.fld_client_id || "";
-    return `
+      title: "Client",
+      data: "client_name",
+      render: (data, type, row) => {
+        const clientId = row.fld_client_id || "";
+        return `
       <a href="/admin/booking_detail/${row.id}" class="font-medium text-blue-600 hover:underline">
         ${data} - ${clientId}
       </a>
     `;
-  },
-},
+      },
+    },
 
     {
       title: "Consultant",
@@ -376,8 +378,8 @@ export default function Bookings() {
     );
   },
 },
-
   ];
+
 
   const tableOptions = {
     responsive: true,
@@ -442,285 +444,293 @@ export default function Bookings() {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-[1250px] mx-auto py-5">
         <div className="p-3 bg-gray-100 rounded shadow text-[13px]">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-bold text-gray-800">
-            Booking Management
-          </h2>
-          
-          <button
-            onClick={handleAddNewClick}
-            className="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 transition-colors text-[11px]"
-          >
-            Add New
-          </button>
-        </div>
-
-        
-
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-          <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-            <h2 className="text-lg font-semibold text-gray-800">
-              All Bookings
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-bold text-gray-800">
+              Booking Management
             </h2>
-           
-            <div className="flex items-center space-x-2">
-               <button
-            onClick={() => {
-              setShowFilters(!showFilters);
-              if (!showFilters) fetchConsultantsAndCrms();
-            }}
-            className="bg-gray-500 text-white px-2 py-1 rounded text-[11px] hover:bg-gray-600"
-          >
-            {showFilters ? "Hide Filters" : "Show Filters"}
-          </button>
-              <span className="text-sm text-gray-500">Total:</span>
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                {isLoading ? "..." : bookings.length}
-              </span>
+
+            <button
+              onClick={handleAddNewClick}
+              className="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 transition-colors text-[11px]"
+            >
+              Add New
+            </button>
+          </div>
+
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+            <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+              <h2 className="text-lg font-semibold text-gray-800">
+                All Bookings
+              </h2>
+
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => {
+                    setShowFilters(!showFilters);
+                    if (!showFilters) fetchConsultantsAndCrms();
+                  }}
+                  className="bg-gray-500 text-white px-2 py-1 rounded text-[11px] hover:bg-gray-600"
+                >
+                  {showFilters ? "Hide Filters" : "Show Filters"}
+                </button>
+                <span className="text-sm text-gray-500">Total:</span>
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                  {isLoading ? "..." : bookings.length}
+                </span>
+              </div>
+            </div>
+
+            <AnimatePresence>
+              {showFilters && (
+                <motion.div
+                  className="bg-white p-4 rounded-lg shadow mb-6 border"
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.5, ease: "easeInOut" }}
+                >
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Call Type
+                      </label>
+                      <select
+                        className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
+                        value={filters.sale_type}
+                        onChange={(e) =>
+                          setFilters({ ...filters, sale_type: e.target.value })
+                        }
+                      >
+                        <option value="">Select Call Type</option>
+                        <option value="Presales">Presales</option>
+                        <option value="Postsales">Postsales</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Select CRM
+                      </label>
+                      <Select
+                        options={crms.map((c) => ({
+                          value: c.id,
+                          label: c.fld_name,
+                        }))}
+                        value={
+                          crms.find((c) => c.id === selectedCRM)
+                            ? {
+                                value: selectedCRM,
+                                label: crms.find((c) => c.id === selectedCRM)
+                                  .fld_name,
+                              }
+                            : null
+                        }
+                        onChange={(opt) => setSelectedCRM(opt.value)}
+                        placeholder="Select CRM"
+                      />
+                    </div>
+
+                    {/* Consultant Type */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Consultant Type
+                      </label>
+                      <select
+                        value={consultantType}
+                        onChange={(e) =>
+                          handleConsultantTypeChange(e.target.value)
+                        }
+                        className="w-full border px-2 py-2 rounded text-sm"
+                      >
+                        <option value="ACTIVE">Active</option>
+                        <option value="INACTIVE">Inactive</option>
+                      </select>
+                    </div>
+
+                    {/* Consultant Dropdown */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Select Consultant
+                      </label>
+                      <Select
+                        options={filteredConsultants.map((c) => ({
+                          value: c.id,
+                          label: c.fld_name,
+                        }))}
+                        value={
+                          filteredConsultants.find(
+                            (c) => c.id === selectedConsultant
+                          )
+                            ? {
+                                value: selectedConsultant,
+                                label: filteredConsultants.find(
+                                  (c) => c.id === selectedConsultant
+                                ).fld_name,
+                              }
+                            : null
+                        }
+                        onChange={(opt) => setSelectedConsultant(opt.value)}
+                        placeholder="Select Consultant"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Call Recording Status
+                      </label>
+                      <select
+                        className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
+                        value={filters.call_rcrd_status}
+                        onChange={(e) =>
+                          setFilters({
+                            ...filters,
+                            call_rcrd_status: e.target.value,
+                          })
+                        }
+                      >
+                        <option value="">Select Call Recording Status</option>
+                        <option value="Call Recording Updated">
+                          Call Recording Updated
+                        </option>
+                        <option value="Call Recording Pending">
+                          Call Recording Pending
+                        </option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Booking Status
+                      </label>
+                      <Select
+                        isMulti
+                        options={[
+                          "Pending",
+                          "Call Scheduled",
+                          "Call Rescheduled",
+                          "Consultant Assigned",
+                          "Accept",
+                          "Reject",
+                          "Completed",
+                          "Rescheduled",
+                          "Converted",
+                          "Cancelled",
+                          "Client did not join",
+                          "Postponed",
+                        ].map((status) => ({
+                          value: status,
+                          label: status,
+                        }))}
+                        value={filters.booking_status.map((status) => ({
+                          value: status,
+                          label: status,
+                        }))}
+                        onChange={(selected) =>
+                          setFilters({
+                            ...filters,
+                            booking_status: selected.map(
+                              (option) => option.value
+                            ),
+                          })
+                        }
+                        placeholder="Select booking statuses"
+                        className="text-sm"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Keyword Search
+                      </label>
+                      <input
+                        type="text"
+                        className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
+                        placeholder="Search Name or Email"
+                        value={filters.keyword_search}
+                        onChange={(e) =>
+                          setFilters({
+                            ...filters,
+                            keyword_search: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Filter Type
+                      </label>
+                      <select
+                        className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
+                        value={filters.filter_type}
+                        onChange={(e) =>
+                          setFilters({
+                            ...filters,
+                            filter_type: e.target.value,
+                          })
+                        }
+                      >
+                        <option value="Booking">Booking Date</option>
+                        <option value="Created">Created Date</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Date Range
+                      </label>
+                      <DatePicker
+                        className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
+                        selectsRange
+                        startDate={filters.date_range[0]}
+                        endDate={filters.date_range[1]}
+                        onChange={(update) =>
+                          setFilters({ ...filters, date_range: update })
+                        }
+                        isClearable
+                        placeholderText="Select date range"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="mt-4 text-right">
+                    <button
+                      className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm"
+                      onClick={handleApplyFilters}
+                    >
+                      Apply Filters
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <div className="p-6">
+              {isLoading ? (
+                <SkeletonLoader
+                  rows={6}
+                  columns={[
+                    "Client",
+                    "Consultant",
+                    "Added By",
+                    "Booking Information",
+                    "Call Type",
+                    "Status",
+                  ]}
+                />
+              ) : (
+                <div className="overflow-hidden">
+                  <DataTable
+                    ref={tableRef}
+                    data={bookings}
+                    columns={columns}
+                    className="display table table-auto w-full text-[13px]"
+                    options={tableOptions}
+                  />
+                </div>
+              )}
             </div>
           </div>
-
-          <AnimatePresence>
-          {showFilters && (
-           <motion.div
-      className="bg-white p-4 rounded-lg shadow mb-6 border"
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.5, ease: "easeInOut" }}
-    >
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Call Type
-                  </label>
-                  <select
-                    className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
-                    value={filters.sale_type}
-                    onChange={(e) =>
-                      setFilters({ ...filters, sale_type: e.target.value })
-                    }
-                  >
-                    <option value="">Select Call Type</option>
-                    <option value="Presales">Presales</option>
-                    <option value="Postsales">Postsales</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Select CRM
-                  </label>
-                  <Select
-                    options={crms.map((c) => ({
-                      value: c.id,
-                      label: c.fld_name,
-                    }))}
-                    value={
-                      crms.find((c) => c.id === selectedCRM)
-                        ? {
-                            value: selectedCRM,
-                            label: crms.find((c) => c.id === selectedCRM)
-                              .fld_name,
-                          }
-                        : null
-                    }
-                    onChange={(opt) => setSelectedCRM(opt.value)}
-                    placeholder="Select CRM"
-                  />
-                </div>
-
-                {/* Consultant Type */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Consultant Type
-                  </label>
-                  <select
-                    value={consultantType}
-                    onChange={(e) => handleConsultantTypeChange(e.target.value)}
-                    className="w-full border px-2 py-2 rounded text-sm"
-                  >
-                    <option value="ACTIVE">Active</option>
-                    <option value="INACTIVE">Inactive</option>
-                  </select>
-                </div>
-
-                {/* Consultant Dropdown */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Select Consultant
-                  </label>
-                  <Select
-                    options={filteredConsultants.map((c) => ({
-                      value: c.id,
-                      label: c.fld_name,
-                    }))}
-                    value={
-                      filteredConsultants.find(
-                        (c) => c.id === selectedConsultant
-                      )
-                        ? {
-                            value: selectedConsultant,
-                            label: filteredConsultants.find(
-                              (c) => c.id === selectedConsultant
-                            ).fld_name,
-                          }
-                        : null
-                    }
-                    onChange={(opt) => setSelectedConsultant(opt.value)}
-                    placeholder="Select Consultant"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Call Recording Status
-                  </label>
-                  <select
-                    className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
-                    value={filters.call_rcrd_status}
-                    onChange={(e) =>
-                      setFilters({
-                        ...filters,
-                        call_rcrd_status: e.target.value,
-                      })
-                    }
-                  >
-                    <option value="">Select Call Recording Status</option>
-                    <option value="Call Recording Updated">
-                      Call Recording Updated
-                    </option>
-                    <option value="Call Recording Pending">
-                      Call Recording Pending
-                    </option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Booking Status
-                  </label>
-                  <Select
-                    isMulti
-                    options={[
-                      "Pending",
-                      "Call Scheduled",
-                      "Call Rescheduled",
-                      "Consultant Assigned",
-                      "Accept",
-                      "Reject",
-                      "Completed",
-                      "Rescheduled",
-                      "Converted",
-                      "Cancelled",
-                      "Client did not join",
-                      "Postponed",
-                    ].map((status) => ({
-                      value: status,
-                      label: status,
-                    }))}
-                    value={filters.booking_status.map((status) => ({
-                      value: status,
-                      label: status,
-                    }))}
-                    onChange={(selected) =>
-                      setFilters({
-                        ...filters,
-                        booking_status: selected.map((option) => option.value),
-                      })
-                    }
-                    placeholder="Select booking statuses"
-                    className="text-sm"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Keyword Search
-                  </label>
-                  <input
-                    type="text"
-                    className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
-                    placeholder="Search Name or Email"
-                    value={filters.keyword_search}
-                    onChange={(e) =>
-                      setFilters({ ...filters, keyword_search: e.target.value })
-                    }
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Filter Type
-                  </label>
-                  <select
-                    className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
-                    value={filters.filter_type}
-                    onChange={(e) =>
-                      setFilters({ ...filters, filter_type: e.target.value })
-                    }
-                  >
-                    <option value="Booking">Booking Date</option>
-                    <option value="Created">Created Date</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Date Range
-                  </label>
-                  <DatePicker
-                    className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
-                    selectsRange
-                    startDate={filters.date_range[0]}
-                    endDate={filters.date_range[1]}
-                    onChange={(update) =>
-                      setFilters({ ...filters, date_range: update })
-                    }
-                    isClearable
-                    placeholderText="Select date range"
-                  />
-                </div>
-              </div>
-
-              <div className="mt-4 text-right">
-                <button
-                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm"
-                  onClick={handleApplyFilters}
-                >
-                  Apply Filters
-                </button>
-              </div>
-           </motion.div>
-          )}
-        </AnimatePresence>
-
-          <div className="p-6">
-            {isLoading ? (
-              <SkeletonLoader
-                rows={6}
-                columns={[
-                  "Client",
-                  "Consultant",
-                  "Added By",
-                  "Booking Information",
-                  "Call Type",
-                  "Status",
-                ]}
-              />
-            ) : (
-              <div className="overflow-hidden">
-                <DataTable
-                  ref={tableRef}
-                  data={bookings}
-                  columns={columns}
-                  className="display table table-auto w-full text-[13px]"
-                  options={tableOptions}
-                />
-              </div>
-            )}
-          </div>
-        </div>
         </div>
       </div>
       <AnimatePresence>

@@ -88,12 +88,12 @@ const ChatBox = ({ bookingId, user, messageData, onSend }) => {
                 placeholder="Type your message..."
                 className="flex-1 border border-gray-300 rounded p-2 text-sm resize-none"
               />
-              <button
+              {/* <button
                 onClick={handleSend}
                 className="bg-blue-600 text-white px-4 py-2 rounded"
               >
                 Send
-              </button>
+              </button> */}
             </div>
           ) : (
             <div className="text-sm text-red-600">
