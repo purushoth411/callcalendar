@@ -10,7 +10,7 @@ import {
 } from "../../helpers/CommonHelper.jsx";
 import SkeletonLoader from "../../components/SkeletonLoader.jsx";
 import AddBooking from "./AddBooking.jsx";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence,motion } from "framer-motion";
 import StatusUpdate from "./StatusUpdate.jsx"; //
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -441,6 +441,7 @@ export default function Bookings() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-[1250px] mx-auto py-5">
+        <div className="p-3 bg-gray-100 rounded shadow text-[13px]">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-bold text-gray-800">
             Booking Management
@@ -461,7 +462,9 @@ export default function Bookings() {
             <h2 className="text-lg font-semibold text-gray-800">
               All Bookings
             </h2>
-            {/* <button
+           
+            <div className="flex items-center space-x-2">
+               <button
             onClick={() => {
               setShowFilters(!showFilters);
               if (!showFilters) fetchConsultantsAndCrms();
@@ -469,8 +472,7 @@ export default function Bookings() {
             className="bg-gray-500 text-white px-2 py-1 rounded text-[11px] hover:bg-gray-600"
           >
             {showFilters ? "Hide Filters" : "Show Filters"}
-          </button> */}
-            <div className="flex items-center space-x-2">
+          </button>
               <span className="text-sm text-gray-500">Total:</span>
               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                 {isLoading ? "..." : bookings.length}
@@ -480,12 +482,13 @@ export default function Bookings() {
 
           <AnimatePresence>
           {showFilters && (
-            <div
-              className="bg-white p-4 rounded-lg shadow mb-6 border"
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-            >
+           <motion.div
+      className="bg-white p-4 rounded-lg shadow mb-6 border"
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.5, ease: "easeInOut" }}
+    >
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -688,7 +691,7 @@ export default function Bookings() {
                   Apply Filters
                 </button>
               </div>
-            </div>
+           </motion.div>
           )}
         </AnimatePresence>
 
@@ -717,6 +720,7 @@ export default function Bookings() {
               </div>
             )}
           </div>
+        </div>
         </div>
       </div>
       <AnimatePresence>

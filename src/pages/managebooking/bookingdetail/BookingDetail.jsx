@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, ArrowDown, Eye, ArrowRight, User, Mail, Trash2 } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useAuth } from '../../utils/idb';
+import { useAuth } from '../../../utils/idb';
 import toast from 'react-hot-toast';
 
 const BookingDetail = () => {
@@ -63,6 +63,38 @@ const fetchBookingById = async (bookingId) => {
     }
   };
 
+  const handleDeleteCallRequest = async () => {
+  if (!window.confirm('Are you sure you want to delete this call request?')) {
+    return;
+  }
+
+  try {
+    const response = await fetch(`http://localhost:5000/bookings/delete`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ bookingId }),
+    });
+
+    const result = await response.json();
+
+   if (result.status) {
+  toast.success('Call request deleted successfully');
+
+  // Delay navigation by 2 seconds (2000 ms)
+  setTimeout(() => {
+    navigate('/bookings');
+  }, 2000);
+}else {
+      toast.error('Failed to delete call request' );
+    }
+  } catch (error) {
+    console.error('Delete error:', error);
+    toast.error('Server error during deletion' );
+  }
+};
+
   // Handle status update
   const handleStatusUpdate = async () => {
     if (!statusByCrm) {
@@ -99,53 +131,36 @@ const fetchBookingById = async (bookingId) => {
 
   // Handle delete call request
 
-const handleDeleteCallRequest = async () => {
-  if (!window.confirm('Are you sure you want to delete this call request?')) {
-    return;
-  }
 
-  try {
-    const response = await fetch(`http://localhost:5000/bookings/delete`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ bookingId }),
-    });
-
-    const result = await response.json();
-
-   if (result.status) {
-  toast.success('Call request deleted successfully');
-
-  // Delay navigation by 2 seconds (2000 ms)
-  setTimeout(() => {
-    navigate('/bookings');
-  }, 2000);
-}else {
-      toast.error('Failed to delete call request' );
-    }
-  } catch (error) {
-    console.error('Delete error:', error);
-    toast.error('Server error during deletion' );
-  }
-};
 
 
   // Handle set as converted
   const handleSetAsConverted = async () => {
     if (!rcCode || !projectId) {
-      setAlert({ type: 'danger', message: 'Please enter RC Code and Project ID' });
+      toast.error('Please enter RC Code and Project ID' );
       return;
     }
 
     try {
-      // API call would go here
-      setAlert({ type: 'success', message: 'Marked as converted successfully' });
+      const response=fetch(`http://localhost:5000/api/bookings/setAsConverted`,{
+        method:"POST",
+        headers:{
+          "Content-type":"application/json"
+        },
+        body:JSON.stringify({
+          bookingId,
+          rcCode,
+          projectId,
+          user,
+        })
+      })
+    
+      toast.success('Marked as converted successfully' );
       setBookingData(prev => ({ ...prev, fld_converted_sts: 'Yes' }));
       setShowConvertForm(false);
+      canSetAsConverted=false;
     } catch (error) {
-      setAlert({ type: 'danger', message: 'Failed to mark as converted' });
+      toast.error('Failed to mark as converted' );
     }
   };
 

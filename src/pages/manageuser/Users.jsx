@@ -370,6 +370,7 @@ export default function Users() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-[1250px] mx-auto py-5">
+        <div className="p-3 bg-gray-100 rounded shadow text-[13px]">
         {/* Header */}
         <div className="mb-8">
           <h4 className="text-xl font-bold text-gray-900">User Management</h4>
@@ -416,12 +417,12 @@ export default function Users() {
                 {userTabs.find((tab) => tab.key === selectedUserType)?.label}{" "}
                 Users
               </h2>
-              <div className="flex items-center space-x-2">
+              {/* <div className="flex items-center space-x-2">
                 <span className="text-sm text-gray-500">Total:</span>
                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                   {isLoading ? "..." : filteredUsers.length}
                 </span>
-              </div>
+              </div> */}
               <div className="flex justify-end mb-4 gap-2">
                 {selectedUserType === "EXECUTIVE" && (
                   <button
@@ -547,6 +548,7 @@ export default function Users() {
             />
           )}
         </AnimatePresence>
+        </div>
       </div>
 
       {/* Custom Styles */}

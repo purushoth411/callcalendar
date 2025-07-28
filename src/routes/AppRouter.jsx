@@ -11,7 +11,7 @@ import DomainPref from "../pages/Domainpref";
 import Teams from "../pages/Teams";
 import Bookings from "../pages/managebooking/Bookings";
 import ScheduleCall from "../pages/managebooking/ScheduleCall";
-import BookingDetail from "../pages/managebooking/BookingDetail";
+import BookingDetail from "../pages/managebooking/bookingdetail/BookingDetail";
 
 
 
@@ -31,6 +31,7 @@ export default function AppRouter() {
             <Route path="/bookings" element={<Bookings />} />
             <Route path="/schedulecall/:id" element={<ScheduleCall />} />
             <Route path="/admin/booking_detail/:bookingId" element={<BookingDetail />} />
+             <Route path="/admin/booking_detail/:bookingId/convert" element={<BookingDetail />} />
             <Route path="/domainpref" element={<DomainPref />} />
           </Route>
         </Route>
