@@ -4,169 +4,93 @@ import { useAuth } from "../utils/idb";
 
 function Dashboard() {
   const { user } = useAuth();
-  const [allConsultants, setAllConsultants] = useState([]);
-  const [selectedConsultant, setSelectedConsultant] = useState("");
-  const [selectedCRM, setSelectedCRM] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState("");
-  const [activeCrms, setActiveCrms] = useState([]);
-  const [inactiveCrms, setInactiveCrms] = useState([]);
-  const [callStats, setCallStats] = useState(null); // 👈 for statistics
+  const [callCounts, setCallCounts] = useState({
+    Accept: 0,
+    Reject: 0,
+    Cancelled: 0,
+    Rescheduled: 0,
+    Completed: 0,
+  });
+  const [loading, setLoading] = useState(false);
 
-  const fetchAdmins = async (type, status, setter) => {
+  const statuses = ["Accept", "Reject", "Cancelled", "Rescheduled", "Completed"];
+
+  const fetchParticularStatus = async (crmId, status) => {
     try {
-      const response = await fetch("http://localhost:5000/api/helpers/getAdmin", {
+      const response = await fetch("http://localhost:5000/api/dashboard/getparticularstatuscalls", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type, status }),
+        body: JSON.stringify({ crm_id: crmId, status }),
       });
       const result = await response.json();
-      if (result?.status && Array.isArray(result.results)) {
-        const sorted = result.results.sort((a, b) =>
-          a.fld_name.localeCompare(b.fld_name)
-        );
-        setter(sorted);
-      } else {
-        toast.error(`Failed to fetch ${type} (${status})`);
-      }
+      return result.status && Array.isArray(result.data) ? result.data.length : 0;
     } catch (error) {
-      console.error(`Error fetching ${type} (${status})`, error);
-      toast.error("Something went wrong");
+      console.error("Error fetching calls for status:", status, error);
+      return 0;
     }
   };
 
-  useEffect(() => {
-    fetchAdmins("BOTH", "Active", setAllConsultants);
-    fetchAdmins("EXECUTIVE", "Active", setActiveCrms);
-    fetchAdmins("EXECUTIVE", "Inactive", setInactiveCrms);
-  }, []);
-
-  const fetchCallStats = async () => {
+  const fetchAllStatuses = async () => {
+    setLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/api/dashboard/getcall_statistics", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          session_user_id: user.id,
-          session_user_type: user.fld_admin_type,
-          consultantid: selectedConsultant,
-          crm_id: selectedCRM,
-          filter_type: ""
-        })
-      });
+      const counts = {};
+      const crmId = user?.fld_admin_type === "EXECUTIVE" ? user?.id : "";
 
-      const data = await res.json();
-      setCallStats(data); // 👈 Save stats
-    } catch (e) {
-      console.log(e);
+      for (let status of statuses) {
+        counts[status] = await fetchParticularStatus(crmId, status);
+      }
+      setCallCounts(counts);
+    } catch (error) {
+      toast.error("Failed to fetch call statuses");
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchCallStats();
-  }, [selectedConsultant, selectedCRM]);
+    if (user?.fld_admin_type === "SUPERADMIN" || user?.fld_admin_type === "EXECUTIVE") {
+      fetchAllStatuses();
+    }
+  }, [user]);
 
-  const renderCRMSelect = (list) => (
-    <div className="mb-4">
-      <label htmlFor="CRM" className="block text-sm font-medium text-gray-700 mb-1">
-        Select CRM
-      </label>
-      <select
-        id="CRM"
-        value={selectedCRM}
-        onChange={(e) => setSelectedCRM(e.target.value)}
-        className="w-full border border-gray-300 rounded px-3 py-2"
-      >
-        <option value="">-- Select CRM --</option>
-        {list.map((crm) => (
-          <option key={crm.id} value={crm.id}>
-            {crm.fld_name}
-          </option>
-        ))}
-      </select>
-    </div>
-  );
+  const submitAndRedirect = (status) => {
+    console.log("Redirect to", status);
+    // e.g. navigate(`/calls/${status.toLowerCase()}`);
+  };
 
   return (
-    <div className="p-6 max-w-5xl mx-auto">
-      <div className="bg-white shadow-lg rounded-lg p-6 border border-gray-200">
-        <h2 className="text-xl font-semibold mb-6 text-gray-800">📞 Call Statistics</h2>
-
-        {/* Dropdowns */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-          {/* Consultant Select */}
-          <div>
-            <label htmlFor="consultant" className="block text-sm font-medium text-gray-700 mb-1">
-              Select Consultant
-            </label>
-            <select
-              id="consultant"
-              value={selectedConsultant}
-              onChange={(e) => setSelectedConsultant(e.target.value)}
-              className="w-full border border-gray-300 rounded px-3 py-2"
+    <div className="p-4 max-w-6xl mx-auto">
+      {(user?.fld_admin_type === "SUPERADMIN" || user?.fld_admin_type === "EXECUTIVE") && (
+        <div className="w-full">
+          <div className="flex items-center justify-between mb-4">
+            <h4 className="text-lg font-semibold">Call Status Summary</h4>
+            <button
+              onClick={fetchAllStatuses}
+              className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-sm"
+              disabled={loading}
             >
-              <option value="">-- Select Consultant --</option>
-              {allConsultants.map((consultant) => (
-                <option key={consultant.id} value={consultant.id}>
-                  {consultant.fld_name}
-                </option>
+              {loading ? "Refreshing..." : "Refresh"}
+            </button>
+          </div>
+
+          
+            <div className="flex flex-wrap gap-2 justify-center">
+              {statuses.map((status) => (
+                <div
+                  key={status}
+                  className="bg-blue-50 hover:bg-blue-100 border border-blue-200 cursor-pointer text-center p-3 rounded shadow w-[15%] "
+                  onClick={() => submitAndRedirect(status)}
+                >
+                  <div className="font-semibold text-blue-700">{status}</div>
+                  <div className="mt-1 text-xl font-bold  flex justify-center items-center">
+                    {loading ? (<div className="w-5 h-5 animate-pulse bg-orange-500 rounded"></div>) :  <p className="bg-orange-500 text-white px-2 py-1 rounded text-sm">{callCounts[status]}</p>}
+                  </div>
+                </div>
               ))}
-            </select>
-          </div>
-
-          {/* Status Select */}
-          <div>
-            <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">
-              Select Status
-            </label>
-            <select
-              id="status"
-              value={selectedStatus}
-              onChange={(e) => {
-                setSelectedStatus(e.target.value);
-                setSelectedCRM(""); // reset CRM when status changes
-              }}
-              className="w-full border border-gray-300 rounded px-3 py-2"
-            >
-              <option value="">-- Select Status --</option>
-              <option value="Active">Active</option>
-              <option value="Inactive">Inactive</option>
-            </select>
-          </div>
-
-          {/* Conditional CRM Select */}
-          {selectedStatus && (
-            <div>
-              {selectedStatus === "Active" && renderCRMSelect(activeCrms)}
-              {selectedStatus === "Inactive" && renderCRMSelect(inactiveCrms)}
             </div>
-          )}
+          
         </div>
-
-        {/* Statistics Cards */}
-        {callStats && (
-          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-            <div className="bg-blue-100 border border-blue-300 rounded p-4 text-center shadow-sm">
-              <h3 className="text-sm font-medium text-blue-700 mb-1">Total Bookings</h3>
-              <p className="text-2xl font-semibold text-blue-900">{callStats.totalbooking}</p>
-            </div>
-
-            <div className="bg-yellow-100 border border-yellow-300 rounded p-4 text-center shadow-sm">
-              <h3 className="text-sm font-medium text-yellow-700 mb-1">Total Pre-sales</h3>
-              <p className="text-2xl font-semibold text-yellow-900">{callStats.totalpresales}</p>
-            </div>
-
-            <div className="bg-green-100 border border-green-300 rounded p-4 text-center shadow-sm">
-              <h3 className="text-sm font-medium text-green-700 mb-1">Conversion Rate</h3>
-              <p className="text-2xl font-semibold text-green-900">{callStats.conversion}%</p>
-            </div>
-
-            <div className="bg-purple-100 border border-purple-300 rounded p-4 text-center shadow-sm">
-              <h3 className="text-sm font-medium text-purple-700 mb-1">Total Post-sales</h3>
-              <p className="text-2xl font-semibold text-purple-900">{callStats.totalpostsales}</p>
-            </div>
-          </div>
-        )}
-      </div>
+      )}
     </div>
   );
 }
