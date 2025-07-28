@@ -14,6 +14,7 @@ import toast from "react-hot-toast";
 import ViewCommentModal from "./ViewCommentModal";
 import SetAsConvertedModal from "./SetAsConvertedModal";
 import ChatBox from "./ChatBox";
+import ReassignModal from "./ReassignModal";
 
 const BookingDetail = () => {
   const navigate = useNavigate();
@@ -31,8 +32,8 @@ const BookingDetail = () => {
   const [showConvertModal, setShowConvertModal] = useState(false);
   const [messageData, setMessageData] = useState([]);
   const [isMsgSending, setIsMsgSending] = useState(false);
-  const [otherBookings,setOtherBookings]=useState([]);
-  
+  const [otherBookings, setOtherBookings] = useState([]);
+  const [isReassigning, setIsReassigning] = useState(false);
 
   useEffect(() => {
     fetchBookingById(bookingId);
@@ -216,15 +217,15 @@ const BookingDetail = () => {
     }
   };
 
-const handleStatusUpdate = async () => {
-  if (!statusByCrm) {
-    toast.error("Please select a status");
-    return;
-  }
+  const handleStatusUpdate = async () => {
+    if (!statusByCrm) {
+      toast.error("Please select a status");
+      return;
+    }
 
-  try {
-    setIsSubmitting(true);
-    const response = await fetch(
+    try {
+      setIsSubmitting(true);
+      const response = await fetch(
         "http://localhost:5000/api/bookings/updateStatusByCrm",
         {
           method: "POST",
@@ -234,91 +235,85 @@ const handleStatusUpdate = async () => {
           body: JSON.stringify({
             bookingid: bookingId,
             statusByCrm: statusByCrm,
-            
           }),
         }
       );
 
       const data = await response.json();
       if (data.status) {
-       toast.success("Status updated successfully");
-        
-         setBookingData((prev) => ({
-      ...prev,
-      statusByCrm: statusByCrm,
-    }));
+        toast.success("Status updated successfully");
+
+        setBookingData((prev) => ({
+          ...prev,
+          statusByCrm: statusByCrm,
+        }));
       } else {
         toast.error("Failed to update status");
       }
-   
-
-    
-  } catch (error) {
-    console.error("Status update failed:", error);
-    toast.error("Failed to update status");
-  }finally{
-    setIsSubmitting(false);
-  }
-};
-
-const getOtherBookings = async () => {
-  try {
-    const queryParams = new URLSearchParams({
-     
-      consultantId: bookingData.fld_consultantid,
-      bookingDate: bookingData.fld_booking_date,
-      bookingSlot: bookingData.fld_booking_slot
-    });
-
-    const response = await fetch(
-      `http://localhost:5000/api/bookings/getBookingData?${queryParams}`
-    );
-
-    const result = await response.json();
-
-    if (result.success) {
-      setOtherBookings(result.data);
-    } else {
-      console.error("Failed to fetch other bookings");
+    } catch (error) {
+      console.error("Status update failed:", error);
+      toast.error("Failed to update status");
+    } finally {
+      setIsSubmitting(false);
     }
-  } catch (err) {
-    console.error("Error fetching other bookings:", err);
-  }
-};
+  };
 
+  const getOtherBookings = async () => {
+    try {
+      const queryParams = new URLSearchParams({
+        consultantId: bookingData.fld_consultantid,
+        bookingDate: bookingData.fld_booking_date,
+        bookingSlot: bookingData.fld_booking_slot,
+      });
 
+      const response = await fetch(
+        `http://localhost:5000/api/bookings/getBookingData?${queryParams}`
+      );
 
+      const result = await response.json();
 
-
+      if (result.success) {
+        setOtherBookings(result.data);
+      } else {
+        console.error("Failed to fetch other bookings");
+      }
+    } catch (err) {
+      console.error("Error fetching other bookings:", err);
+    }
+  };
 
   // Handle mark as confirmed
   const handleMarkAsConfirmed = async () => {
     if (
-      !window.confirm("Are You Sure! You Want To Mark as Confirmed by Client")
+      !window.confirm(
+        "Are you sure you want to mark this as confirmed by the client?"
+      )
     ) {
       return;
     }
 
     try {
-      const response=await fetch(`http://localhost:5000/api/bookings/markAsConfirmByClient`,{
-        method:"POST",
-        headers:{
-          "Content-type":"application/json"
-        },
-        body:JSON.stringify({
-          bookingId
-        })
-      })
-      const result =await response.json();
-      if(result.status){
-toast.success("Marked as confirmed by client" );
-      }else{
+      const response = await fetch(
+        `http://localhost:5000/api/bookings/markAsConfirmByClient`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ bookingId }),
+        }
+      );
 
+      const result = await response.json();
+
+      if (result.status) {
+        toast.success("Marked as confirmed by client");
+      } else {
+        toast.error(result.message || "Failed to mark as confirmed");
       }
-      
-     
     } catch (error) {
-      
+      console.error("Error confirming booking:", error);
+      toast.error("Something went wrong while marking as confirmed");
     }
   };
 
@@ -327,26 +322,50 @@ toast.success("Marked as confirmed by client" );
   // Handle set as converted
 
   // Handle reassign comment
-  const handleReassignComment = async (e) => {
-    e.preventDefault();
+  const handleReassignComment = async () => {
     if (!reassignComment.trim()) {
-      setAlert({ type: "danger", message: "Please enter a comment" });
+      toast.error("Please enter a comment");
       return;
     }
 
     try {
-      // API call would go here
-      setAlert({
-        type: "success",
-        message: "Reassign request submitted successfully",
-      });
-      setShowReassignForm(false);
-      setReassignComment("");
+      setIsReassigning(true); // optional: for disabling button or showing spinner
+
+      const response = await fetch(
+        "http://localhost:5000/api/bookings/reassignComment",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            bookingid: bookingId,
+            reassign_comment: reassignComment,
+            user: user,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok && data.status) {
+        toast.success(
+          data.message || "Reassign request submitted successfully"
+        );
+        setShowReassignForm(false);
+        setReassignComment("");
+        setBookingData((prev) => ({
+          ...prev,
+          fld_call_request_sts: "Reassign Request",
+          fld_reassign_comment: reassignComment,
+        }));
+      } else {
+        toast.error(data.message || "Failed to submit reassign request");
+      }
     } catch (error) {
-      setAlert({
-        type: "danger",
-        message: "Failed to submit reassign request",
-      });
+      console.error("Reassign comment error:", error);
+    } finally {
+      setIsReassigning(false); // optional
     }
   };
 
@@ -368,30 +387,26 @@ toast.success("Marked as confirmed by client" );
     bookingData.fld_consultantid < 1 &&
     bookingData.fld_call_related_to !== "I_am_not_sure";
 
-const hasOtherConfirmedBooking = (otherBookings || []).some(
-  (row) =>
-    row.id !== bookingData.id &&
-    row.fld_call_confirmation_status === "Call Confirmed by Client" &&
-    row.fld_consultation_sts === "Accept"
-);
-
-const canMarkAsConfirmed =
-  user.fld_admin_type === "EXECUTIVE" &&
-  (
-    (
-      bookingData.fld_call_confirmation_status === "Call Confirmation Pending at Client End" &&
-      (bookingData.fld_call_request_sts !== "Rescheduled" || bookingData.fld_call_request_sts === "Call Rescheduled") &&
-      !hasOtherConfirmedBooking &&
-      bookingData.fld_call_related_to !== "I_am_not_sure"
-    ) ||
-    (
-      bookingData.fld_booking_date &&
-      bookingData.fld_booking_slot &&
-      bookingData.fld_call_related_to === "I_am_not_sure" &&
-      bookingData.fld_call_external_assign === "Yes" &&
-      bookingData.fld_call_request_sts === "Accept"
-    )
+  const hasOtherConfirmedBooking = (otherBookings || []).some(
+    (row) =>
+      row.id !== bookingData.id &&
+      row.fld_call_confirmation_status === "Call Confirmed by Client" &&
+      row.fld_consultation_sts === "Accept"
   );
+
+  const canMarkAsConfirmed =
+    user.fld_admin_type === "EXECUTIVE" &&
+    ((bookingData.fld_call_confirmation_status ===
+      "Call Confirmation Pending at Client End" &&
+      (bookingData.fld_call_request_sts !== "Rescheduled" ||
+        bookingData.fld_call_request_sts === "Call Rescheduled") &&
+      !hasOtherConfirmedBooking &&
+      bookingData.fld_call_related_to !== "I_am_not_sure") ||
+      (bookingData.fld_booking_date &&
+        bookingData.fld_booking_slot &&
+        bookingData.fld_call_related_to === "I_am_not_sure" &&
+        bookingData.fld_call_external_assign === "Yes" &&
+        bookingData.fld_call_request_sts === "Accept"));
 
   const canUpdateStatus =
     (user.fld_admin_type === "SUBADMIN" ||
@@ -399,7 +414,7 @@ const canMarkAsConfirmed =
     !bookingData.statusByCrm &&
     bookingData.fld_call_request_sts === "Accept";
 
-  const canSetAsConverted =
+  var canSetAsConverted =
     user.fld_admin_type === "EXECUTIVE" &&
     bookingData.fld_call_request_sts === "Completed" &&
     bookingData.fld_converted_sts === "No" &&
@@ -488,16 +503,43 @@ const canMarkAsConfirmed =
 
                 {/* Back Button */}
                 {/* Mark as Confirmed Button */}
-            {canMarkAsConfirmed && (
-              <div className="flex justify-end">
-                <button
-                  onClick={handleMarkAsConfirmed}
-                  className="bg-blue-500 hover:bg-blue-600 text-white px-2 rounded-md transition-colors"
-                >
-                  Mark as Confirmed by Client
-                </button>
-              </div>
-            )}
+                {canMarkAsConfirmed && (
+                  <div className="flex justify-end">
+                    <button
+                      onClick={handleMarkAsConfirmed}
+                      className="bg-blue-500 hover:bg-blue-600 text-white px-2 rounded-md transition-colors"
+                    >
+                      Mark as Confirmed by Client
+                    </button>
+                  </div>
+                )}
+
+
+                
+                 {/* Reassign Comment Form */}
+            {user.fld_admin_type === "EXECUTIVE" &&
+              bookingData.fld_call_request_sts === "Consultant Assigned" &&
+              bookingData.fld_consultant_approve_sts === "Yes" && (
+                <>
+                  <div className=" flex justify-end">
+                    <button
+                      onClick={() => setShowReassignForm(true)}
+                      className="bg-yellow-500 hover:bg-yellow-600 text-white px-2 rounded-md transition-colors"
+                    >
+                      Request for reassign
+                    </button>
+                  </div>
+
+                  <ReassignModal
+                    show={showReassignForm}
+                    onClose={() => setShowReassignForm(false)}
+                    comment={reassignComment}
+                    setComment={setReassignComment}
+                    onSubmit={handleReassignComment}
+                    isReassigning={isReassigning}
+                  />
+                </>
+              )}
                 <button
                   onClick={() => navigate(-1)}
                   className="bg-gray-500 hover:bg-gray-600 text-white px-2 rounded-md flex items-center space-x-2 transition-colors"
@@ -524,55 +566,20 @@ const canMarkAsConfirmed =
                   </select>
                   <button
                     onClick={handleStatusUpdate}
-                    className={`${isSubmitting ? "bg-blue-300 hover:bg-blue-400":"bg-blue-500 hover:bg-blue-600"} text-white px-6 py-2 rounded-md transition-colors`}
+                    className={`${
+                      isSubmitting
+                        ? "bg-blue-300 hover:bg-blue-400"
+                        : "bg-blue-500 hover:bg-blue-600"
+                    } text-white px-6 py-2 rounded-md transition-colors`}
                     disabled={isSubmitting}
                   >
-                    {isSubmitting ? "Submitting..":"Submit"}
+                    {isSubmitting ? "Submitting.." : "Submit"}
                   </button>
                 </div>
               </div>
             )}
 
-            
-
-            {/* Reassign Comment Form */}
-            {user.fld_admin_type === "EXECUTIVE" &&
-              bookingData.fld_call_request_sts === "Consultant Assigned" && (
-                <>
-                  <div className="mb-4 flex justify-end">
-                    <button
-                      onClick={() => setShowReassignForm(!showReassignForm)}
-                      className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-md transition-colors"
-                    >
-                      Request for reassign
-                    </button>
-                  </div>
-
-                  {showReassignForm && (
-                    <form
-                      onSubmit={handleReassignComment}
-                      className="mb-6 p-4 bg-gray-50 rounded-lg"
-                    >
-                      <div className="flex items-center space-x-4">
-                        <textarea
-                          value={reassignComment}
-                          onChange={(e) => setReassignComment(e.target.value)}
-                          placeholder="Add Comments"
-                          className="flex-1 border border-gray-300 rounded px-3 py-2 min-h-20"
-                          required
-                        />
-                        <button
-                          type="submit"
-                          className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-md flex items-center space-x-2 transition-colors"
-                        >
-                          <ArrowRight size={16} />
-                          <span>Update</span>
-                        </button>
-                      </div>
-                    </form>
-                  )}
-                </>
-              )}
+           
 
             {/* Consultant Information */}
             {(user.fld_admin_type === "SUPERADMIN" ||
