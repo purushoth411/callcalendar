@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import "./calendar.css"; // For CSS styles
+import "./Calendar.css"; // For CSS styles
 
 const CustomCalendar = ({ consultantSettings, onDateClick }) => {
   const today = new Date();
