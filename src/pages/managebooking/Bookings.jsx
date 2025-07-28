@@ -38,6 +38,13 @@ export default function Bookings() {
   const [selectedConsultant, setSelectedConsultant] = useState(null);
   const [consultantType, setConsultantType] = useState("ACTIVE");
   const { dashboard_status } = useParams();
+
+  const {bookingid} = useParams();
+
+  useEffect(()=>{
+    setShowForm(true);
+  },[bookingid]);
+
   const navigate = useNavigate();
 
   const [filters, setFilters] = useState({
@@ -230,7 +237,10 @@ export default function Bookings() {
       const result = await response.json();
       if (result.status) {
         setBookings(result.data);
-        navigate("/bookings");
+        if(dashboard_status){
+          
+          navigate("/bookings");
+        }
       } else {
         setBookings([]);
       }
@@ -740,6 +750,7 @@ export default function Bookings() {
               user={user}
               fetchAllBookings={fetchAllBookings}
               setShowForm={setShowForm}
+              bookingId={bookingid}
             />
           </div>
         )}

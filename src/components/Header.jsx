@@ -1,7 +1,7 @@
 import { useAuth } from "../utils/idb.jsx";
 import { useNavigate, NavLink } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
-import { LogOut, CircleUserRound, Bell,LayoutDashboard, BarChart2, Users2, Globe2,CalendarCheckIcon } from "lucide-react";
+import { LogOut, CircleUserRound, Bell,LayoutDashboard, BarChart2, Users2, Globe2,CalendarCheckIcon, Phone } from "lucide-react";
 import { AnimatePresence,motion } from "framer-motion";
 import logo from '../assets/images/callcalendar-logo.png';
 
@@ -135,6 +135,19 @@ export default function Header() {
       <CalendarCheckIcon className="mr-1" size={16} />
       Bookings
     </NavLink>
+    {(user?.fld_admin_type == "SUPERADMIN" || user?.fld_admin_type == "EXECUTIVE") && (
+      <NavLink
+      to="/call_request_from_rc"
+      className={({ isActive }) =>
+        isActive
+          ? "flex items-center text-white underline font-semibold"
+          : "flex items-center text-white hover:text-gray-300"
+      }
+    >
+      <Phone className="mr-1" size={16} />
+      Call Request From RC
+    </NavLink>
+    )}
      {/* <NavLink
       to="/domainpref"
       className={({ isActive }) =>
