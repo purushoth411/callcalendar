@@ -489,10 +489,10 @@ const canMarkAsConfirmed =
                 {/* Back Button */}
                 {/* Mark as Confirmed Button */}
             {canMarkAsConfirmed && (
-              <div className="mb-6 flex justify-end">
+              <div className="flex justify-end">
                 <button
                   onClick={handleMarkAsConfirmed}
-                  className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-md transition-colors"
+                  className="bg-blue-500 hover:bg-blue-600 text-white px-2 rounded-md transition-colors"
                 >
                   Mark as Confirmed by Client
                 </button>
