@@ -112,7 +112,18 @@ export default function AddBooking({
               sale_type: "Postsales",
               client_id: result.data?.student_code || "",
               projectid: result.data?.project_id || "",
+              project_milestone : result.data?.milestone_id || "",
+              project_milestone_name : result.data?.milestone_title || "",
+              call_regarding : result.data?.call_regarding || "",
+              
             }));
+
+            const consultantsData = await fetchAllConsultants();
+            let filteredConsultants = consultantsData.results || [];
+
+
+            // Set consultants to dropdown
+            setConsultants(filteredConsultants);
           } else {
             toast.error(result.message || "No Calls Found");
           }
@@ -127,6 +138,10 @@ export default function AddBooking({
       fetchCallRequestData();
     }
   }, [decodedBookingId]);
+
+  useEffect(()=>{
+    console.log(consultants)
+  },[consultants]);
 
   useEffect(() => {
     const fetchClientDetails = async () => {
@@ -211,8 +226,8 @@ export default function AddBooking({
               email: data.data.email || "",
               phone: data.data.phone || "",
               client_plan_id: data.data.plan_type || "",
-              client_plan_name: plan ? plan.plan : "",
-              allowedCalls: plan ? plan.allowedCalls : "",
+              client_plan_name: plan ? plan.plan : (data.data.plan_type == "1" ? "Basic" : data.data.plan_type == "2" ? "Standard" : "Advanced" ),
+              allowedCalls: plan ? plan.allowedCalls : (data.data.plan_type == "1" ? "1" : data.data.plan_type == "2" ? "2" : "3" ),
             };
             setFormData((prev) => ({
               ...prev,
@@ -520,6 +535,7 @@ export default function AddBooking({
       await handlePostsalesChanges();
     } else {
       setConsultants([]);
+      console.log("542")
       await handlePresalesChanges();
     }
   };
@@ -565,36 +581,50 @@ export default function AddBooking({
     }));
   };
 
+  const [submitting, setSubmitting] = useState(false);
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitting(true);
 
-    const response = await fetch(
-      "http://localhost:5000/api/bookings/addBooking",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+    try {
+      const response = await fetch(
+        "http://localhost:5000/api/bookings/addBooking",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        }
+      );
+
+      const result = await response.json();
+      if (
+        result.status &&
+        result.message === "Call Request Added Successfully"
+      ) {
+        toast.success(result.message);
+        fetchAllBookings();
+        setShowForm(false);
+      } else if (
+        result.status &&
+        result.message === "Add Call Request Already Sent!"
+      ) {
+        toast.error(result.message);
+        fetchAllBookings();
+        setShowForm(false);
+      } else if (
+        !result.status &&
+        result.message === "Booking already exists"
+      ) {
+        toast.error(result.message);
+        fetchAllBookings();
+        setShowForm(false);
+      } else {
+        toast.error("Something went wrong.");
       }
-    );
-
-    const result = await response.json();
-    if (result.status && result.message === "Call Request Added Successfully") {
-      toast.success(result.message);
-      fetchAllBookings();
-      setShowForm(false);
-    } else if (
-      result.status &&
-      result.message === "Add Call Request Already Sent!"
-    ) {
-      toast.error(result.message);
-      fetchAllBookings();
-      setShowForm(false);
-    } else if (!result.status && result.message === "Booking already exists") {
-      toast.error(result.message);
-      fetchAllBookings();
-      setShowForm(false);
-    } else {
-      toast.error("Something went wrong.");
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -605,8 +635,31 @@ export default function AddBooking({
 
   useEffect(() => {
     console.log("Form data updated:", formData);
-    console.log("consultantOprtions:", consultantOptions);
   }, [formData]);
+
+  useEffect(() => {
+    const fetchMileStones = async () => {
+      if(!formData.projectid){
+        return;
+      }
+      try {
+        const res = await fetch(
+          `http://localhost:5000/api/bookings/getProjectMilestones/${formData.projectid}`
+        );
+        const data = await res.json();
+
+        if (data.status && Array.isArray(data.data)) {
+          setMilestones(data.data);
+        } else {
+          setMilestones([]);
+        }
+      } catch (error) {
+        console.error("Error fetching milestones", error);
+        setMilestones([]);
+      }
+    };
+    fetchMileStones()
+  }, [formData.projectid]);
 
   return (
     <motion.div
@@ -737,21 +790,6 @@ export default function AddBooking({
                   }));
 
                   // Fetch milestones for the selected project
-                  try {
-                    const res = await fetch(
-                      `http://localhost:5000/api/bookings/getProjectMilestones/${selectedProjectId}`
-                    );
-                    const data = await res.json();
-
-                    if (data.status && Array.isArray(data.data)) {
-                      setMilestones(data.data);
-                    } else {
-                      setMilestones([]);
-                    }
-                  } catch (error) {
-                    console.error("Error fetching milestones", error);
-                    setMilestones([]);
-                  }
                 }}
                 className="border border-gray-300 rounded px-2 py-1 text-sm w-full"
               >
@@ -1146,9 +1184,9 @@ export default function AddBooking({
                 ? "opacity-50 cursor-not-allowed"
                 : "hover:bg-blue-700"
             }`}
-            disabled={submitDisabled}
+            disabled={submitDisabled || submitting}
           >
-            {submitButtonText}
+            {submitting ? "Submitting..." : submitButtonText}
           </button>
         </div>
       </div>

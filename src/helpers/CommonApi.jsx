@@ -1,6 +1,6 @@
 export const fetchAllConsultants = async () => {
   try {
-    const response = await fetch("http://localhost:5000/elpers/getAllActiveConsultants");
+    const response = await fetch("http://localhost:5000/api/helpers/getAllActiveConsultants");
     if (!response.ok) throw new Error("Failed to fetch consultants");
     return await response.json();
   } catch (error) {
