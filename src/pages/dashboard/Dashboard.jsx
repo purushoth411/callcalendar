@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { useAuth } from "../utils/idb";
+import { useAuth } from "../../utils/idb";
+import { useNavigate } from "react-router-dom";
+import ConsultantTimings from "./ConsultantTimings";
 
 function Dashboard() {
   const { user } = useAuth();
@@ -12,6 +14,7 @@ function Dashboard() {
     Completed: 0,
   });
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const statuses = ["Accept", "Reject", "Cancelled", "Rescheduled", "Completed"];
 
@@ -55,11 +58,15 @@ function Dashboard() {
 
   const submitAndRedirect = (status) => {
     console.log("Redirect to", status);
-    // e.g. navigate(`/calls/${status.toLowerCase()}`);
+    // e.g. 
+    navigate(`/bookings/${status}`);
   };
 
   return (
     <div className="p-4 max-w-6xl mx-auto">
+
+    <ConsultantTimings />
+
       {(user?.fld_admin_type === "SUPERADMIN" || user?.fld_admin_type === "EXECUTIVE") && (
         <div className="w-full">
           <div className="flex items-center justify-between mb-4">
