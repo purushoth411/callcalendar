@@ -20,7 +20,7 @@ function Dashboard() {
 
   const fetchParticularStatus = async (crmId, status) => {
     try {
-      const response = await fetch("http://localhost:5000/api/dashboard/getparticularstatuscalls", {
+      const response = await fetch("https://callback-2suo.onrender.com/api/dashboard/getparticularstatuscalls", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ crm_id: crmId, status }),

@@ -38,7 +38,7 @@ const BookingDetail = () => {
   const fetchBookingById = async (bookingId) => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/bookings/fetchBookingById`,
+        `https://callback-2suo.onrender.com/api/bookings/fetchBookingById`,
         {
           method: "POST",
           headers: {
@@ -66,7 +66,7 @@ const BookingDetail = () => {
    const fetchMsgData = async (bookingId) => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/helpers/getMessageData?bookingId=${bookingId}`
+        `https://callback-2suo.onrender.com/api/helpers/getMessageData?bookingId=${bookingId}`
       );
       const data = await response.json();
       if (data.status) {
@@ -101,7 +101,7 @@ const BookingDetail = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:5000/bookings/delete`, {
+      const response = await fetch(`https://callback-2suo.onrender.com/bookings/delete`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -137,7 +137,7 @@ const BookingDetail = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:5000/api/bookings/setAsConverted`,
+        `https://callback-2suo.onrender.com/api/bookings/setAsConverted`,
         {
           method: "POST",
           headers: {
@@ -177,7 +177,7 @@ const BookingDetail = () => {
 
   const sendMessage = async (message) => {
   try {
-    const response = await fetch("http://localhost:5000/api/sendMessage", {
+    const response = await fetch("https://callback-2suo.onrender.com/api/sendMessage", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
