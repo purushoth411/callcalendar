@@ -15,6 +15,7 @@ import ViewCommentModal from "./ViewCommentModal";
 import SetAsConvertedModal from "./SetAsConvertedModal";
 import ChatBox from "./ChatBox";
 import ReassignModal from "./ReassignModal";
+import UserInformation from "./UserInformation";
 
 const BookingDetail = () => {
   const navigate = useNavigate();
@@ -34,6 +35,7 @@ const BookingDetail = () => {
   const [isMsgSending, setIsMsgSending] = useState(false);
   const [otherBookings, setOtherBookings] = useState([]);
   const [isReassigning, setIsReassigning] = useState(false);
+  const [externalCallInfo,setExternalCallInfo]=useState([]);
 
   useEffect(() => {
     fetchBookingById(bookingId);
@@ -65,6 +67,7 @@ const BookingDetail = () => {
     } finally {
       fetchMsgData(bookingId);
       getOtherBookings();
+      getExternalCallByBookingId(bookingId);
     }
   };
 
@@ -79,6 +82,23 @@ const BookingDetail = () => {
       }
     } catch (err) {
       console.error("Error fetching messages:", err);
+    }
+  };
+
+  const getExternalCallByBookingId = async (bookingId) => {
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/bookings/getExternalCallByBookingId?bookingId=${bookingId}`
+      );
+      const data = await response.json();
+      if (data.status) {
+        setExternalCallInfo(data.data);
+      }
+      else{
+        console.error("Error fetching external call info");
+      }
+    } catch (err) {
+      console.error("Error fetching external call info:", err);
     }
   };
 
@@ -514,32 +534,30 @@ const BookingDetail = () => {
                   </div>
                 )}
 
+                {/* Reassign Comment Form */}
+                {user.fld_admin_type === "EXECUTIVE" &&
+                  bookingData.fld_call_request_sts === "Consultant Assigned" &&
+                  bookingData.fld_consultant_approve_sts === "Yes" && (
+                    <>
+                      <div className=" flex justify-end">
+                        <button
+                          onClick={() => setShowReassignForm(true)}
+                          className="bg-yellow-500 hover:bg-yellow-600 text-white px-2 rounded-md transition-colors"
+                        >
+                          Request for reassign
+                        </button>
+                      </div>
 
-                
-                 {/* Reassign Comment Form */}
-            {user.fld_admin_type === "EXECUTIVE" &&
-              bookingData.fld_call_request_sts === "Consultant Assigned" &&
-              bookingData.fld_consultant_approve_sts === "Yes" && (
-                <>
-                  <div className=" flex justify-end">
-                    <button
-                      onClick={() => setShowReassignForm(true)}
-                      className="bg-yellow-500 hover:bg-yellow-600 text-white px-2 rounded-md transition-colors"
-                    >
-                      Request for reassign
-                    </button>
-                  </div>
-
-                  <ReassignModal
-                    show={showReassignForm}
-                    onClose={() => setShowReassignForm(false)}
-                    comment={reassignComment}
-                    setComment={setReassignComment}
-                    onSubmit={handleReassignComment}
-                    isReassigning={isReassigning}
-                  />
-                </>
-              )}
+                      <ReassignModal
+                        show={showReassignForm}
+                        onClose={() => setShowReassignForm(false)}
+                        comment={reassignComment}
+                        setComment={setReassignComment}
+                        onSubmit={handleReassignComment}
+                        isReassigning={isReassigning}
+                      />
+                    </>
+                  )}
                 <button
                   onClick={() => navigate(-1)}
                   className="bg-gray-500 hover:bg-gray-600 text-white px-2 rounded-md flex items-center space-x-2 transition-colors"
@@ -579,13 +597,59 @@ const BookingDetail = () => {
               </div>
             )}
 
-           
-
             {/* Consultant Information */}
             {(user.fld_admin_type === "SUPERADMIN" ||
+              user.fld_admin_type === "EXECUTIVE") && (
+              <div
+                className="p-6 rounded-lg mb-6"
+                style={{
+                  backgroundColor: getStatusColor(
+                    bookingData.fld_call_request_sts
+                  ),
+                }}
+              >
+                <h5 className="text-xl font-semibold mb-4 text-gray-800">
+                  Consultant Information
+                </h5>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div>
+                    <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
+                      <User size={16} className="mr-2" />
+                      Consultant Id
+                    </label>
+                    <p className="text-gray-900">
+                      {bookingData.consultant_client_code}
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
+                      <User size={16} className="mr-2" />
+                      Name
+                    </label>
+                    <p className="text-gray-900">
+                      {bookingData.consultant_name}
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
+                      <Mail size={16} className="mr-2" />
+                      Email
+                    </label>
+                    <p className="text-gray-900">
+                      {bookingData.consultant_email}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Secondary Consultant Information */}
+            {(user.fld_admin_type === "SUPERADMIN" ||
               user.fld_admin_type === "EXECUTIVE") &&
-              bookingData.admin_name &&
-              bookingData.fld_consultant_approve_sts === "Yes" && (
+              bookingData.fld_secondary_consultant_id > 0 && (
                 <div
                   className="p-6 rounded-lg mb-6"
                   style={{
@@ -595,7 +659,7 @@ const BookingDetail = () => {
                   }}
                 >
                   <h5 className="text-xl font-semibold mb-4 text-gray-800">
-                    Consultant Information
+                    Secondary Consultant Information
                   </h5>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -604,7 +668,9 @@ const BookingDetail = () => {
                         <User size={16} className="mr-2" />
                         Consultant Id
                       </label>
-                      <p className="text-gray-900">{bookingData.admin_code}</p>
+                      <p className="text-gray-900">
+                        {bookingData.sec_consultant_client_code}
+                      </p>
                     </div>
 
                     <div>
@@ -612,7 +678,9 @@ const BookingDetail = () => {
                         <User size={16} className="mr-2" />
                         Name
                       </label>
-                      <p className="text-gray-900">{bookingData.admin_name}</p>
+                      <p className="text-gray-900">
+                        {bookingData.sec_consultant_name}
+                      </p>
                     </div>
 
                     <div>
@@ -620,77 +688,20 @@ const BookingDetail = () => {
                         <Mail size={16} className="mr-2" />
                         Email
                       </label>
-                      <p className="text-gray-900">{bookingData.admin_email}</p>
+                      <p className="text-gray-900">
+                        {bookingData.sec_consultant_email}
+                      </p>
                     </div>
                   </div>
                 </div>
               )}
 
-            {/* Booking Details */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <h6 className="font-semibold text-gray-700 mb-2">Booking ID</h6>
-                <p className="text-gray-900">{bookingData.id}</p>
-              </div>
-
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <h6 className="font-semibold text-gray-700 mb-2">
-                  Subject Area
-                </h6>
-                <p className="text-gray-900">{bookingData.fld_subject_area}</p>
-              </div>
-
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <h6 className="font-semibold text-gray-700 mb-2">Sale Type</h6>
-                <p className="text-gray-900">{bookingData.fld_sale_type}</p>
-              </div>
-
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <h6 className="font-semibold text-gray-700 mb-2">
-                  Booking Date
-                </h6>
-                <p className="text-gray-900">{bookingData.fld_booking_date}</p>
-              </div>
-
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <h6 className="font-semibold text-gray-700 mb-2">Time Slot</h6>
-                <p className="text-gray-900">{bookingData.fld_booking_slot}</p>
-              </div>
-
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <h6 className="font-semibold text-gray-700 mb-2">
-                  Questions Count
-                </h6>
-                <p className="text-gray-900">{questionCount}</p>
-              </div>
-
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <h6 className="font-semibold text-gray-700 mb-2">
-                  Call Status
-                </h6>
-                <p className="text-gray-900">
-                  {bookingData.fld_call_request_sts}
-                </p>
-              </div>
-
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <h6 className="font-semibold text-gray-700 mb-2">
-                  Consultation Status
-                </h6>
-                <p className="text-gray-900">
-                  {bookingData.fld_consultation_sts}
-                </p>
-              </div>
-
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <h6 className="font-semibold text-gray-700 mb-2">
-                  Confirmation Status
-                </h6>
-                <p className="text-gray-900">
-                  {bookingData.fld_call_confirmation_status}
-                </p>
-              </div>
-            </div>
+            <UserInformation
+              data={bookingData}
+              user={user}
+              bgColor={getStatusColor(bookingData?.fld_call_request_sts)}
+              externalCallInfo={externalCallInfo}
+            />
 
             {/* Chat Box Placeholder */}
             <ChatBox
