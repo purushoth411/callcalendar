@@ -86,7 +86,7 @@ export default function AddBooking({
     const consultantsData = await fetchAllConsultants();
     const subjectAreasData = await fetchAllSubjectAreas();
     const planDetails = await fetchPlanDetails();
-    setConsultants(consultantsData.data || []);
+    setConsultants(consultantsData.results || []);
     setSubjectAreas(subjectAreasData.data || []);
     setPlanDetails(planDetails.results || []);
   };
@@ -539,7 +539,6 @@ export default function AddBooking({
       await handlePostsalesChanges();
     } else {
       setConsultants([]);
-      console.log("542")
       await handlePresalesChanges();
     }
   };

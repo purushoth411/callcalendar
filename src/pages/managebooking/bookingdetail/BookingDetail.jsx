@@ -19,12 +19,13 @@ import UserInformation from "./UserInformation";
 import { AnimatePresence, motion } from "framer-motion";
 import ConsultantInformation from "./ConsultantInformation";
 import { fetchAllConsultants } from "../../../helpers/CommonApi";
+import Select from "react-select";
 
 const BookingDetail = () => {
   const navigate = useNavigate();
   const { bookingId } = useParams();
   const [bookingData, setBookingData] = useState([]);
-  const { user } = useAuth();
+  const { user,priceDiscoutUsernames } = useAuth();
 
   const [alert, setAlert] = useState({ type: "", message: "" });
   const [statusByCrm, setStatusByCrm] = useState("");
@@ -76,11 +77,60 @@ const BookingDetail = () => {
       fetchMsgData(bookingId);
       getOtherBookings();
       getExternalCallByBookingId(bookingId);
-      const consultantsData = await fetchAllConsultants();
-      setConsultantList(consultantsData.data || []);
-      console.log("Updated consultantList:", JSON.stringify(consultantList, null, 2));
+     
+        fetchConsultants(bookingData.fld_subject_area, bookingData.fld_call_related_to);
+      
+      
     }
   };
+
+  const fetchConsultants = async (subject_area, call_related_to) => {
+  try {
+    let filteredConsultants = [];
+
+    if (call_related_to === "subject_area_related") {
+      // 🎯 Fetch consultants based on subject area
+      const res = await fetch(
+        "http://localhost:5000/api/helpers/getConsultantsBySubjectArea",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ subject_area }),
+        }
+      );
+      const data = await res.json();
+      if (res.ok) {
+       
+        setConsultantList(data);
+      }
+
+    } else if (call_related_to === "price_and_discount_related") {
+      
+      const consultantsData = await fetchAllConsultants();
+      filteredConsultants = consultantsData.results || [];
+
+     
+
+      filteredConsultants = filteredConsultants.filter((c) =>
+        priceDiscoutUsernames.includes(c.fld_username)
+      );
+
+     
+      setConsultantList(filteredConsultants);
+
+    } else {
+     
+      const consultantsData = await fetchAllConsultants();
+     
+      setConsultantList(consultantsData.results || []);
+    }
+
+  } catch (error) {
+    console.error("Error fetching consultants:", error);
+  }
+};
 
   const fetchMsgData = async (bookingId) => {
     try {
@@ -426,22 +476,24 @@ const BookingDetail = () => {
     }
   };
 
-  const handleReassignToConsultant = async (e) => {
-  e.preventDefault();
+  const handleReassignToConsultant = async () => {
+  
 
   if (!primaryConsultantId) {
-    toast.error("Please select a primary consultant");
+    toast.error("Please select a consultant");
     return;
   }
 
   try {
+    setIsProcessing(true);
+    setLoaderMessage("Reassigning Consultant...");
     const res = await fetch("http://localhost:5000/api/bookings/reassignToConsultant", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        bookingid: bookingData.id,
+        bookingId: bookingData.id,
         primary_consultant_id: primaryConsultantId,
         user,
       }),
@@ -457,11 +509,14 @@ const BookingDetail = () => {
   } catch (err) {
     console.error("Reassignment error:", err);
     toast.error("Error while reassigning");
+  }finally{
+     setIsProcessing(false);
+      setLoaderMessage("Processing...");
   }
 };
 
-const handleCancelBooking = async (e) => {
-  e.preventDefault();
+const handleCancelBooking = async () => {
+ 
 
   if (!cancelComment.trim()) {
     toast.error("Please enter a comment");
@@ -469,13 +524,15 @@ const handleCancelBooking = async (e) => {
   }
 
   try {
+    setIsProcessing(true);
+    setLoaderMessage("Cancelling...");
     const res = await fetch("http://localhost:5000/api/bookings/updateStatusToCancelled", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        bookingid: bookingData.id,
+        bookingId: bookingData.id,
         comment: cancelComment,
         status: "Cancelled",
         user,
@@ -492,6 +549,9 @@ const handleCancelBooking = async (e) => {
   } catch (err) {
     console.error("Cancellation error:", err);
     toast.error("Error while cancelling");
+  }finally{
+     setIsProcessing(false);
+      setLoaderMessage("Processing...");
   }
 };
 
@@ -771,43 +831,53 @@ const handleCancelBooking = async (e) => {
 
             {/* Reassign to Consultant Form */}
 {canShowReasignConsultant && (
-    <form onSubmit={handleReassignToConsultant} className="mb-6">
-      <div className="flex flex-wrap gap-4">
-        <div className="w-full md:w-1/2">
-          <label className="block mb-2 font-medium">Reassign to another Consultant</label>
-          <select
-            className="w-full border rounded px-4 py-2"
-            value={primaryConsultantId}
-            onChange={(e) => setPrimaryConsultantId(e.target.value)}
-            required
-          >
-            <option value="">Select Primary Consultant</option>
-            {/* You need to fetch and render consultants here */}
-            {/* Example: */}
-            {consultantList.map((consultant) => (
-              <option key={consultant.id} value={consultant.id}>
-                {consultant.fld_name}
-              </option>
-            ))}
-          </select>
-        </div>
+  <div className="flex flex-wrap gap-4">
+    <div className="w-full md:w-1/2">
+      <label className="block mb-2 font-medium">Reassign to another Consultant</label>
+      <Select
+        name="consultant_id"
+        className="react-select-container"
+        classNamePrefix="react-select"
+        options={consultantList
+          .filter((consultant) => consultant.id !== bookingData.fld_consultantid)
+          .map((consultant) => ({
+            value: consultant.id,
+            label: consultant.fld_name,
+          }))
+        }
+        value={
+          consultantList
+            .filter((consultant) => consultant.id !== bookingData.fld_consultantid)
+            .map((consultant) => ({
+              value: consultant.id,
+              label: consultant.fld_name,
+            }))
+            .find((option) => option.value === primaryConsultantId) || null
+        }
+        onChange={(selectedOption) =>
+          setPrimaryConsultantId(selectedOption ? selectedOption.value : "")
+        }
+        placeholder="Select Primary Consultant"
+        isClearable
+      />
+    </div>
 
-        <div className="w-full md:w-1/3 self-end">
-          <button
-            type="submit"
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-          >
-            <i className="fa fa-arrow-right mr-2" aria-hidden="true"></i> Update
-          </button>
-        </div>
-      </div>
-    </form>
+    <div className="w-full md:w-1/3 self-end">
+      <button
+        type="button"
+        onClick={handleReassignToConsultant}
+        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+      >
+        <i className="fa fa-arrow-right mr-2" aria-hidden="true"></i> Update Consultant
+      </button>
+    </div>
+  </div>
 )}
 
 
 {/* Cancel Booking Form */}
 {canCancelCall && (
-    <form onSubmit={handleCancelBooking} className="mb-6">
+    <>
       <h5 className="font-semibold mb-3">Call Cancelled</h5>
       <div className="flex flex-wrap gap-4">
         <div className="w-full md:w-1/2">
@@ -822,14 +892,15 @@ const handleCancelBooking = async (e) => {
 
         <div className="w-full md:w-1/3 self-end">
           <button
-            type="submit"
+            type="button"
+            onClick={handleCancelBooking}
             className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
           >
             <i className="fa fa-arrow-right mr-2" aria-hidden="true"></i> Update
           </button>
         </div>
       </div>
-    </form>
+    </>
 )}
 
 
