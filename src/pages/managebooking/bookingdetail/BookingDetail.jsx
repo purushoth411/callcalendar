@@ -20,6 +20,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import ConsultantInformation from "./ConsultantInformation";
 import { fetchAllConsultants } from "../../../helpers/CommonApi";
 import Select from "react-select";
+import CallUpdateActions from "./CallUpdateActions";
 
 const BookingDetail = () => {
   const navigate = useNavigate();
@@ -526,15 +527,15 @@ const handleCancelBooking = async () => {
   try {
     setIsProcessing(true);
     setLoaderMessage("Cancelling...");
-    const res = await fetch("http://localhost:5000/api/bookings/updateStatusToCancelled", {
+    const res = await fetch("http://localhost:5000/api/bookings/updateConsultationStatus", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        bookingId: bookingData.id,
+        bookingid: bookingData.id,
         comment: cancelComment,
-        status: "Cancelled",
+        consultation_sts: "Cancelled",
         user,
       }),
     });
@@ -553,6 +554,96 @@ const handleCancelBooking = async () => {
      setIsProcessing(false);
       setLoaderMessage("Processing...");
   }
+};
+
+const onUpdateStatus = async (statusData) => {
+  if (!statusData.consultationStatus) {
+    toast.error("Please select a consultation status.");
+    return;
+  }
+
+  // 🟡 Validation by status
+  if (statusData.consultationStatus === "Rescheduled") {
+    if (statusData.statusOptions.length === 0) {
+      toast.error("Please select options for Rescheduling.");
+      return;
+    }
+  }
+
+  if (statusData.consultationStatus === "Accept") {
+    if (statusData.statusOptions.length !== 2) {
+      toast.error("Please select exactly 2 options for Accept.");
+      return;
+    }
+  }
+
+  if (statusData.consultationStatus === "Client did not join") {
+    if (!statusData.comment || statusData.comment.trim() === "") {
+      toast.error("Enter Comments for 'Client did not join'.");
+      return;
+    }
+  }
+
+  if (statusData.consultationStatus === "Reject") {
+    if (statusData.statusOptions.length === 0) {
+      toast.error("Please select at least one reason for rejection.");
+      return;
+    }
+  }
+
+  if (statusData.consultationStatus === "Completed") {
+    if (!statusData.callSummary || statusData.callSummary.trim() === "") {
+      toast.error("Call Summary is required for completion.");
+      return;
+    }
+  }
+try {
+  setIsProcessing(true);
+    setLoaderMessage("Updating Status...");
+    const response = await fetch("http://localhost:5000/api/bookings/updateConsultationStatus", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        bookingid: statusData.bookingId,
+        comment: statusData.comment,
+        consultation_sts: statusData.consultationStatus,
+        status_options: statusData.statusOptions,
+        status_options_rescheduled_others: statusData.rescheduledOthers,
+        rescheduled_date: statusData.rescheduledDate || null,
+        rescheduled_time: statusData.rescheduledTime || null,
+        scalequestion1: statusData.scaleQuestion1,
+        scalequestion2: statusData.scaleQuestion2,
+        scalequestion3: statusData.scaleQuestion3,
+        specific_commnets_for_the_call: statusData.callSummary,
+        old_video_file: statusData.file || null,
+        user: user, 
+      }),
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      toast.success("Consultation status updated successfully.");
+    } else {
+      toast.error(data.error || "Failed to update status.");
+    }
+  } catch (error) {
+    console.error("API Error:", error);
+    toast.error("Something went wrong while updating the status.");
+  }finally {
+      setIsProcessing(false);
+      setLoaderMessage("Processing...");
+    }
+};
+
+const onAssignExternal = (externalData) => {
+  console.log("onAssignExternal called with:", externalData);
+};
+
+const onReassignCall = (reassignData) => {
+  console.log("onReassignCall called with:", reassignData);
 };
 
 
@@ -617,39 +708,14 @@ const handleCancelBooking = async () => {
   bookingData.fld_call_request_sts !== "Cancelled" &&
   bookingData.fld_call_request_sts !== "Completed";
 
-  useEffect(() => {
-    // Auto-hide alerts after 5 seconds
-    if (alert.message) {
-      const timer = setTimeout(() => {
-        setAlert({ type: "", message: "" });
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [alert]);
+
 
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-6xl mx-auto">
         <div className="bg-white rounded-lg shadow-sm">
           <div className="p-6">
-            {/* Alert Messages */}
-            {alert.message && (
-              <div
-                className={`mb-4 p-4 rounded-md border ${
-                  alert.type === "success"
-                    ? "bg-green-50 border-green-200 text-green-800"
-                    : "bg-red-50 border-red-200 text-red-800"
-                }`}
-              >
-                <button
-                  onClick={() => setAlert({ type: "", message: "" })}
-                  className="float-right text-xl leading-none"
-                >
-                  ×
-                </button>
-                {alert.message}
-              </div>
-            )}
+      
 
             {/* Header */}
             <div className="flex justify-between items-center mb-6">
@@ -903,6 +969,13 @@ const handleCancelBooking = async () => {
     </>
 )}
 
+<CallUpdateActions 
+bookingData={bookingData}
+user={user}
+consultantList={consultantList}
+onUpdateStatus={onUpdateStatus}
+onAssignExternal={onAssignExternal}
+onReassignCall={onReassignCall} />
 
             {/* Chat Box Placeholder */}
             <ChatBox
