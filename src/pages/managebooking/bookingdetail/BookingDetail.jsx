@@ -21,6 +21,8 @@ import ConsultantInformation from "./ConsultantInformation";
 import { fetchAllConsultants } from "../../../helpers/CommonApi";
 import Select from "react-select";
 import CallUpdateActions from "./CallUpdateActions";
+import OverallHistory from "./OverallHistory";
+import OtherCalls from "./OtherCalls";
 
 const BookingDetail = () => {
   const navigate = useNavigate();
@@ -976,6 +978,23 @@ consultantList={consultantList}
 onUpdateStatus={onUpdateStatus}
 onAssignExternal={onAssignExternal}
 onReassignCall={onReassignCall} />
+
+<div className="flex flex-wrap -mx-2">
+  {/* Overall History - 1/3 width */}
+  <div className="w-full md:w-1/2 px-2">
+    <OverallHistory bookingData={bookingData} />
+  </div>
+
+  {/* Other Calls - 2/3 width */}
+  <div className="w-full md:w-1/2 px-2">
+    <OtherCalls
+      bookingId={bookingId}
+      clientId={bookingData.fld_client_id}
+      fetchBookingById={fetchBookingById}
+    />
+  </div>
+</div>
+
 
             {/* Chat Box Placeholder */}
             <ChatBox
