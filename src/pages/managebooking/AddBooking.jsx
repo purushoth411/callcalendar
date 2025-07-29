@@ -19,7 +19,11 @@ export default function AddBooking({
 }) {
   const { user: loggedInUser, priceDiscoutUsernames } = useAuth();
 
-  const decodedBookingId = atob(bookingId);
+  let decodedBookingId ;
+  if(bookingId){
+
+   decodedBookingId = atob(bookingId);
+  }
 
   const [formData, setFormData] = useState({
     user: loggedInUser,

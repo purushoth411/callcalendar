@@ -42,7 +42,10 @@ export default function Bookings() {
   const {bookingid} = useParams();
 
   useEffect(()=>{
-    setShowForm(true);
+    if(bookingid){
+
+      setShowForm(true);
+    }
   },[bookingid]);
 
   const navigate = useNavigate();

@@ -16,6 +16,9 @@ import SetAsConvertedModal from "./SetAsConvertedModal";
 import ChatBox from "./ChatBox";
 import ReassignModal from "./ReassignModal";
 import UserInformation from "./UserInformation";
+import { AnimatePresence, motion } from "framer-motion";
+import ConsultantInformation from "./ConsultantInformation";
+import { fetchAllConsultants } from "../../../helpers/CommonApi";
 
 const BookingDetail = () => {
   const navigate = useNavigate();
@@ -35,7 +38,12 @@ const BookingDetail = () => {
   const [isMsgSending, setIsMsgSending] = useState(false);
   const [otherBookings, setOtherBookings] = useState([]);
   const [isReassigning, setIsReassigning] = useState(false);
-  const [externalCallInfo,setExternalCallInfo]=useState([]);
+  const [externalCallInfo, setExternalCallInfo] = useState([]);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [loaderMessage, setLoaderMessage] = useState("Processing...");
+  const [primaryConsultantId, setPrimaryConsultantId] = useState("");
+  const [cancelComment, setCancelComment] = useState("");
+  const [consultantList, setConsultantList] = useState([]);
 
   useEffect(() => {
     fetchBookingById(bookingId);
@@ -68,6 +76,9 @@ const BookingDetail = () => {
       fetchMsgData(bookingId);
       getOtherBookings();
       getExternalCallByBookingId(bookingId);
+      const consultantsData = await fetchAllConsultants();
+      setConsultantList(consultantsData.data || []);
+      console.log("Updated consultantList:", JSON.stringify(consultantList, null, 2));
     }
   };
 
@@ -93,8 +104,7 @@ const BookingDetail = () => {
       const data = await response.json();
       if (data.status) {
         setExternalCallInfo(data.data);
-      }
-      else{
+      } else {
         console.error("Error fetching external call info");
       }
     } catch (err) {
@@ -279,6 +289,7 @@ const BookingDetail = () => {
   };
 
   const getOtherBookings = async () => {
+   // console.log("Booking Data:" + JSON.stringify(bookingData, null, 2));
     try {
       const queryParams = new URLSearchParams({
         consultantId: bookingData.fld_consultantid,
@@ -287,13 +298,14 @@ const BookingDetail = () => {
       });
 
       const response = await fetch(
-        `http://localhost:5000/api/bookings/getBookingData?${queryParams}`
+        `http://localhost:5000/api/bookings/getBookingData?bookingId=${bookingId}`
       );
 
       const result = await response.json();
 
-      if (result.success) {
+      if (result.status) {
         setOtherBookings(result.data);
+        console.log("OtherBooking:" + JSON.stringify(otherBookings, null, 2));
       } else {
         console.error("Failed to fetch other bookings");
       }
@@ -308,18 +320,18 @@ const BookingDetail = () => {
       !window.confirm(
         "Are you sure you want to mark this as confirmed by the client?"
       )
-    ) {
+    )
       return;
-    }
+
+    setIsProcessing(true);
+    setLoaderMessage("Marking as confirming...");
 
     try {
       const response = await fetch(
         `http://localhost:5000/api/bookings/markAsConfirmByClient`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ bookingId }),
         }
       );
@@ -328,12 +340,37 @@ const BookingDetail = () => {
 
       if (result.status) {
         toast.success("Marked as confirmed by client");
+
+        if (result.reschedulePending) {
+          setLoaderMessage("Rescheduling other calls...");
+
+          const res2 = await fetch(
+            `http://localhost:5000/api/bookings/rescheduleOtherBookings`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ bookingId }),
+            }
+          );
+
+          const res2Json = await res2.json();
+          if (res2Json.status) {
+            toast.success("Other bookings rescheduled");
+          } else {
+            toast.error(
+              res2Json.message || "Failed to reschedule other bookings"
+            );
+          }
+        }
       } else {
         toast.error(result.message || "Failed to mark as confirmed");
       }
     } catch (error) {
       console.error("Error confirming booking:", error);
       toast.error("Something went wrong while marking as confirmed");
+    } finally {
+      setIsProcessing(false);
+      setLoaderMessage("Processing...");
     }
   };
 
@@ -389,6 +426,76 @@ const BookingDetail = () => {
     }
   };
 
+  const handleReassignToConsultant = async (e) => {
+  e.preventDefault();
+
+  if (!primaryConsultantId) {
+    toast.error("Please select a primary consultant");
+    return;
+  }
+
+  try {
+    const res = await fetch("http://localhost:5000/api/bookings/reassignToConsultant", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        bookingid: bookingData.id,
+        primary_consultant_id: primaryConsultantId,
+        user,
+      }),
+    });
+
+    const data = await res.json();
+    if (data.status) {
+      toast.success("Reassigned successfully");
+      fetchBookingById(bookingData.id);
+    } else {
+      toast.error(data.message || "Reassignment failed");
+    }
+  } catch (err) {
+    console.error("Reassignment error:", err);
+    toast.error("Error while reassigning");
+  }
+};
+
+const handleCancelBooking = async (e) => {
+  e.preventDefault();
+
+  if (!cancelComment.trim()) {
+    toast.error("Please enter a comment");
+    return;
+  }
+
+  try {
+    const res = await fetch("http://localhost:5000/api/bookings/updateStatusToCancelled", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        bookingid: bookingData.id,
+        comment: cancelComment,
+        status: "Cancelled",
+        user,
+      }),
+    });
+
+    const data = await res.json();
+    if (data.status) {
+      toast.success("Call status updated to Cancelled");
+      fetchBookingById(bookingData.id);
+    } else {
+      toast.error(data.message || "Cancellation failed");
+    }
+  } catch (err) {
+    console.error("Cancellation error:", err);
+    toast.error("Error while cancelling");
+  }
+};
+
+
   const scrollToChat = () => {
     const chatBox = document.querySelector(".chatbox");
     if (chatBox) {
@@ -415,7 +522,8 @@ const BookingDetail = () => {
   );
 
   const canMarkAsConfirmed =
-    user.fld_admin_type === "EXECUTIVE" &&
+    user.fld_admin_type === "SUBADMIN" &&
+    bookingData.fld_call_confirmation_status != "Call Confirmed by Client" &&
     ((bookingData.fld_call_confirmation_status ===
       "Call Confirmation Pending at Client End" &&
       (bookingData.fld_call_request_sts !== "Rescheduled" ||
@@ -439,6 +547,15 @@ const BookingDetail = () => {
     bookingData.fld_call_request_sts === "Completed" &&
     bookingData.fld_converted_sts === "No" &&
     bookingData.fld_sale_type === "Presales";
+
+  const canShowReasignConsultant=user.fld_admin_type === "EXECUTIVE" &&
+  bookingData.fld_call_related_to !== "I_am_not_sure" &&
+  bookingData.fld_call_request_sts !== "Completed";
+
+  const canCancelCall=user.fld_admin_type === "EXECUTIVE" &&
+  bookingData.fld_call_related_to !== "I_am_not_sure" &&
+  bookingData.fld_call_request_sts !== "Cancelled" &&
+  bookingData.fld_call_request_sts !== "Completed";
 
   useEffect(() => {
     // Auto-hide alerts after 5 seconds
@@ -534,6 +651,49 @@ const BookingDetail = () => {
                   </div>
                 )}
 
+                {/* Loading Overlay */}
+                <AnimatePresence>
+                  {isProcessing && (
+                    <motion.div
+                      className="fixed inset-0 backdrop-blur-sm bg-black/10 flex items-center justify-center z-50"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                    >
+                      <motion.div
+                        className="bg-white p-6 rounded-lg shadow-md flex items-center gap-4"
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0.8, opacity: 0 }}
+                      >
+                        <svg
+                          className="animate-spin h-6 w-6 text-blue-600"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          />
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                          />
+                        </svg>
+                        <span className="text-gray-700 font-medium">
+                          {loaderMessage}
+                        </span>
+                      </motion.div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
                 {/* Reassign Comment Form */}
                 {user.fld_admin_type === "EXECUTIVE" &&
                   bookingData.fld_call_request_sts === "Consultant Assigned" &&
@@ -597,111 +757,81 @@ const BookingDetail = () => {
               </div>
             )}
 
-            {/* Consultant Information */}
-            {(user.fld_admin_type === "SUPERADMIN" ||
-              user.fld_admin_type === "EXECUTIVE") && (
-              <div
-                className="p-6 rounded-lg mb-6"
-                style={{
-                  backgroundColor: getStatusColor(
-                    bookingData.fld_call_request_sts
-                  ),
-                }}
-              >
-                <h5 className="text-xl font-semibold mb-4 text-gray-800">
-                  Consultant Information
-                </h5>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div>
-                    <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
-                      <User size={16} className="mr-2" />
-                      Consultant Id
-                    </label>
-                    <p className="text-gray-900">
-                      {bookingData.consultant_client_code}
-                    </p>
-                  </div>
-
-                  <div>
-                    <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
-                      <User size={16} className="mr-2" />
-                      Name
-                    </label>
-                    <p className="text-gray-900">
-                      {bookingData.consultant_name}
-                    </p>
-                  </div>
-
-                  <div>
-                    <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
-                      <Mail size={16} className="mr-2" />
-                      Email
-                    </label>
-                    <p className="text-gray-900">
-                      {bookingData.consultant_email}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Secondary Consultant Information */}
-            {(user.fld_admin_type === "SUPERADMIN" ||
-              user.fld_admin_type === "EXECUTIVE") &&
-              bookingData.fld_secondary_consultant_id > 0 && (
-                <div
-                  className="p-6 rounded-lg mb-6"
-                  style={{
-                    backgroundColor: getStatusColor(
-                      bookingData.fld_call_request_sts
-                    ),
-                  }}
-                >
-                  <h5 className="text-xl font-semibold mb-4 text-gray-800">
-                    Secondary Consultant Information
-                  </h5>
-
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div>
-                      <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
-                        <User size={16} className="mr-2" />
-                        Consultant Id
-                      </label>
-                      <p className="text-gray-900">
-                        {bookingData.sec_consultant_client_code}
-                      </p>
-                    </div>
-
-                    <div>
-                      <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
-                        <User size={16} className="mr-2" />
-                        Name
-                      </label>
-                      <p className="text-gray-900">
-                        {bookingData.sec_consultant_name}
-                      </p>
-                    </div>
-
-                    <div>
-                      <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
-                        <Mail size={16} className="mr-2" />
-                        Email
-                      </label>
-                      <p className="text-gray-900">
-                        {bookingData.sec_consultant_email}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
-
+          <ConsultantInformation
+          bookingData={bookingData}
+          user={user}
+         bgColor={getStatusColor(bookingData?.fld_call_request_sts)}
+         />
             <UserInformation
               data={bookingData}
               user={user}
               bgColor={getStatusColor(bookingData?.fld_call_request_sts)}
               externalCallInfo={externalCallInfo}
             />
+
+            {/* Reassign to Consultant Form */}
+{canShowReasignConsultant && (
+    <form onSubmit={handleReassignToConsultant} className="mb-6">
+      <div className="flex flex-wrap gap-4">
+        <div className="w-full md:w-1/2">
+          <label className="block mb-2 font-medium">Reassign to another Consultant</label>
+          <select
+            className="w-full border rounded px-4 py-2"
+            value={primaryConsultantId}
+            onChange={(e) => setPrimaryConsultantId(e.target.value)}
+            required
+          >
+            <option value="">Select Primary Consultant</option>
+            {/* You need to fetch and render consultants here */}
+            {/* Example: */}
+            {consultantList.map((consultant) => (
+              <option key={consultant.id} value={consultant.id}>
+                {consultant.fld_name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="w-full md:w-1/3 self-end">
+          <button
+            type="submit"
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          >
+            <i className="fa fa-arrow-right mr-2" aria-hidden="true"></i> Update
+          </button>
+        </div>
+      </div>
+    </form>
+)}
+
+
+{/* Cancel Booking Form */}
+{canCancelCall && (
+    <form onSubmit={handleCancelBooking} className="mb-6">
+      <h5 className="font-semibold mb-3">Call Cancelled</h5>
+      <div className="flex flex-wrap gap-4">
+        <div className="w-full md:w-1/2">
+          <label className="block mb-2">Comments <span className="text-red-500">*</span></label>
+          <textarea
+            className="w-full border rounded px-4 py-2"
+            value={cancelComment}
+            onChange={(e) => setCancelComment(e.target.value)}
+            placeholder="Add Comments"
+          />
+        </div>
+
+        <div className="w-full md:w-1/3 self-end">
+          <button
+            type="submit"
+            className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+          >
+            <i className="fa fa-arrow-right mr-2" aria-hidden="true"></i> Update
+          </button>
+        </div>
+      </div>
+    </form>
+)}
+
 
             {/* Chat Box Placeholder */}
             <ChatBox
