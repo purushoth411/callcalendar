@@ -27,15 +27,16 @@ const AddUser = ({
     });
   }, [formType, setShowForm]);
   return (
+    <motion.div className="fixed inset-0 bg-[#000000c2] flex items-center justify-center z-50">
     <motion.div
       initial={{ x: "100%" }}
       animate={{ x: 0 }}
       exit={{ x: "100%" }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
-      className="fixed top-0 right-0 w-full h-full bg-white shadow-xl z-50 overflow-y-auto"
+      className="fixed top-0 right-0 w-[25%] h-full bg-white shadow z-50 overflow-y-auto"
     >
-      <div className="flex justify-between items-center px-6 py-4 border-b">
-        <h2 className="text-xl font-semibold">
+      <div className="flex justify-between items-center px-4 py-3 border-b bg-[#224d68] text-white">
+        <h2 className="text-[15px] font-semibold">
           {formType === "EXECUTIVE" && "Add CRM"}
           {formType === "CONSULTANT" && "Add Consultant"}
           {formType === "SUBADMIN" && "Add Subadmin"}
@@ -43,18 +44,18 @@ const AddUser = ({
         </h2>
         <button
           onClick={() => setShowForm(false)}
-          className="text-gray-600 hover:text-black text-2xl"
+          className="text-gray-100 hover:text-black text-2xl"
         >
-          <XIcon size={15} />
+          <XIcon size={17} />
         </button>
       </div>
 
-      <div className="p-6 space-y-4 row">
+      <div className="p-4 space-y-4 row">
         {(formType === "EXECUTIVE" ||
           formType === "CONSULTANT" ||
           formType === "SUBADMIN") && (
           <div className="col-md-4">
-            <label className="block mb-1 font-medium">Select Team</label>
+            <label className="block mb-1">Select Team</label>
             <Select
               className="react-select-container"
               classNamePrefix="react-select"
@@ -100,10 +101,10 @@ const AddUser = ({
         )}
 
         <div className="col-md-4">
-          <label className="block mb-1 font-medium">Username</label>
+          <label className="block mb-1">Username</label>
           <input
             type="text"
-            className="w-full border px-3 py-2 rounded"
+            className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
             value={formData.username}
             onChange={(e) =>
               setFormData({ ...formData, username: e.target.value })
@@ -112,20 +113,20 @@ const AddUser = ({
         </div>
 
         <div className="col-md-4">
-          <label className="block mb-1 font-medium">Name</label>
+          <label className="block mb-1">Name</label>
           <input
             type="text"
-            className="w-full border px-3 py-2 rounded"
+            className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           />
         </div>
 
         <div className="col-md-4">
-          <label className="block mb-1 font-medium">Email ID</label>
+          <label className="block mb-1">Email ID</label>
           <input
             type="email"
-            className="w-full border px-3 py-2 rounded"
+            className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
             value={formData.email}
             onChange={(e) =>
               setFormData({ ...formData, email: e.target.value })
@@ -134,10 +135,10 @@ const AddUser = ({
         </div>
 
         <div className="col-md-4">
-          <label className="block mb-1 font-medium">Phone</label>
+          <label className="block mb-1">Phone</label>
           <input
             type="text"
-            className="w-full border px-3 py-2 rounded"
+            className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
             autoComplete="off"
             value={formData.phone}
             onChange={(e) =>
@@ -149,9 +150,9 @@ const AddUser = ({
         {/* Consultant Type */}
         {formType === "CONSULTANT" && (
           <div className="col-md-3">
-            <label className="block mb-1 font-medium">Consultant Type</label>
+            <label className="block mb-1">Consultant Type</label>
             <select
-              className="w-full border px-3 py-2 rounded"
+              className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
               value={formData.consultant_type}
               onChange={(e) =>
                 setFormData({
@@ -171,9 +172,9 @@ const AddUser = ({
         {/* SubAdmin Type */}
         {formType === "SUBADMIN" && (
           <div className="col-md-3">
-            <label className="block mb-1 font-medium">Subadmin Type</label>
+            <label className="block mb-1">Subadmin Type</label>
             <select
-              className="w-full border px-3 py-2 rounded"
+              className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
               value={formData.subadmin_type}
               onChange={(e) =>
                 setFormData({
@@ -190,11 +191,11 @@ const AddUser = ({
         )}
 
         <div className="col-md-4">
-          <label className="block mb-1 font-medium">Password</label>
+          <label className="block mb-1">Password</label>
           <input
             type="password"
             autoComplete="off"
-            className="w-full border px-3 py-2 rounded"
+            className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
             value={formData.password}
             onChange={(e) =>
               setFormData({ ...formData, password: e.target.value })
@@ -203,10 +204,10 @@ const AddUser = ({
         </div>
 
         <div className="col-md-4">
-          <label className="block mb-1 font-medium">Confirm Password</label>
+          <label className="block mb-1">Confirm Password</label>
           <input
             type="password"
-            className="w-full border px-3 py-2 rounded"
+            className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
             value={formData.confirmPassword}
             onChange={(e) =>
               setFormData({
@@ -270,15 +271,16 @@ const AddUser = ({
           </div>
         )}
 
-        <div className="pt-6 flex justify-end">
+        <div className="flex justify-end">
           <button
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            className="bg-green-600 leading-none text-white px-3 py-2 rounded hover:bg-green-700 text-[13px] flex items-center gap-1"
             onClick={handleSave}
           >
             Save
           </button>
         </div>
       </div>
+    </motion.div>
     </motion.div>
   );
 };

@@ -270,3 +270,61 @@ table.dataTable tbody tr:hover {
 .f-11{
   font-size: 11px;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* -------------------------------------------- */
+
+.overflow-y-auto::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    background-color: #F5F5F5;
+}
+
+.overflow-y-auto::-webkit-scrollbar {
+    width: 5px;
+    background-color: #F5F5F5;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+    background-color: #224d68;
+    border: 2px solid #224d68;
+}
+
+
+
+
+
+
+.n-table-set thead th {
+    border-left: 1px solid #6a6a6a;
+}
+.n-table-set thead {
+    background: #224d68;
+    color: #fff;
+    border: 1px solid #6a6a6a;
+}
+
+.dt-column-order {
+    position: sticky !important;
+}
+.dt-orderable-asc{
+  padding: 5px 10px !important;
+}
+
+
+div.dt-container .dt-paging .dt-paging-button{
+  padding: 3px 10px;
+}

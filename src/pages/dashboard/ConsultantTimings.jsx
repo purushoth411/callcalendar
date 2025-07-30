@@ -362,7 +362,7 @@ function ConsultantTimings() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
+    <div className="">
       <div className="mb-6">
         <label className="block mb-2 text-sm font-medium text-gray-700">
           Select Consultant

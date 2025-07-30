@@ -665,28 +665,29 @@ export default function AddBooking({
   }, [formData.projectid]);
 
   return (
+    <motion.div className="fixed inset-0 bg-[#000000c2] flex items-center justify-center z-50">
     <motion.div
       initial={{ x: "100%" }}
       animate={{ x: 0 }}
       exit={{ x: "100%" }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
-      className="fixed top-0 right-0 w-full h-full bg-white shadow-xl z-50 overflow-y-auto"
+      className="fixed top-0 right-0 w-[45%] h-full bg-white shadow z-50 overflow-y-auto"
     >
       {/* Header */}
-      <div className="flex justify-between items-center px-6 py-4 border-b">
-        <h2 className="text-xl font-semibold">Add Booking</h2>
+      <div className="flex justify-between items-center px-4 py-3 border-b bg-[#224d68] text-white">
+        <h2 className="text-[15px] font-semibold">Add Booking</h2>
         <button
           onClick={() => setShowForm(false)}
-          className="text-gray-600 hover:text-black text-2xl"
+          className="text-gray-100 hover:text-black text-2xl"
         >
-          <XIcon size={15} />
+          <XIcon size={17} />
         </button>
       </div>
 
       {/* Form */}
-      <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block mb-1">
             Select Call Type
           </label>
           <select
@@ -696,7 +697,7 @@ export default function AddBooking({
               handleChange(e);
               handleSaleTypeChange(e.target.value);
             }}
-            className="w-full border px-3 py-2 rounded"
+            className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
             required
           >
             <option value="">Select Call Type</option>
@@ -708,7 +709,7 @@ export default function AddBooking({
         {(formData.sale_type === "Presales" ||
           formData.sale_type === "Postsales") && (
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block mb-1">
               {formData.sale_type === "Presales"
                 ? "Insta CRM RefId"
                 : "RC Student Code"}
@@ -734,7 +735,7 @@ export default function AddBooking({
                 }));
                 setProjects([]);
               }}
-              className="w-full border px-3 py-2 rounded"
+              className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
               required
             />
           </div>
@@ -779,7 +780,7 @@ export default function AddBooking({
           formData.client_id &&
           projects.length > 0 && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block mb-1">
                 Project
               </label>
               <select
@@ -808,7 +809,7 @@ export default function AddBooking({
 
         {formData.projectid && milestones.length > 0 && (
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block mb-1">
               Milestone
             </label>
             <select
@@ -848,14 +849,14 @@ export default function AddBooking({
 
         {formData.sale_type === "Postsales" && formData.client_plan_name && (
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block mb-1">
               Plan
             </label>
             <input
               type="text"
               name="client_plan_name"
               value={formData.client_plan_name}
-              className="w-full border px-3 py-2 rounded"
+              className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
               required
               readOnly
             />
@@ -863,7 +864,7 @@ export default function AddBooking({
         )}
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block mb-1">
             Call Related To
           </label>
           <select
@@ -873,7 +874,7 @@ export default function AddBooking({
               handleChange(e);
               handleCallRelatedToChange(e.target.value);
             }}
-            className="w-full border px-3 py-2 rounded"
+            className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
             required
           >
             <option value="">Select Option</option>
@@ -894,7 +895,7 @@ export default function AddBooking({
 
         {formData.call_related_to === "subject_area_related" && (
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block mb-1">
               Subject Area
             </label>
             <select
@@ -904,7 +905,7 @@ export default function AddBooking({
                 handleChange(e);
                 handleSubjectAreaChange({ value: e.target.value });
               }}
-              className="w-full border px-3 py-2 rounded"
+              className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
             >
               <option value="">Select Subject Area</option>
               {subjectAreas.map((s) => (
@@ -917,7 +918,7 @@ export default function AddBooking({
         )}
         {formData.call_related_to !== "I_am_not_sure" && (
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block mb-1">
               Primary Consultant
             </label>
             <Select
@@ -989,7 +990,7 @@ export default function AddBooking({
         {formData.sale_type === "Postsales" &&
           formData.call_related_to !== "I_am_not_sure" && (
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block mb-1">
                 Secondary Consultant
               </label>
               <Select
@@ -1036,14 +1037,14 @@ export default function AddBooking({
           formData.sale_type === "Presales" &&
           formData.call_related_to === "direct_call" && (
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block mb-1">
                 Sub Option
               </label>
               <select
                 name="consultant_another_option"
                 value={formData.consultant_another_option || ""}
                 onChange={handleChange}
-                className="w-full border px-3 py-2 rounded"
+                className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
               >
                 <option value="">Select Sub Option</option>
                 <option value="CONSULTANT">
@@ -1055,66 +1056,66 @@ export default function AddBooking({
           )}
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block mb-1">
             Client Name
           </label>
           <input
             type="text"
             name="name"
             value={formData.name}
-            className="w-full border px-3 py-2 rounded"
+            className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
             readOnly
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block mb-1">
             Email
           </label>
           <input
             type="email"
             name="email"
             value={formData.email}
-            className="w-full border px-3 py-2 rounded"
+            className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
             readOnly
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block mb-1">
             Phone
           </label>
           <input
             type="text"
             name="phone"
             value={formData.phone}
-            className="w-full border px-3 py-2 rounded"
+            className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
             readOnly
           />
         </div>
 
         <div className="md:col-span-3">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block mb-1">
             Topic of Research
           </label>
           <textarea
             name="topic_of_research"
             value={formData.topic_of_research}
             onChange={handleChange}
-            className="w-full border px-3 py-2 rounded"
+            className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
             required
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block mb-1">
             Call Regarding
           </label>
           <select
             name="call_regarding"
             value={formData.call_regarding}
             onChange={handleChange}
-            className="w-full border px-3 py-2 rounded"
+            className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
             required
           >
             <option value="">Select</option>
@@ -1129,7 +1130,7 @@ export default function AddBooking({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block mb-1">
             Asana URL / Quote ID
           </label>
           <input
@@ -1137,7 +1138,7 @@ export default function AddBooking({
             name="asana_link"
             value={formData.asana_link}
             onChange={handleChange}
-            className="w-full border px-3 py-2 rounded"
+            className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
             required
           />
         </div>
@@ -1158,7 +1159,7 @@ export default function AddBooking({
               name="internal_comments"
               value={formData.internal_comments}
               onChange={handleChange}
-              className="w-full border px-3 py-2 rounded mt-2"
+              className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600 mt-2"
               placeholder="Enter comments"
             />
           )}
@@ -1182,7 +1183,7 @@ export default function AddBooking({
             id="submitBtn"
             type="button"
             onClick={handleSubmit}
-            className={`bg-blue-600 text-white px-4 py-2 rounded transition ${
+            className={`bg-green-600 leading-none text-white px-3 py-2 rounded hover:bg-green-700 text-[13px] flex items-center gap-1 transition ${
               submitDisabled
                 ? "opacity-50 cursor-not-allowed"
                 : "hover:bg-blue-700"
@@ -1193,6 +1194,7 @@ export default function AddBooking({
           </button>
         </div>
       </div>
+    </motion.div>
     </motion.div>
   );
 }

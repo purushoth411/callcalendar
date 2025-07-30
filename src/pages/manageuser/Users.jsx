@@ -9,6 +9,7 @@ import AddUser from "./AddUser.jsx";
 import EditUser from "./EditUser.jsx";
 import { formatDate } from "../../helpers/CommonHelper.jsx";
 import SkeletonLoader from "../../components/SkeletonLoader.jsx";
+import { PlusIcon } from "lucide-react";
 
 export default function Users() {
   const { user, logout } = useAuth();
@@ -246,7 +247,7 @@ export default function Users() {
       data: "fld_admin_type",
       orderable: true,
       render: (data) =>
-        `<div class="px-2 py-1 text-xs font-semibold text-indigo-600 bg-indigo-50 rounded-md inline-block">${
+        `<div class="px-2 py-1 text-[11px] font-semibold text-indigo-600 bg-indigo-50 rounded-md inline-block">${
           data || ""
         }</div>`,
     },
@@ -255,7 +256,7 @@ export default function Users() {
       data: "fld_addedon",
       orderable: true,
       render: (data) =>
-        `<div class="text-gray-500 text-sm">${formatDate(data)}</div>`,
+        `<div class="text-gray-500 ">${formatDate(data)}</div>`,
     },
 
     {
@@ -278,7 +279,7 @@ export default function Users() {
       data: null,
       orderable: false,
       render: (data) => `
-        <button class="edit-btn bg-blue-600 px-2 py-1 rounded text-white leading-none text-[11px] mr-1"" data-id="${data.id}">
+        <button class="edit-btn bg-yellow-600 hover:bg-yellow-700 px-2 py-1 rounded text-white leading-none text-[11px] cursor-pointer"" data-id="${data.id}">
             Edit
         </button>
       `,
@@ -331,7 +332,7 @@ export default function Users() {
     pageLength: 25,
     lengthMenu: [5, 10, 25, 50, 100],
     order: [[0, "asc"]],
-    dom: '<"flex justify-between items-center mb-4"lf>rt<"flex justify-between items-center mt-4"ip>',
+    dom: '<"flex justify-between items-center mb-4 text-[13px]"lf>rt<"flex justify-between items-center mt-4"ip>',
     language: {
       search: "",
       searchPlaceholder: "Search users...",
@@ -357,63 +358,64 @@ export default function Users() {
       container
         .find('input[type="search"]')
         .addClass(
-          "form-input px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          "px-3 !py-1 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 text-[13px]"
         );
       container
         .find("select")
         .addClass(
-          "form-select px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          "px-3 !py-1 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 text-[13px]"
         );
     },
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-[1250px] mx-auto py-5">
-        <div className="p-3 bg-gray-100 rounded shadow text-[13px]">
+    <div className="">
+      <div className="">
+        <div className="">
         {/* Header */}
-        <div className="mb-8">
-          <h4 className="text-xl font-bold text-gray-900">User Management</h4>
-        </div>
-
-        {/* Navigation Tabs */}
-        <div className="mb-8">
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-1">
-            <nav className="flex space-x-1">
-              {userTabs.map((tab) => (
-                <button
-                  key={tab.key}
-                  onClick={() => handleTabClick(tab.key)}
-                  className={`flex-1 px-4 py-3 text-sm font-medium rounded-md transition-all duration-200 ${
-                    selectedUserType === tab.key
-                      ? "prime-bg text-white shadow-sm"
-                      : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-                  }`}
-                >
-                  <div className="flex items-center justify-center space-x-2">
-                    <span>{tab.label}</span>
-                    <span
-                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        selectedUserType === tab.key
-                          ? "secondary-bg text-white"
-                          : "bg-gray-100 text-gray-800"
-                      }`}
-                    >
-                      {tab.count}
-                    </span>
-                  </div>
-                </button>
-              ))}
-            </nav>
+        <div className="mb-4 flex items-center gap-3 justify-between">
+          <h4 className="text-[18px] font-semibold text-gray-900">User Management</h4>
+          {/* Navigation Tabs */}
+          <div className="">
+            <div className="bg-white rounded border border-gray-200 p-1">
+              <nav className="flex space-x-1">
+                {userTabs.map((tab) => (
+                  <button
+                    key={tab.key}
+                    onClick={() => handleTabClick(tab.key)}
+                    className={`flex-1 px-2 py-1 rounded transition-all duration-200 cursor-pointer ${
+                      selectedUserType === tab.key
+                        ? "prime-bg text-white shadow-sm"
+                        : "text-gray-600 hover:text-gray-900 hover:bg-orange-100 bg-gray-200"
+                    }`}
+                  >
+                    <div className="flex items-center justify-center space-x-2 whitespace-nowrap">
+                      <span className="text-[12px]">{tab.label}</span>
+                      <span
+                        className={`inline-flex items-center leading-none px-2 py-1 rounded text-[11px] ${
+                          selectedUserType === tab.key
+                            ? "secondary-bg text-white"
+                            : "bg-gray-100 text-gray-800"
+                        }`}
+                      >
+                        {tab.count}
+                      </span>
+                    </div>
+                  </button>
+                ))}
+              </nav>
+            </div>
           </div>
         </div>
+
+        
 
         {/* Content Area */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200">
           {/* Header */}
-          <div className="px-6 py-4 border-b border-gray-200">
+          <div className="px-3 py-2 bg-[#d7efff7d]">
             <div className="flex justify-between items-center">
-              <h2 className="text-xl font-semibold text-gray-900">
+              <h2 className="text-[16px] font-semibold text-gray-900">
                 {userTabs.find((tab) => tab.key === selectedUserType)?.label}{" "}
                 Users
               </h2>
@@ -423,16 +425,16 @@ export default function Users() {
                   {isLoading ? "..." : filteredUsers.length}
                 </span>
               </div> */}
-              <div className="flex justify-end mb-4 gap-2">
+              <div className="flex justify-end gap-2">
                 {selectedUserType === "EXECUTIVE" && (
                   <button
                     onClick={() => {
                       setFormType("EXECUTIVE");
                       setShowForm(true);
                     }}
-                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                    className="bg-green-600 leading-none text-white px-2 py-1.5 rounded hover:bg-green-700 text-[11px] flex items-center gap-1"
                   >
-                    + Add CRM
+                    <PlusIcon size={11} className="leading-none" /> Add CRM
                   </button>
                 )}
                 {selectedUserType === "SUBADMIN" && (
@@ -441,9 +443,9 @@ export default function Users() {
                       setFormType("SUBADMIN");
                       setShowForm(true);
                     }}
-                    className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700"
+                    className="bg-green-600 leading-none text-white px-2 py-1.5 rounded hover:bg-green-700 text-[11px] flex items-center gap-1"
                   >
-                    + Add Subadmin
+                    <PlusIcon size={11} className="leading-none" /> Add Subadmin
                   </button>
                 )}
                 {selectedUserType === "CONSULTANT" && (
@@ -452,9 +454,9 @@ export default function Users() {
                       setFormType("CONSULTANT");
                       setShowForm(true);
                     }}
-                    className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+                    className="bg-green-600 leading-none text-white px-2 py-1.5 rounded hover:bg-green-700 text-[11px] flex items-center gap-1"
                   >
-                    + Add Consultant
+                    <PlusIcon size={11} className="leading-none" /> Add Consultant
                   </button>
                 )}
                 {selectedUserType === "OPERATIONSADMIN" && (
@@ -463,9 +465,9 @@ export default function Users() {
                       setFormType("OPSADMIN");
                       setShowForm(true);
                     }}
-                    className="bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700"
+                    className="bg-green-600 leading-none text-white px-2 py-1.5 rounded hover:bg-green-700 text-[11px] flex items-center gap-1"
                   >
-                    + Add OPS Admin
+                    <PlusIcon size={11} className="leading-none" /> Add OPS Admin
                   </button>
                 )}
               </div>
@@ -474,7 +476,7 @@ export default function Users() {
 
           {/* Table Content */}
           {/* Table Content */}
-          <div className="p-6">
+          <div className="p-4">
             {isLoading ? (
               <SkeletonLoader
                 rows={6}
@@ -494,7 +496,7 @@ export default function Users() {
                   <DataTable
                     data={executiveUsers}
                     columns={columns}
-                    className="display table table-auto w-full text-[13px]"
+                    className="display table table-auto w-full text-[13px] border border-gray-300 n-table-set"
                     options={tableOptions}
                   />
                 )}
@@ -502,7 +504,7 @@ export default function Users() {
                   <DataTable
                     data={subadminUsers}
                     columns={columns}
-                    className="display table table-auto w-full text-[13px]"
+                    className="display table table-auto w-full text-[13px] border border-gray-300 n-table-set"
                     options={tableOptions}
                   />
                 )}
@@ -510,7 +512,7 @@ export default function Users() {
                   <DataTable
                     data={consultantUsers}
                     columns={columns}
-                    className="display table table-auto w-full text-[13px]"
+                    className="display table table-auto w-full text-[13px] border border-gray-300 n-table-set"
                     options={tableOptions}
                   />
                 )}
@@ -518,7 +520,7 @@ export default function Users() {
                   <DataTable
                     data={opsAdminUsers}
                     columns={columns}
-                    className="display table table-auto w-full text-[13px]"
+                    className="display table table-auto w-full text-[13px] border border-gray-300 n-table-set"
                     options={tableOptions}
                   />
                 )}

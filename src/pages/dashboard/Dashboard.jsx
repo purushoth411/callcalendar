@@ -63,7 +63,7 @@ function Dashboard() {
   };
 
   return (
-    <div className="p-4 max-w-6xl mx-auto">
+    <div className="">
 
     <ConsultantTimings />
     <hr className="my-3 text-gray-200"/>
