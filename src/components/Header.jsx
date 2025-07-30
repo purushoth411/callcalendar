@@ -150,6 +150,22 @@ export default function Header() {
             Bookings
           </NavLink>
           {(user?.fld_admin_type == "SUPERADMIN" ||
+            user?.fld_admin_type == "EXECUTIVE" || 
+            user?.fld_admin_type == "SUBADMIN" || 
+            user?.fld_admin_type == "CONSULTANT") && (
+            <NavLink
+              to="/external_calls"
+              className={({ isActive }) =>
+                isActive
+                  ? "flex items-center text-white underline font-semibold"
+                  : "flex items-center text-white hover:text-gray-300"
+              }
+            >
+              <Phone className="mr-1" size={14} />
+              External Calls
+            </NavLink>
+          )}
+          {(user?.fld_admin_type == "SUPERADMIN" ||
             user?.fld_admin_type == "EXECUTIVE") && (
             <NavLink
               to="/call_request_from_rc"
