@@ -690,9 +690,48 @@ const onAssignExternal = async (externalData) => {
 
 
 
-const onReassignCall = (reassignData) => {
-  console.log("onReassignCall called with:", reassignData);
+const onReassignCall = async (reassignData) => {
+  if (!reassignData.consultantId) {
+    toast.error("Please select a consultant");
+    return;
+  }
+
+  try {
+    setIsProcessing(true);
+    setLoaderMessage("Reassigning call...");
+
+    const response = await fetch("http://localhost:5000/api/bookings/updateReassignCallStatus", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        user:user,
+        bookingid: reassignData.bookingId,
+        consultant_id: reassignData.consultantId,
+        bookingdate: reassignData.bookingDate,
+        bookingslot: reassignData.bookingSlot,
+      }),
+    });
+
+    const result = await response.json();
+
+    if (response.ok && result.status) {
+      toast.success("Call reassigned successfully");
+      fetchBookingById(reassignData.bookingId); // refresh booking info using the correct ID
+    } else {
+      const errMsg = result.message || "Call reassignment failed";
+      toast.error(errMsg);
+    }
+  } catch (error) {
+    console.error("Reassignment error:", error);
+    toast.error("An error occurred while reassigning the call");
+  } finally {
+    setIsProcessing(false);
+    setLoaderMessage("Processing...");
+  }
 };
+
 
 
   const scrollToChat = () => {

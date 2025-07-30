@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import toast from "react-hot-toast";
 import Select from "react-select";
 const CallUpdateActions = ({
   bookingData,
@@ -23,6 +24,8 @@ const CallUpdateActions = ({
   const userType = user.fld_admin_type;
   const permissions = user.fld_permission;
    const [externalCount, setExternalCount] = useState(0);
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+  const [displayConsultantId, setDisplayConsultantId] = useState('');
 
   useEffect(() => {
     if (bookingData?.id) {
@@ -249,6 +252,53 @@ const CallUpdateActions = ({
     value: consultant.id,
     label: consultant.fld_name,
   }));
+
+const checkCompletedCallsForSelectedConsultant = async (consultantId) => {
+    if (!bookingData.fld_email || !consultantId || bookingData.fld_sale_type !== 'Presales') return;
+
+    try {
+      const response = await fetch(`http://localhost:5000/api/bookings/checkCompletedCall`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+          primaryconsultantid: consultantId,
+          clientemail: bookingData.fld_email ,
+          saletype: bookingData.fld_sale_type,
+        }),
+      });
+
+      const resultText = await response.text();
+
+      if (resultText === 'call not completed' || resultText === 'add call') {
+        setIsButtonDisabled(false);
+       // toast.success('Call not completed. You can proceed.');
+        return;
+      }
+
+      // Else: call already completed
+      const [displayMsg, displayConId, displayPrimConId] = resultText.split('||');
+      setDisplayConsultantId(displayConId);
+
+      if (displayPrimConId === displayConId) {
+        setIsButtonDisabled(true);
+      } else {
+        setIsButtonDisabled(false);
+      }
+
+      if (displayMsg) {
+        toast.error(displayMsg);
+        //toast.error('You cannot reassign the call. Call already completed!');
+      }else{
+        toast.error('You cannot reassign the call. Call already completed!');
+      }
+
+    } catch (err) {
+      console.error(err);
+      //toast.error('Error checking consultant call status.');
+    }
+  };
 
   return (
     <div className="col-sm-6">
@@ -584,21 +634,31 @@ const CallUpdateActions = ({
           <div className="col-sm-9">
 
 
-<Select
-  value={consultantOptions.find(option => option.value === selectedConsultant) || null}
-  onChange={(selectedOption) => setSelectedConsultant(selectedOption?.value)}
-  options={consultantOptions}
-  placeholder="Select Consultant"
-  classNamePrefix="react-select"
-  isClearable
-  required
-/>
+  <Select
+        value={consultantOptions.find(option => option.value === selectedConsultant) || null}
+        onChange={(selectedOption) => {
+          const consultantId = selectedOption?.value || '';
+          setSelectedConsultant(consultantId);
+          checkCompletedCallsForSelectedConsultant(consultantId);
+        }}
+        options={consultantOptions}
+        placeholder="Select Consultant"
+        classNamePrefix="react-select"
+        isClearable
+        required
+      />
+
+      
+
+      {/* Hidden to store result consultant id if needed */}
+      <input type="hidden" id="call_completed_consultant_id" value={displayConsultantId} />
           </div>
 
           <div className="col-sm-3">
             <button
               type="button"
               onClick={handleReassignCall}
+               disabled={isButtonDisabled}
               className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
             >
               <i className="fa fa-arrow-right mr-2" aria-hidden="true"></i>{" "}
