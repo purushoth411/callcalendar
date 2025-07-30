@@ -17,7 +17,6 @@ import "react-datepicker/dist/react-datepicker.css";
 import Select from "react-select";
 import { useNavigate, useParams } from "react-router-dom";
 
-
 export default function Bookings() {
   const { user } = useAuth();
 
@@ -39,14 +38,13 @@ export default function Bookings() {
   const [consultantType, setConsultantType] = useState("ACTIVE");
   const { dashboard_status } = useParams();
 
-  const {bookingid} = useParams();
+  const { bookingid } = useParams();
 
-  useEffect(()=>{
-    if(bookingid){
-
+  useEffect(() => {
+    if (bookingid) {
       setShowForm(true);
     }
-  },[bookingid]);
+  }, [bookingid]);
 
   const navigate = useNavigate();
 
@@ -240,8 +238,7 @@ export default function Bookings() {
       const result = await response.json();
       if (result.status) {
         setBookings(result.data);
-        if(dashboard_status){
-          
+        if (dashboard_status) {
           navigate("/bookings");
         }
       } else {
@@ -326,7 +323,6 @@ export default function Bookings() {
       body: JSON.stringify({ id, status }),
     });
   };
-
   const columns = [
     {
       title: "Client",
@@ -334,9 +330,9 @@ export default function Bookings() {
       render: (data, type, row) => {
         const clientId = row.fld_client_id || "";
         return `
-      <a href="/admin/booking_detail/${row.id}" class="font-medium text-blue-600 hover:underline">
+      <button class="details-btn font-medium text-blue-600 hover:underline" data-id="${row.id}">
         ${data} - ${clientId}
-      </a>
+      </button>
     `;
       },
     },
@@ -377,22 +373,21 @@ export default function Bookings() {
         `<div class="text-indigo-700 font-medium text-sm">${data}</div>`,
     },
     {
-  title: "Status",
-  data: null,
-  render: (data, type, row) => {
-    const call_status_updation_pending = getCallStatusUpdationPending(row);
-    return ReactDOMServer.renderToString(
-      <StatusUpdate
-        row={row}
-        user={user}
-        onCrmStatusChange={handleCrmStatusUpdate}
-        call_status_updation_pending={call_status_updation_pending}
-      />
-    );
-  },
-},
+      title: "Status",
+      data: null,
+      render: (data, type, row) => {
+        const call_status_updation_pending = getCallStatusUpdationPending(row);
+        return ReactDOMServer.renderToString(
+          <StatusUpdate
+            row={row}
+            user={user}
+            onCrmStatusChange={handleCrmStatusUpdate}
+            call_status_updation_pending={call_status_updation_pending}
+          />
+        );
+      },
+    },
   ];
-
 
   const tableOptions = {
     responsive: true,
@@ -450,6 +445,14 @@ export default function Bookings() {
         .addClass(
           "form-input px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 sm:text-sm"
         );
+
+      container
+        .find(".details-btn")
+        .off("click")
+        .on("click", function () {
+          const bookingId = $(this).data("id");
+          navigate(`/admin/booking_detail/${bookingId}`);
+        });
     },
   };
 

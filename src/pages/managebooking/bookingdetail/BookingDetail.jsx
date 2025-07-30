@@ -640,9 +640,49 @@ try {
     }
 };
 
-const onAssignExternal = (externalData) => {
-  console.log("onAssignExternal called with:", externalData);
+const onAssignExternal = async (externalData) => {
+  const { consultantName, bookingId } = externalData;
+
+  if (!consultantName) {
+    toast.error("Consultant Name is Missing");
+    return;
+  }
+
+  if (!bookingId) {
+    toast.error("Booking Id is Missing");
+    return;
+  }
+
+  try {
+    setIsProcessing(true);
+    setLoaderMessage("Assigning External Call...");
+
+    const response = await fetch("http://localhost:5000/api/bookings/assignExternalCall", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ consultantName, bookingId }),
+    });
+
+    const result = await response.json();
+
+    if (result.status) {
+      toast.success("External Call Assigned Successfully");
+      fetchBookingById(bookingId); // refresh booking info
+    } else {
+      toast.error(result.message || "Assignment failed");
+    }
+  } catch (error) {
+    console.error("Error during external assignment:", error);
+    toast.error("Something went wrong while assigning external call");
+  } finally {
+    setIsProcessing(false);
+    setLoaderMessage("Processing...");
+  }
 };
+
+
 
 const onReassignCall = (reassignData) => {
   console.log("onReassignCall called with:", reassignData);
