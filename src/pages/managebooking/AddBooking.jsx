@@ -10,6 +10,7 @@ import {
 } from "../../helpers/CommonApi";
 import { useAuth } from "../../utils/idb";
 import { callRegardingOptions, toastWarning } from "../../helpers/CommonHelper";
+import { useNavigate } from "react-router-dom";
 
 export default function AddBooking({
   user,
@@ -18,11 +19,11 @@ export default function AddBooking({
   bookingId,
 }) {
   const { user: loggedInUser, priceDiscoutUsernames } = useAuth();
+  const navigate = useNavigate()
 
-  let decodedBookingId ;
-  if(bookingId){
-
-   decodedBookingId = atob(bookingId);
+  let decodedBookingId;
+  if (bookingId) {
+    decodedBookingId = atob(bookingId);
   }
 
   const [formData, setFormData] = useState({
@@ -93,6 +94,7 @@ export default function AddBooking({
 
   const [pageLoading, setPageLoading] = useState(false);
 
+  const [rcCallData, setRcCallData] = useState(null);
   useEffect(() => {
     if (decodedBookingId) {
       const fetchCallRequestData = async () => {
@@ -110,21 +112,20 @@ export default function AddBooking({
           if (result.status) {
             // TODO: handle result.data, e.g., populate formData or other state
             console.log("Call Request Data:", result.data);
+            setRcCallData(result.data);
             setFormData((prev) => ({
               ...prev,
               rc_call_request_id: decodedBookingId,
               sale_type: "Postsales",
               client_id: result.data?.student_code || "",
               projectid: result.data?.project_id || "",
-              project_milestone : result.data?.milestone_id || "",
-              project_milestone_name : result.data?.milestone_title || "",
-              call_regarding : result.data?.call_regarding || "",
-              
+              project_milestone: result.data?.milestone_id || "",
+              project_milestone_name: result.data?.milestone_title || "",
+              call_regarding: result.data?.call_regarding || "",
             }));
 
             const consultantsData = await fetchAllConsultants();
             let filteredConsultants = consultantsData.results || [];
-
 
             // Set consultants to dropdown
             setConsultants(filteredConsultants);
@@ -136,6 +137,7 @@ export default function AddBooking({
           toast.error("Something went wrong while fetching call request data.");
         } finally {
           setPageLoading(false);
+          navigate('/bookings')
         }
       };
 
@@ -143,9 +145,66 @@ export default function AddBooking({
     }
   }, [decodedBookingId]);
 
-  useEffect(()=>{
-    console.log(consultants)
-  },[consultants]);
+  useEffect(() => {
+    const fetchWriterEmails = async () => {
+      if (rcCallData?.project_id && rcCallData?.milestone_id) {
+        try {
+          setPageLoading(true);
+          const response = await fetch(
+            "http://localhost:5000/api/additional/getwritersemail",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                project_id: rcCallData.project_id,
+                milestone_id: rcCallData.milestone_id,
+              }),
+            }
+          );
+
+          const result = await response.json();
+          console.log("Writer Email Data:", result);
+          if (result.status && result.data) {
+            const { main_writer_email, sub_writer_email } = result.data;
+
+            const mainWriter = consultants.find(
+              (c) =>
+                c.fld_email?.toLowerCase() == main_writer_email?.toLowerCase()
+            );
+
+            console.log("main writer", mainWriter);
+
+            const subWriter = sub_writer_email
+              ? consultants.find(
+                  (c) =>
+                    c.fld_email?.toLowerCase() ==
+                    sub_writer_email?.toLowerCase()
+                )
+              : null;
+            console.log("sub writer", subWriter);
+
+            setFormData((prev) => ({
+              ...prev,
+              consultant_id: mainWriter?.id || "",
+              secondary_consultant_id: subWriter?.id || "",
+            }));
+          }
+        } catch (e) {
+          console.error("Error fetching writer emails:", e);
+        } finally {
+          setPageLoading(false);
+        }
+      }
+    };
+
+    fetchWriterEmails(); // Call the async function
+  }, [rcCallData, consultants]);
+
+  useEffect(() => {
+    console.log(consultants);
+  }, [consultants]);
 
   useEffect(() => {
     const fetchClientDetails = async () => {
@@ -230,8 +289,20 @@ export default function AddBooking({
               email: data.data.email || "",
               phone: data.data.phone || "",
               client_plan_id: data.data.plan_type || "",
-              client_plan_name: plan ? plan.plan : (data.data.plan_type == "1" ? "Basic" : data.data.plan_type == "2" ? "Standard" : "Advanced" ),
-              allowedCalls: plan ? plan.allowedCalls : (data.data.plan_type == "1" ? "1" : data.data.plan_type == "2" ? "2" : "3" ),
+              client_plan_name: plan
+                ? plan.plan
+                : data.data.plan_type == "1"
+                ? "Basic"
+                : data.data.plan_type == "2"
+                ? "Standard"
+                : "Advanced",
+              allowedCalls: plan
+                ? plan.allowedCalls
+                : data.data.plan_type == "1"
+                ? "1"
+                : data.data.plan_type == "2"
+                ? "2"
+                : "3",
             };
             setFormData((prev) => ({
               ...prev,
@@ -587,6 +658,69 @@ export default function AddBooking({
   const [submitting, setSubmitting] = useState(false);
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if(!formData.sale_type){
+      toast.error("Please select a sale type");
+      return;
+    }
+    if(!formData.client_id){
+      toast.error("Please select a client");
+      return;
+    }
+    if(!formData.name || !formData.email || !formData.phone){
+      toast.error("Please fill client name, email and phone");
+      return;
+    }
+    if(!formData.topic_of_research){
+      toast.error("Please select a topic of research");
+      return;
+    }
+    if(!formData.call_regarding){
+      toast.error("Please select a call regarding");
+      return;
+    }
+    if(!formData.asana_link){
+      toast.error("Please provide Asana URL / Quote ID");
+      return;
+    }
+    if(formData.set_int_comments && !formData.internal_comments){
+      toast.error("Please fill internal comments");
+      return;
+    }
+
+    if(formData.sale_type == "Presales"){
+      if(!formData.call_related_to){
+        toast.error("Please select a call related to");
+        return;
+      }else if(!formData.consultant_id){
+        toast.error("Please select a Consultant");
+        return;
+      }else if(showReassignOptions && !formData.consultant_another_option){
+        toast.error("Please select a Consultant SubOption");
+        return;
+      }
+
+
+    }
+
+    if(formData.sale_type == "Postsales"){
+      if(!formData.consultant_id){
+        toast.error("Please select a Consultant");
+        return;
+      }else if(!formData.secondary_consultant_id){
+        toast.error("Please select a Secondary Consultant")
+        return;
+      }else if(!formData.projectid){
+        toast.error("Please select a Project ID");
+        return;
+      }else if(!formData.project_milestone){
+        toast.error("Please select a Project Milestone");
+        return;
+      }
+
+
+    }
+
     setSubmitting(true);
 
     try {
@@ -642,7 +776,7 @@ export default function AddBooking({
 
   useEffect(() => {
     const fetchMileStones = async () => {
-      if(!formData.projectid){
+      if (!formData.projectid) {
         return;
       }
       try {
@@ -661,540 +795,525 @@ export default function AddBooking({
         setMilestones([]);
       }
     };
-    fetchMileStones()
+    fetchMileStones();
   }, [formData.projectid]);
 
   return (
     <motion.div className="fixed inset-0 bg-[#000000c2] flex items-center justify-center z-50">
-    <motion.div
-      initial={{ x: "100%" }}
-      animate={{ x: 0 }}
-      exit={{ x: "100%" }}
-      transition={{ type: "spring", stiffness: 300, damping: 30 }}
-      className="fixed top-0 right-0 w-[45%] h-full bg-white shadow z-50 overflow-y-auto"
-    >
-      {/* Header */}
-      <div className="flex justify-between items-center px-4 py-3 border-b bg-[#224d68] text-white">
-        <h2 className="text-[15px] font-semibold">Add Booking</h2>
-        <button
-          onClick={() => setShowForm(false)}
-          className="text-gray-100 hover:text-black text-2xl"
-        >
-          <XIcon size={17} />
-        </button>
-      </div>
-
-      {/* Form */}
-      <div className="p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div>
-          <label className="block mb-1">
-            Select Call Type
-          </label>
-          <select
-            name="sale_type"
-            value={formData.sale_type}
-            onChange={(e) => {
-              handleChange(e);
-              handleSaleTypeChange(e.target.value);
-            }}
-            className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
-            required
+      <motion.div
+        initial={{ x: "100%" }}
+        animate={{ x: 0 }}
+        exit={{ x: "100%" }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        className="fixed top-0 right-0 w-[45%] h-full bg-white shadow z-50 overflow-y-auto"
+      >
+        {/* Header */}
+        <div className="flex justify-between items-center px-4 py-3 border-b bg-[#224d68] text-white">
+          <h2 className="text-[15px] font-semibold">Add Booking</h2>
+          <button
+            onClick={() => setShowForm(false)}
+            className="text-gray-100 hover:text-black text-2xl"
           >
-            <option value="">Select Call Type</option>
-            <option value="Presales">Presales</option>
-            <option value="Postsales">Postsales</option>
-          </select>
+            <XIcon size={17} />
+          </button>
         </div>
 
-        {(formData.sale_type === "Presales" ||
-          formData.sale_type === "Postsales") && (
-          <div>
-            <label className="block mb-1">
-              {formData.sale_type === "Presales"
-                ? "Insta CRM RefId"
-                : "RC Student Code"}
-            </label>
-            <input
-              type="text"
-              name="client_id"
-              value={formData.client_id}
-              onChange={(e) => {
-                const value = e.target.value;
-                setFormData((prev) => ({
-                  ...prev,
-                  client_id: value,
-                  client_plan_id: "",
-                  client_plan_name: "",
-                  // projectid: "",
-                  project_milestone: "",
-                  project_milestone_name: "",
-                  allowedCalls: "",
-                  completedCalls: "",
-                  insta_website: "",
-                  company_name: "",
-                }));
-                setProjects([]);
-              }}
-              className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
-              required
-            />
-          </div>
-        )}
-
-        {formData.sale_type === "Presales" && (
-          <>
-            <input
-              type="hidden"
-              name="insta_website"
-              value={formData.insta_website || ""}
-            />
-            <input
-              type="hidden"
-              name="company_name"
-              value={formData.company_name || ""}
-            />
-          </>
-        )}
-
-        {formData.sale_type === "Postsales" && (
-          <>
-            <input
-              type="hidden"
-              name="completedCalls"
-              value={formData.completedCalls || ""}
-            />
-            <input
-              type="hidden"
-              name="client_plan_id"
-              value={formData.client_plan_id || ""}
-            />
-            <input
-              type="hidden"
-              name="allowedCalls"
-              value={formData.allowedCalls || ""}
-            />
-          </>
-        )}
-
-        {formData.sale_type === "Postsales" &&
-          formData.client_id &&
-          projects.length > 0 && (
+        <div className="relative w-full overflow-x-hidden">
+          {pageLoading && (
+            <div className=" bg-[#000000bd] flex items-center justify-center w-full">
+              <div className="text-white text-xl">Loading...</div>
+            </div>
+          )}
+          {/* Form */}
+          <div className={`p-4 grid grid-cols-1 md:grid-cols-3 gap-4 ${pageLoading ? "disabled" : ""}`}>
             <div>
-              <label className="block mb-1">
-                Project
-              </label>
+              <label className="block mb-1">Select Call Type</label>
               <select
-                value={formData.projectid}
-                onChange={async (e) => {
-                  const selectedProjectId = e.target.value;
-
-                  setFormData((prev) => ({
-                    ...prev,
-                    projectid: selectedProjectId,
-                  }));
-
-                  // Fetch milestones for the selected project
+                name="sale_type"
+                value={formData.sale_type}
+                onChange={(e) => {
+                  handleChange(e);
+                  handleSaleTypeChange(e.target.value);
                 }}
-                className="border border-gray-300 rounded px-2 py-1 text-sm w-full"
+                className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
+                required
               >
-                <option value="">Select a project</option>
-                {projects.map((project) => (
-                  <option key={project.id} value={project.id}>
-                    {project.id} - {project.project_title}
+                <option value="">Select Call Type</option>
+                <option value="Presales">Presales</option>
+                <option value="Postsales">Postsales</option>
+              </select>
+            </div>
+
+            {(formData.sale_type === "Presales" ||
+              formData.sale_type === "Postsales") && (
+              <div>
+                <label className="block mb-1">
+                  {formData.sale_type === "Presales"
+                    ? "Insta CRM RefId"
+                    : "RC Student Code"}
+                </label>
+                <input
+                  type="text"
+                  name="client_id"
+                  value={formData.client_id}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setFormData((prev) => ({
+                      ...prev,
+                      client_id: value,
+                      client_plan_id: "",
+                      client_plan_name: "",
+                      // projectid: "",
+                      project_milestone: "",
+                      project_milestone_name: "",
+                      allowedCalls: "",
+                      completedCalls: "",
+                      insta_website: "",
+                      company_name: "",
+                    }));
+                    setProjects([]);
+                  }}
+                  className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
+                  required
+                />
+              </div>
+            )}
+
+            {formData.sale_type === "Presales" && (
+              <>
+                <input
+                  type="hidden"
+                  name="insta_website"
+                  value={formData.insta_website || ""}
+                />
+                <input
+                  type="hidden"
+                  name="company_name"
+                  value={formData.company_name || ""}
+                />
+              </>
+            )}
+
+            {formData.sale_type === "Postsales" && (
+              <>
+                <input
+                  type="hidden"
+                  name="completedCalls"
+                  value={formData.completedCalls || ""}
+                />
+                <input
+                  type="hidden"
+                  name="client_plan_id"
+                  value={formData.client_plan_id || ""}
+                />
+                <input
+                  type="hidden"
+                  name="allowedCalls"
+                  value={formData.allowedCalls || ""}
+                />
+              </>
+            )}
+
+            {formData.sale_type === "Postsales" &&
+              formData.client_id &&
+              projects.length > 0 && (
+                <div>
+                  <label className="block mb-1">Project</label>
+                  <select
+                    value={formData.projectid}
+                    onChange={async (e) => {
+                      const selectedProjectId = e.target.value;
+
+                      setFormData((prev) => ({
+                        ...prev,
+                        projectid: selectedProjectId,
+                      }));
+
+                      // Fetch milestones for the selected project
+                    }}
+                    className="border border-gray-300 rounded px-2 py-1 text-sm w-full"
+                  >
+                    <option value="">Select a project</option>
+                    {projects.map((project) => (
+                      <option key={project.id} value={project.id}>
+                        {project.id} - {project.project_title}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+            {formData.projectid && milestones.length > 0 && (
+              <div>
+                <label className="block mb-1">Milestone</label>
+                <select
+                  value={formData.project_milestone}
+                  onChange={async (e) => {
+                    const selectedMilestoneId = e.target.value;
+                    const selectedMilestone = milestones.find(
+                      (m) => String(m.id) === selectedMilestoneId
+                    );
+
+                    const updatedForm = {
+                      ...formData,
+                      project_milestone: selectedMilestoneId,
+                      project_milestone_name:
+                        selectedMilestone?.segment_title || "",
+                    };
+
+                    setFormData(updatedForm);
+
+                    await checkPostsaleCompletedCalls(
+                      updatedForm.email,
+                      selectedMilestoneId,
+                      updatedForm.allowedCalls
+                    );
+                  }}
+                  className="border border-gray-300 rounded px-2 py-1 text-sm w-full"
+                >
+                  <option value="">Select milestone</option>
+                  {milestones.map((milestone) => (
+                    <option key={milestone.id} value={milestone.id}>
+                      {milestone.segment_title}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {formData.sale_type === "Postsales" &&
+              formData.client_plan_name && (
+                <div>
+                  <label className="block mb-1">Plan</label>
+                  <input
+                    type="text"
+                    name="client_plan_name"
+                    value={formData.client_plan_name}
+                    className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
+                    required
+                    disabled
+                    readOnly
+                  />
+                </div>
+              )}
+
+            <div>
+              <label className="block mb-1">Call Related To</label>
+              <select
+                name="call_related_to"
+                value={formData.call_related_to}
+                onChange={(e) => {
+                  handleChange(e);
+                  handleCallRelatedToChange(e.target.value);
+                }}
+                className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
+                required
+              >
+                <option value="">Select Option</option>
+                {formData.sale_type === "Presales" && (
+                  <>
+                    <option value="direct_call">Direct Call</option>
+                    <option value="subject_area_related">
+                      Subject Area Related
+                    </option>
+                    <option value="price_and_discount_related">
+                      Price And Discount Related
+                    </option>
+                  </>
+                )}
+                <option value="I_am_not_sure">I am not sure</option>
+              </select>
+            </div>
+
+            {formData.call_related_to === "subject_area_related" && (
+              <div>
+                <label className="block mb-1">Subject Area</label>
+                <select
+                  name="subject_area"
+                  value={formData.subject_area}
+                  onChange={(e) => {
+                    handleChange(e);
+                    handleSubjectAreaChange({ value: e.target.value });
+                  }}
+                  className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
+                >
+                  <option value="">Select Subject Area</option>
+                  {subjectAreas.map((s) => (
+                    <option key={s.id} value={s.domain}>
+                      {s.domain}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+            {formData.call_related_to !== "I_am_not_sure" && (
+              <div>
+                <label className="block mb-1">Primary Consultant</label>
+                <Select
+                  name="consultant_id"
+                  options={consultantOptions}
+                  value={
+                    consultantOptions.find(
+                      (option) => option.value === formData.consultant_id
+                    ) || null
+                  }
+                  onChange={(selectedOption) => {
+                    const selectedValue = selectedOption
+                      ? selectedOption.value
+                      : "";
+                    const selectedLabel = selectedOption
+                      ? selectedOption.label
+                      : "";
+                    setSelectedConsultantName(selectedLabel);
+
+                    if (
+                      selectedValue &&
+                      selectedValue === formData.secondary_consultant_id
+                    ) {
+                      toast.error(
+                        "Primary and Secondary Consultant cannot be the same."
+                      );
+                      return;
+                    }
+
+                    handleChange({
+                      target: {
+                        name: "consultant_id",
+                        value: selectedValue,
+                      },
+                    });
+
+                    if (selectedValue) {
+                      checkConsultantConditions(selectedValue, selectedLabel);
+
+                      const selectedConsultant = consultants.find(
+                        (c) => c.id === selectedValue
+                      );
+
+                      // Check if they have "Reassign" permission
+                      if (
+                        selectedConsultant &&
+                        selectedConsultant.fld_permission &&
+                        JSON.parse(selectedConsultant.fld_permission).includes(
+                          "Reassign"
+                        )
+                      ) {
+                        setShowReassignOptions(true);
+                      } else {
+                        setShowReassignOptions(false);
+                      }
+                    } else {
+                      setShowReassignOptions(false);
+                    }
+                  }}
+                  className="react-select-container"
+                  classNamePrefix="react-select"
+                  isClearable
+                  placeholder="Select Consultant"
+                  required
+                />
+              </div>
+            )}
+
+            {formData.sale_type === "Postsales" &&
+              formData.call_related_to !== "I_am_not_sure" && (
+                <div className="mb-4">
+                  <label className="block mb-1">Secondary Consultant</label>
+                  <Select
+                    name="secondary_consultant_id"
+                    options={consultantOptions}
+                    value={
+                      consultantOptions.find(
+                        (option) =>
+                          option.value === formData.secondary_consultant_id
+                      ) || null
+                    }
+                    onChange={(selectedOption) => {
+                      const selectedSecondaryValue = selectedOption
+                        ? selectedOption.value
+                        : "";
+
+                      // Prevent duplicate consultant selection
+                      if (
+                        selectedSecondaryValue &&
+                        selectedSecondaryValue === formData.consultant_id
+                      ) {
+                        toast.error(
+                          "Primary and Secondary Consultant cannot be the same."
+                        );
+                        return;
+                      }
+
+                      handleChange({
+                        target: {
+                          name: "secondary_consultant_id",
+                          value: selectedSecondaryValue,
+                        },
+                      });
+                    }}
+                    className="react-select-container"
+                    classNamePrefix="react-select"
+                    isClearable
+                    placeholder="Select Secondary Consultant"
+                  />
+                </div>
+              )}
+
+            {showReassignOptions &&
+              formData.sale_type === "Presales" &&
+              formData.call_related_to === "direct_call" && (
+                <div className="mb-4">
+                  <label className="block mb-1">Sub Option</label>
+                  <select
+                    name="consultant_another_option"
+                    value={formData.consultant_another_option || ""}
+                    onChange={handleChange}
+                    className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
+                  >
+                    <option value="">Select Sub Option</option>
+                    <option value="CONSULTANT">
+                      Assign Call to {selectedConsultantName}
+                    </option>
+                    <option value="TEAM">Assign Call to Team Member</option>
+                  </select>
+                </div>
+              )}
+
+            <div>
+              <label className="block mb-1">Client Name</label>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                disabled
+                className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
+                readOnly
+              />
+            </div>
+
+            <div>
+              <label className="block mb-1">Email</label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                disabled
+                className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
+                readOnly
+              />
+            </div>
+
+            <div>
+              <label className="block mb-1">Phone</label>
+              <input
+                type="text"
+                name="phone"
+                value={formData.phone}
+                disabled
+                className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
+                readOnly
+              />
+            </div>
+
+            <div className="md:col-span-3">
+              <label className="block mb-1">Topic of Research</label>
+              <textarea
+                name="topic_of_research"
+                value={formData.topic_of_research}
+                onChange={handleChange}
+                className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block mb-1">Call Regarding</label>
+              <select
+                name="call_regarding"
+                value={formData.call_regarding}
+                onChange={handleChange}
+                className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
+                required
+              >
+                <option value="">Select</option>
+                {Object.entries(
+                  callRegardingOptions[formData.sale_type] || {}
+                ).map(([key, label]) => (
+                  <option key={key} value={label}>
+                    {label}
                   </option>
                 ))}
               </select>
             </div>
-          )}
 
-        {formData.projectid && milestones.length > 0 && (
-          <div>
-            <label className="block mb-1">
-              Milestone
-            </label>
-            <select
-              value={formData.project_milestone}
-              onChange={async (e) => {
-                const selectedMilestoneId = e.target.value;
-                const selectedMilestone = milestones.find(
-                  (m) => String(m.id) === selectedMilestoneId
-                );
-
-                const updatedForm = {
-                  ...formData,
-                  project_milestone: selectedMilestoneId,
-                  project_milestone_name:
-                    selectedMilestone?.segment_title || "",
-                };
-
-                setFormData(updatedForm);
-
-                await checkPostsaleCompletedCalls(
-                  updatedForm.email,
-                  selectedMilestoneId,
-                  updatedForm.allowedCalls
-                );
-              }}
-              className="border border-gray-300 rounded px-2 py-1 text-sm w-full"
-            >
-              <option value="">Select milestone</option>
-              {milestones.map((milestone) => (
-                <option key={milestone.id} value={milestone.id}>
-                  {milestone.segment_title}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
-
-        {formData.sale_type === "Postsales" && formData.client_plan_name && (
-          <div>
-            <label className="block mb-1">
-              Plan
-            </label>
-            <input
-              type="text"
-              name="client_plan_name"
-              value={formData.client_plan_name}
-              className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
-              required
-              readOnly
-            />
-          </div>
-        )}
-
-        <div>
-          <label className="block mb-1">
-            Call Related To
-          </label>
-          <select
-            name="call_related_to"
-            value={formData.call_related_to}
-            onChange={(e) => {
-              handleChange(e);
-              handleCallRelatedToChange(e.target.value);
-            }}
-            className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
-            required
-          >
-            <option value="">Select Option</option>
-            {formData.sale_type === "Presales" && (
-              <>
-                <option value="direct_call">Direct Call</option>
-                <option value="subject_area_related">
-                  Subject Area Related
-                </option>
-                <option value="price_and_discount_related">
-                  Price And Discount Related
-                </option>
-              </>
-            )}
-            <option value="I_am_not_sure">I am not sure</option>
-          </select>
-        </div>
-
-        {formData.call_related_to === "subject_area_related" && (
-          <div>
-            <label className="block mb-1">
-              Subject Area
-            </label>
-            <select
-              name="subject_area"
-              value={formData.subject_area}
-              onChange={(e) => {
-                handleChange(e);
-                handleSubjectAreaChange({ value: e.target.value });
-              }}
-              className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
-            >
-              <option value="">Select Subject Area</option>
-              {subjectAreas.map((s) => (
-                <option key={s.id} value={s.domain}>
-                  {s.domain}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
-        {formData.call_related_to !== "I_am_not_sure" && (
-          <div>
-            <label className="block mb-1">
-              Primary Consultant
-            </label>
-            <Select
-              name="consultant_id"
-              options={consultantOptions}
-              value={
-                consultantOptions.find(
-                  (option) => option.value === formData.consultant_id
-                ) || null
-              }
-              onChange={(selectedOption) => {
-                const selectedValue = selectedOption
-                  ? selectedOption.value
-                  : "";
-                const selectedLabel = selectedOption
-                  ? selectedOption.label
-                  : "";
-                setSelectedConsultantName(selectedLabel);
-
-                if (
-                  selectedValue &&
-                  selectedValue === formData.secondary_consultant_id
-                ) {
-                  toast.error(
-                    "Primary and Secondary Consultant cannot be the same."
-                  );
-                  return;
-                }
-
-                handleChange({
-                  target: {
-                    name: "consultant_id",
-                    value: selectedValue,
-                  },
-                });
-
-                if (selectedValue) {
-                  checkConsultantConditions(selectedValue, selectedLabel);
-
-                  const selectedConsultant = consultants.find(
-                    (c) => c.id === selectedValue
-                  );
-
-                  // Check if they have "Reassign" permission
-                  if (
-                    selectedConsultant &&
-                    selectedConsultant.fld_permission &&
-                    JSON.parse(selectedConsultant.fld_permission).includes(
-                      "Reassign"
-                    )
-                  ) {
-                    setShowReassignOptions(true);
-                  } else {
-                    setShowReassignOptions(false);
-                  }
-                } else {
-                  setShowReassignOptions(false);
-                }
-              }}
-              className="react-select-container"
-              classNamePrefix="react-select"
-              isClearable
-              placeholder="Select Consultant"
-              required
-            />
-          </div>
-        )}
-
-        {formData.sale_type === "Postsales" &&
-          formData.call_related_to !== "I_am_not_sure" && (
-            <div className="mb-4">
-              <label className="block mb-1">
-                Secondary Consultant
-              </label>
-              <Select
-                name="secondary_consultant_id"
-                options={consultantOptions}
-                value={
-                  consultantOptions.find(
-                    (option) =>
-                      option.value === formData.secondary_consultant_id
-                  ) || null
-                }
-                onChange={(selectedOption) => {
-                  const selectedSecondaryValue = selectedOption
-                    ? selectedOption.value
-                    : "";
-
-                  // Prevent duplicate consultant selection
-                  if (
-                    selectedSecondaryValue &&
-                    selectedSecondaryValue === formData.consultant_id
-                  ) {
-                    toast.error(
-                      "Primary and Secondary Consultant cannot be the same."
-                    );
-                    return;
-                  }
-
-                  handleChange({
-                    target: {
-                      name: "secondary_consultant_id",
-                      value: selectedSecondaryValue,
-                    },
-                  });
-                }}
-                className="react-select-container"
-                classNamePrefix="react-select"
-                isClearable
-                placeholder="Select Secondary Consultant"
-              />
-            </div>
-          )}
-
-        {showReassignOptions &&
-          formData.sale_type === "Presales" &&
-          formData.call_related_to === "direct_call" && (
-            <div className="mb-4">
-              <label className="block mb-1">
-                Sub Option
-              </label>
-              <select
-                name="consultant_another_option"
-                value={formData.consultant_another_option || ""}
+            <div>
+              <label className="block mb-1">Asana URL / Quote ID</label>
+              <input
+                type="text"
+                name="asana_link"
+                value={formData.asana_link}
                 onChange={handleChange}
                 className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
-              >
-                <option value="">Select Sub Option</option>
-                <option value="CONSULTANT">
-                  Assign Call to {selectedConsultantName}
-                </option>
-                <option value="TEAM">Assign Call to Team Member</option>
-              </select>
+                required
+              />
             </div>
-          )}
 
-        <div>
-          <label className="block mb-1">
-            Client Name
-          </label>
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
-            readOnly
-          />
-        </div>
-
-        <div>
-          <label className="block mb-1">
-            Email
-          </label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
-            readOnly
-          />
-        </div>
-
-        <div>
-          <label className="block mb-1">
-            Phone
-          </label>
-          <input
-            type="text"
-            name="phone"
-            value={formData.phone}
-            className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
-            readOnly
-          />
-        </div>
-
-        <div className="md:col-span-3">
-          <label className="block mb-1">
-            Topic of Research
-          </label>
-          <textarea
-            name="topic_of_research"
-            value={formData.topic_of_research}
-            onChange={handleChange}
-            className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
-            required
-          />
-        </div>
-
-        <div>
-          <label className="block mb-1">
-            Call Regarding
-          </label>
-          <select
-            name="call_regarding"
-            value={formData.call_regarding}
-            onChange={handleChange}
-            className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
-            required
-          >
-            <option value="">Select</option>
-            {Object.entries(callRegardingOptions[formData.sale_type] || {}).map(
-              ([key, label]) => (
-                <option key={key} value={label}>
-                  {label}
-                </option>
-              )
+            <div className="md:col-span-3">
+              <label className="inline-flex items-center text-sm text-gray-700">
+                <input
+                  type="checkbox"
+                  name="set_int_comments"
+                  checked={formData.set_int_comments}
+                  onChange={handleChange}
+                  className="mr-2"
+                />
+                Add CRM Comments
+              </label>
+              {formData.set_int_comments && (
+                <textarea
+                  name="internal_comments"
+                  value={formData.internal_comments}
+                  onChange={handleChange}
+                  className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600 mt-2"
+                  placeholder="Enter comments"
+                />
+              )}
+            </div>
+            {showRequestField && (
+              <div className="mt-4">
+                <label
+                  htmlFor="requestMessage"
+                  className="block mb-1 font-medium"
+                >
+                  Request Message
+                </label>
+                <textarea
+                  id="requestMessage"
+                  name="requestMessage"
+                  className="w-full p-2 border rounded"
+                  onChange={handleChange}
+                />
+              </div>
             )}
-          </select>
-        </div>
 
-        <div>
-          <label className="block mb-1">
-            Asana URL / Quote ID
-          </label>
-          <input
-            type="text"
-            name="asana_link"
-            value={formData.asana_link}
-            onChange={handleChange}
-            className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
-            required
-          />
-        </div>
-
-        <div className="md:col-span-3">
-          <label className="inline-flex items-center text-sm text-gray-700">
-            <input
-              type="checkbox"
-              name="set_int_comments"
-              checked={formData.set_int_comments}
-              onChange={handleChange}
-              className="mr-2"
-            />
-            Add CRM Comments
-          </label>
-          {formData.set_int_comments && (
-            <textarea
-              name="internal_comments"
-              value={formData.internal_comments}
-              onChange={handleChange}
-              className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600 mt-2"
-              placeholder="Enter comments"
-            />
-          )}
-        </div>
-        {showRequestField && (
-          <div className="mt-4">
-            <label htmlFor="requestMessage" className="block mb-1 font-medium">
-              Request Message
-            </label>
-            <textarea
-              id="requestMessage"
-              name="requestMessage"
-              className="w-full p-2 border rounded"
-              onChange={handleChange}
-            />
+            <div className="md:col-span-3 flex justify-end pt-4">
+              <button
+                id="submitBtn"
+                type="button"
+                onClick={handleSubmit}
+                className={`bg-green-600 leading-none text-white px-3 py-2 rounded hover:bg-green-700 text-[13px] flex items-center gap-1 transition ${
+                  submitDisabled
+                    ? "opacity-50 cursor-not-allowed"
+                    : "hover:bg-blue-700"
+                }`}
+                disabled={submitDisabled || submitting}
+              >
+                {submitting ? "Submitting..." : submitButtonText}
+              </button>
+            </div>
           </div>
-        )}
-
-        <div className="md:col-span-3 flex justify-end pt-4">
-          <button
-            id="submitBtn"
-            type="button"
-            onClick={handleSubmit}
-            className={`bg-green-600 leading-none text-white px-3 py-2 rounded hover:bg-green-700 text-[13px] flex items-center gap-1 transition ${
-              submitDisabled
-                ? "opacity-50 cursor-not-allowed"
-                : "hover:bg-blue-700"
-            }`}
-            disabled={submitDisabled || submitting}
-          >
-            {submitting ? "Submitting..." : submitButtonText}
-          </button>
         </div>
-      </div>
-    </motion.div>
+      </motion.div>
     </motion.div>
   );
 }

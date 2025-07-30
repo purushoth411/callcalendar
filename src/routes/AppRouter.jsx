@@ -12,6 +12,7 @@ import Bookings from "../pages/managebooking/Bookings";
 import ScheduleCall from "../pages/managebooking/ScheduleCall";
 import BookingDetail from "../pages/managebooking/bookingdetail/BookingDetail";
 import CallRequestsFromRc from "../pages/additional/CallRequestsFromRc";
+import ExternalCalls from "../pages/additional/ExternalCalls";
 
 
 
@@ -34,6 +35,7 @@ export default function AppRouter() {
             <Route path="/admin/booking_detail/:bookingId" element={<BookingDetail />} />
              <Route path="/admin/booking_detail/:bookingId/convert" element={<BookingDetail />} />
             <Route path="/call_request_from_rc" element={<CallRequestsFromRc />} />
+            <Route path="/external_calls" element={<ExternalCalls />} />
             <Route path="/admin/add_call_request/:bookingid/enq" element={<Bookings />} />
 
 
