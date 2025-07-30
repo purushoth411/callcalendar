@@ -4,7 +4,7 @@ import DataTable from "datatables.net-react";
 import DT from "datatables.net-dt";
 import { toast } from "react-hot-toast";
 import $ from "jquery";
-import { X } from "lucide-react";
+import { PlusIcon, X, XIcon } from "lucide-react";
 import Select from "react-select";
 import SkeletonLoader from "../components/SkeletonLoader";
 
@@ -47,29 +47,29 @@ export default function Teams() {
   };
 
   const updateTeamStatus = async (teamId, status) => {
-      try {
-        const res = await fetch(
-          `http://localhost:5000/api/helpers/update-team-status/${teamId}`,
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ status }),
-          }
-        );
-  
-        const data = await res.json();
-        if (data.status) {
-          toast.success("Status updated");
-        } else {
-          toast.error(data.message || "Status update failed");
+    try {
+      const res = await fetch(
+        `http://localhost:5000/api/helpers/update-team-status/${teamId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ status }),
         }
-      } catch (err) {
-        console.error(err);
-        toast.error("Error updating status");
+      );
+
+      const data = await res.json();
+      if (data.status) {
+        toast.success("Status updated");
+      } else {
+        toast.error(data.message || "Status update failed");
       }
-    };
+    } catch (err) {
+      console.error(err);
+      toast.error("Error updating status");
+    }
+  };
 
   const handleSave = async () => {
     const { team } = formData;
@@ -149,16 +149,16 @@ export default function Teams() {
     setShowEditForm(true);
   };
 
-const columns = [
-  {
-    title: "Team Name",
-    data: "fld_title",
-  },
-  {
-    title: "Added On",
-    data: "fld_addedon",
-  },
-  {
+  const columns = [
+    {
+      title: "Team Name",
+      data: "fld_title",
+    },
+    {
+      title: "Added On",
+      data: "fld_addedon",
+    },
+    {
       title: "Status",
       data: "status",
       orderable: false,
@@ -172,17 +172,16 @@ const columns = [
     `;
       },
     },
-  {
-    title: "Actions",
-    data: null,
-    orderable: false,
-    render: (data, type, row) => `
-      <button class="edit-btn bg-blue-600 px-2 py-1 rounded text-white leading-none text-[11px] mr-1" data-id="${row.id}">Edit</button>
+    {
+      title: "Actions",
+      data: null,
+      orderable: false,
+      render: (data, type, row) => `
+      <button class="edit-btn bg-yellow-600 hover:bg-yellow-700 px-2 py-1 rounded text-white leading-none text-[11px] cursor-pointer" data-id="${row.id}">Edit</button>
      
     `,
-  },
-];
-
+    },
+  ];
 
   useEffect(() => {
     $(document).on("click", ".edit-btn", function () {
@@ -191,11 +190,8 @@ const columns = [
       handleEdit(selected);
     });
 
-
-
     return () => {
       $(document).off("click", ".edit-btn");
-    
     };
   }, [teams]);
 
@@ -213,8 +209,7 @@ const columns = [
       infoEmpty: "No entries available",
       infoFiltered: "(filtered from _MAX_ total entries)",
     },
-     createdRow: (row, data) => {
-      
+    createdRow: (row, data) => {
       $(row)
         .find(".custom-checkbox")
         .on("change", function () {
@@ -228,12 +223,12 @@ const columns = [
       container
         .find('input[type="search"]')
         .addClass(
-          "form-input px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          "px-3 !py-1 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 text-[13px]"
         );
       container
         .find("select")
         .addClass(
-          "form-select px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          "px-3 !py-1 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 text-[13px]"
         );
     },
   };
@@ -257,161 +252,172 @@ const columns = [
     setShowEditForm(false);
   };
 
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-[1250px] mx-auto py-5">
-       <div className="p-3 bg-gray-100 rounded shadow text-[13px]">
-  <div className="flex justify-between items-center mb-6">
-    <h2 className="text-xl font-bold text-gray-800">
-      Team Management
-    </h2>
-    <button
-      onClick={openAddForm}
-      className="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 transition-colors text-[11px]"
-    >
-      Add New
-    </button>
-  </div>
-
-  {isLoading ? (
-    <SkeletonLoader
-  rows={6}
-  columns={["Team Name", "Added On", "Status", "Actions"]}
-/>
-
-  ) :  (
-    <DataTable
-      data={teams}
-      columns={columns}
-      className="display w-full text-[13px]"
-      options={tableOptions}
-    />
-  )}
-</div>
-
+    <div className="">
+      <div className="">
+        <div className="">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-[18px] font-semibold text-gray-900">Team Management</h2>
+            <button
+              onClick={openAddForm}
+              className="bg-green-600 leading-none text-white px-2 py-1.5 rounded hover:bg-green-700 text-[11px] flex items-center gap-1"
+            >
+              <PlusIcon size={11} className="leading-none" /> Add New
+            </button>
+          </div>
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+          {isLoading ? (
+            <SkeletonLoader
+              rows={6}
+              columns={["Team Name", "Added On", "Status", "Actions"]}
+            />
+          ) : (
+            <DataTable
+              data={teams}
+              columns={columns}
+              className="display table table-auto w-full text-[13px] border border-gray-300 n-table-set dataTable"
+              options={tableOptions}
+            />
+          )}
+          </div>
+        </div>
       </div>
-<AnimatePresence>
-  {/* ADD TEAM FORM */}
-  {showAddForm && (
-    <>
-      {/* Backdrop */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.3 }}
-        className="fixed inset-0 bg-black bg-opacity-50 z-40"
-        onClick={closeForm}
-      />
+      <AnimatePresence>
+        {/* ADD TEAM FORM */}
+        {showAddForm && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="fixed inset-0 bg-[#000000c2] flex items-center justify-center z-50"
+              onClick={closeForm}
+            />
 
-      {/* Slide-In Panel */}
-      <motion.div
-        initial={{ x: "100%" }}
-        animate={{ x: 0 }}
-        exit={{ x: "100%" }}
-        transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className="fixed top-0 right-0 h-full w-full bg-white shadow-2xl z-50 overflow-y-auto"
-      >
-        <div className="p-6">
-          <div className="flex justify-between items-center mb-6 pb-4">
-            <h3 className="text-xl font-semibold text-gray-800">Add New Team</h3>
-            <button onClick={closeForm} className="text-gray-500 hover:text-gray-700 text-2xl font-bold">
-              <X size={15} />
-            </button>
-          </div>
-
-          <div className="space-y-6">
-            {/* Team Name */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Team Name *</label>
-              <input
-                type="text"
-                placeholder="Enter team name"
-                value={formData.team}
-                onChange={(e) => setFormData({ ...formData, team: e.target.value })}
-                className="w-full border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-
-           
-          </div>
-
-          {/* Save Button */}
-          <div className="flex justify-end gap-3 mt-8 pt-6 border-t">
-            <button
-              onClick={handleSave}
-              className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+            {/* Slide-In Panel */}
+            <motion.div
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              className="fixed top-0 right-0 w-[25%] h-full bg-white shadow z-50 overflow-y-auto"
             >
-              Save
-            </button>
-          </div>
-        </div>
-      </motion.div>
-    </>
-  )}
+              <div className="">
+                <div className="flex justify-between items-center px-4 py-3 border-b bg-[#224d68] text-white">
+                  <h3 className="text-[15px] font-semibold">
+                    Add New Team
+                  </h3>
+                  <button
+                    onClick={closeForm}
+                    className="text-gray-100 hover:text-black text-2xl"
+                  >
+                    <XIcon size={17} />
+                  </button>
+                </div>
 
-  {/* EDIT TEAM FORM */}
-  {showEditForm && (
-    <>
-      {/* Backdrop */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.3 }}
-        className="fixed inset-0 bg-black bg-opacity-50 z-40"
-        onClick={closeForm}
-      />
+                <div className="p-4 space-y-4 row">
+                  {/* Team Name */}
+                  <div>
+                    <label className="block mb-1">
+                      Team Name *
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Enter team name"
+                      value={formData.team}
+                      onChange={(e) =>
+                        setFormData({ ...formData, team: e.target.value })
+                      }
+                      className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
+                    />
+                  </div>
+                
 
-      {/* Slide-In Panel */}
-      <motion.div
-        initial={{ x: "100%" }}
-        animate={{ x: 0 }}
-        exit={{ x: "100%" }}
-        transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className="fixed top-0 right-0 h-full w-full bg-white shadow-2xl z-50 overflow-y-auto"
-      >
-        <div className="p-6">
-          <div className="flex justify-between items-center mb-6 pb-4">
-            <h3 className="text-xl font-semibold text-gray-800">Edit Team</h3>
-            <button onClick={closeForm} className="text-gray-500 hover:text-gray-700 text-2xl font-bold">
-              <X size={15} />
-            </button>
-          </div>
+                {/* Save Button */}
+                <div className="flex justify-end gap-3">
+                  <button
+                    onClick={handleSave}
+                    className="bg-green-600 leading-none text-white px-3 py-2 rounded hover:bg-green-700 text-[13px] flex items-center gap-1"
+                  >
+                    Save
+                  </button>
+                </div>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
 
-          <div className="space-y-6">
-            {/* Team Name */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Team Name *</label>
-              <input
-                type="text"
-                placeholder="Enter team name"
-                value={formData.team}
-                onChange={(e) => setFormData({ ...formData, team: e.target.value })}
-                className="w-full border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
+        {/* EDIT TEAM FORM */}
+        {showEditForm && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="fixed inset-0 bg-[#000000c2] flex items-center justify-center z-50"
+              onClick={closeForm}
+            />
 
-           
-          </div>
-
-          {/* Update Button */}
-          <div className="flex justify-end gap-3 mt-8 pt-6 border-t">
-            <button
-              onClick={handleUpdate}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            {/* Slide-In Panel */}
+            <motion.div
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              className="fixed top-0 right-0 w-[25%] h-full bg-white shadow z-50 overflow-y-auto"
             >
-              Update
-            </button>
-          </div>
-        </div>
-      </motion.div>
-    </>
-  )}
-</AnimatePresence>
+              <div className="">
+                <div className="flex justify-between items-center px-4 py-3 border-b bg-[#224d68] text-white">
+                  <h3 className="text-[15px] font-semibold">
+                    Edit Team
+                  </h3>
+                  <button
+                    onClick={closeForm}
+                    className="text-gray-100 hover:text-black text-2xl"
+                  >
+                    <XIcon size={17} />
+                  </button>
+                </div>
 
-    
+                <div className="p-4 space-y-4 row">
+                  {/* Team Name */}
+                  <div>
+                    <label className="block mb-1">
+                      Team Name *
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Enter team name"
+                      value={formData.team}
+                      onChange={(e) =>
+                        setFormData({ ...formData, team: e.target.value })
+                      }
+                      className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
+                    />
+                  </div>
+                
+
+                {/* Update Button */}
+                <div className="flex justify-end gap-3 ">
+                  <button
+                    onClick={handleUpdate}
+                    className="bg-green-600 leading-none text-white px-3 py-2 rounded hover:bg-green-700 text-[13px] flex items-center gap-1"
+                  >
+                    Update
+                  </button>
+                </div>
+
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
