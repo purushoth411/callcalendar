@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-
+import Select from "react-select";
 const CallUpdateActions = ({
   bookingData,
   user,
@@ -242,6 +242,13 @@ const CallUpdateActions = ({
   if (!shouldShowComponent()) {
     return null;
   }
+
+  const consultantOptions = consultantList
+  .filter((consultant) => consultant.id !== bookingData.fld_consultantid)
+  .map((consultant) => ({
+    value: consultant.id,
+    label: consultant.fld_name,
+  }));
 
   return (
     <div className="col-sm-6">
@@ -575,28 +582,17 @@ const CallUpdateActions = ({
       {selectedAction === "Reassign Call" && (
         <div className="form-group row form-detls">
           <div className="col-sm-9">
-            <select
-              value={selectedConsultant}
-              onChange={(e) => setSelectedConsultant(e.target.value)}
-              className="form-control"
-              required
-            >
-              <option value="">
-                {bookingData.fld_sale_type === "Presales"
-                  ? "Select Consultants"
-                  : "Select Consultant"}
-              </option>
-              {consultantList
-                .filter(
-                  (consultant) =>
-                    consultant.id !== bookingData.current_consultant_id
-                )
-                .map((consultant) => (
-                  <option key={consultant.id} value={consultant.id}>
-                    {consultant.fld_name}
-                  </option>
-                ))}
-            </select>
+
+
+<Select
+  value={consultantOptions.find(option => option.value === selectedConsultant) || null}
+  onChange={(selectedOption) => setSelectedConsultant(selectedOption?.value)}
+  options={consultantOptions}
+  placeholder="Select Consultant"
+  classNamePrefix="react-select"
+  isClearable
+  required
+/>
           </div>
 
           <div className="col-sm-3">

@@ -54,6 +54,7 @@ const BookingDetail = () => {
   }, [bookingId]);
 
   const fetchBookingById = async (bookingId) => {
+    let tempBooking = null;
     try {
       const response = await fetch(
         `http://localhost:5000/api/bookings/fetchBookingById`,
@@ -71,6 +72,7 @@ const BookingDetail = () => {
       if (result.status) {
         console.log("Booking Data:", result.data);
         setBookingData(result.data);
+        tempBooking = result.data;
       } else {
         console.warn("Booking not found or error:", result.message);
       }
@@ -80,8 +82,13 @@ const BookingDetail = () => {
       fetchMsgData(bookingId);
       getOtherBookings();
       getExternalCallByBookingId(bookingId);
-     
-        fetchConsultants(bookingData.fld_subject_area, bookingData.fld_call_related_to);
+     if(tempBooking && tempBooking.fld_subject_area && tempBooking.fld_call_related_to){
+
+       fetchConsultants(tempBooking.fld_subject_area, tempBooking.fld_call_related_to);
+     }else{
+
+       fetchConsultants(null, null);
+     }
       
       
     }
@@ -90,9 +97,8 @@ const BookingDetail = () => {
   const fetchConsultants = async (subject_area, call_related_to) => {
   try {
     let filteredConsultants = [];
-
     if (call_related_to === "subject_area_related") {
-      // 🎯 Fetch consultants based on subject area
+     
       const res = await fetch(
         "http://localhost:5000/api/helpers/getConsultantsBySubjectArea",
         {
