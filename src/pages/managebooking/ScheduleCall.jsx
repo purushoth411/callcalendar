@@ -20,7 +20,6 @@ const ScheduleCall = () => {
   const [submitMessage, setSubmitMessage] = useState("");
   const [loadingSlots, setLoadingSlots] = useState(false);
 
-
   const fetchBookingDetailsWithRc = async () => {
     try {
       const response = await fetch(
@@ -74,7 +73,7 @@ const ScheduleCall = () => {
   };
 
   const handleDateSelect = async (dateStr, dayKey) => {
-    setLoadingSlots(true); 
+    setLoadingSlots(true);
     setSelectedDate(dateStr);
     setSelectedSlot(""); // Reset selected slot
 
@@ -150,7 +149,6 @@ const ScheduleCall = () => {
     });
 
     try {
-     
       const res1 = await fetch(
         "http://localhost:5000/api/helpers/getBookingData",
         {
@@ -248,54 +246,55 @@ const ScheduleCall = () => {
     } catch (error) {
       console.error("Error fetching booking data:", error);
       setAvailableSlots([]);
-    }finally{
+    } finally {
       setLoadingSlots(false);
     }
   };
 
   const handleSubmit = async () => {
-  if (!selectedDate || !selectedSlot || !callLink) {
-    alert("Please select a date, slot, and provide a call link.");
-    return;
-  }
-
-  try {
-    const response = await fetch("http://localhost:5000/api/bookings/saveCallScheduling", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        bookingId:bookingDetails?.id,
-        consultantId: bookingDetails?.fld_consultantid,
-        secondaryConsultantId:bookingDetails?.fld_secondary_consultant_id,
-        bookingDate: selectedDate,
-        slot: selectedSlot,
-        callLink,
-        timezone: selectedTimezone,
-      }),
-    });
-
-    const result = await response.json();
-
-    if (result.status) {
-  toast.success("Booking successfully submitted!");
-  setCallLink("");
-  setSelectedSlot("");
-
-  setTimeout(() => {
-    window.location.href = "http://localhost:5173/bookings";
-  }, 1500); // optional delay to let toast show
-}
-else {
-      toast.errro("Failed to submit booking.");
+    if (!selectedDate || !selectedSlot || !callLink) {
+      alert("Please select a date, slot, and provide a call link.");
+      return;
     }
-  } catch (err) {
-    console.error("Submission error:", err);
-    toast.error("An error occurred during submission.");
-  }
-};
 
+    try {
+      const response = await fetch(
+        "http://localhost:5000/api/bookings/saveCallScheduling",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            bookingId: bookingDetails?.id,
+            consultantId: bookingDetails?.fld_consultantid,
+            secondaryConsultantId: bookingDetails?.fld_secondary_consultant_id,
+            bookingDate: selectedDate,
+            slot: selectedSlot,
+            callLink,
+            timezone: selectedTimezone,
+          }),
+        }
+      );
+
+      const result = await response.json();
+
+      if (result.status) {
+        toast.success("Booking successfully submitted!");
+        setCallLink("");
+        setSelectedSlot("");
+
+        setTimeout(() => {
+          window.location.href = "http://localhost:5173/bookings";
+        }, 1500); // optional delay to let toast show
+      } else {
+        toast.errro("Failed to submit booking.");
+      }
+    } catch (err) {
+      console.error("Submission error:", err);
+      toast.error("An error occurred during submission.");
+    }
+  };
 
   return (
     <div className="p-6">
@@ -372,40 +371,41 @@ else {
                       : "Select a date to view slots"}
                   </h5>
 
-                {loadingSlots ? (
-  // Skeleton loader
-  <div className="grid grid-cols-2 gap-2 max-h-80 overflow-y-auto">
-    {Array(16)
-      .fill("")
-      .map((_, i) => (
-        <div
-          key={i}
-          className="h-10 bg-gray-200 animate-pulse rounded-md"
-        ></div>
-      ))}
-  </div>
-) : availableSlots.length > 0 ? (
-  // Slots display
-  <div className="grid grid-cols-2 gap-2 max-h-80 overflow-y-auto">
-    {availableSlots.map((slot, i) => (
-      <div
-        key={i}
-        onClick={() => setSelectedSlot(slot)}
-        className={`cursor-pointer border rounded-md text-center py-2 px-3 text-sm transition
+                  {loadingSlots ? (
+                    // Skeleton loader
+                    <div className="grid grid-cols-2 gap-2 max-h-80 overflow-y-auto">
+                      {Array(16)
+                        .fill("")
+                        .map((_, i) => (
+                          <div
+                            key={i}
+                            className="h-10 bg-gray-200 animate-pulse rounded-md"
+                          ></div>
+                        ))}
+                    </div>
+                  ) : availableSlots.length > 0 ? (
+                    // Slots display
+                    <div className="grid grid-cols-2 gap-2 max-h-80 overflow-y-auto">
+                      {availableSlots.map((slot, i) => (
+                        <div
+                          key={i}
+                          onClick={() => setSelectedSlot(slot)}
+                          className={`cursor-pointer border rounded-md text-center py-2 px-3 text-sm transition
           ${
             selectedSlot === slot
               ? "bg-blue-600 text-white border-blue-600"
               : "bg-gray-50 hover:bg-blue-100"
           }`}
-      >
-        {slot}
-      </div>
-    ))}
-  </div>
-) : selectedDate ? (
-  <p className="text-sm text-red-600">No slots available for this day.</p>
-) : null}
-
+                        >
+                          {slot}
+                        </div>
+                      ))}
+                    </div>
+                  ) : selectedDate ? (
+                    <p className="text-sm text-red-600">
+                      No slots available for this day.
+                    </p>
+                  ) : null}
                 </div>
 
                 {selectedSlot && (

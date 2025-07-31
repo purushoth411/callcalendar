@@ -357,7 +357,7 @@ const CallUpdateOtherActions = ({
             <div className="space-y-4">
               {loadingFollowers ? (
                 <p className="text-blue-600 text-sm mb-2">
-                  Fetching followers...
+                  Fetching followers...This may take some time.
                 </p>
               ) : (
                 <>

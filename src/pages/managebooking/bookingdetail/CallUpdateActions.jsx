@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import Select from "react-select";
+import { ArrowRight, Settings, UserCheck, ExternalLink, FileText, Upload, Star } from "lucide-react";
+
+
 const CallUpdateActions = ({
   bookingData,
   user,
@@ -16,9 +19,9 @@ const CallUpdateActions = ({
   const [selectedConsultant, setSelectedConsultant] = useState("");
   const [externalConsultantName, setExternalConsultantName] = useState("");
   const [rescheduledOthersText, setRescheduledOthersText] = useState("");
-  const [scaleQuestion1, setScaleQuestion1] = useState("");
-  const [scaleQuestion2, setScaleQuestion2] = useState("");
-  const [scaleQuestion3, setScaleQuestion3] = useState("");
+  const [scaleQuestion1, setScaleQuestion1] = useState("Being Poor");
+  const [scaleQuestion2, setScaleQuestion2] = useState("Being Poor");
+  const [scaleQuestion3, setScaleQuestion3] = useState("scale8");
   const [callSummary, setCallSummary] = useState("");
   const [uploadedFile, setUploadedFile] = useState(null);
   const userType = user.fld_admin_type;
@@ -32,6 +35,21 @@ const CallUpdateActions = ({
       fetchExternalCallCount(bookingData.id);
     }
   }, [bookingData?.id]);
+
+
+   // Check if component should be visible
+  const shouldShowComponent = () => {
+    return (
+      (userType === "CONSULTANT" ||
+        userType === "SUBADMIN" ||
+        userType === "SUPERADMIN") &&
+      !["Completed", "Reject", "Cancelled"].includes(
+        bookingData.fld_consultation_sts
+      ) &&
+      bookingData.fld_call_related_to !== "I_am_not_sure" &&
+      bookingData.fld_call_external_assign !== "Yes"
+    );
+  };
 
   const fetchExternalCallCount = async (bookingId) => {
     try {
@@ -50,19 +68,7 @@ const CallUpdateActions = ({
     }
   };
 
-  // Check if component should be visible
-  const shouldShowComponent = () => {
-    return (
-      (userType === "CONSULTANT" ||
-        userType === "SUBADMIN" ||
-        userType === "SUPERADMIN") &&
-      !["Completed", "Reject", "Cancelled"].includes(
-        bookingData.fld_consultation_sts
-      ) &&
-      bookingData.fld_call_related_to !== "I_am_not_sure" &&
-      bookingData.fld_call_external_assign !== "Yes"
-    );
-  };
+ 
 
   // Check if external assignment is allowed
   const canAssignExternal = () => {
@@ -300,73 +306,73 @@ const checkCompletedCallsForSelectedConsultant = async (consultantId) => {
     }
   };
 
-  return (
-    <div className="col-sm-6">
-      <div id="msgloader" style={{ textAlign: "center" }}></div>
+ return (
+    <div className="bg-white border border-gray-200 rounded-lg p-6">
+      <div id="msgloader" className="text-center"></div>
 
-      <div className="form-group row form-detls">
-        <div className="col-sm-12">
-          <h5>
-            <strong>Call Booking Action</strong>
-          </h5>
-        </div>
+      <div className="mb-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+          <Settings className="w-5 h-5 mr-2" />
+          Call Booking Action
+        </h2>
 
-        <div className="col-sm-12 booking-actn">
-          <div className="flex flex-col gap-2">
-            <label className="flex items-center">
+        <div className="space-y-3">
+          <label className="flex items-center p-3 border border-gray-200 rounded-md hover:bg-gray-50 cursor-pointer transition-colors">
+            <input
+              type="radio"
+              name="call_booking_action"
+              value="Update Call Status"
+              checked={selectedAction === "Update Call Status"}
+              onChange={(e) => handleActionChange(e.target.value)}
+              className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+            />
+            <UserCheck className="w-4 h-4 ml-3 mr-2 text-gray-500" />
+            <span className="text-sm font-medium text-gray-700">Update Call Status</span>
+          </label>
+
+          {permissions && permissions.includes("Reassign") && (
+            <label className="flex items-center p-3 border border-gray-200 rounded-md hover:bg-gray-50 cursor-pointer transition-colors">
               <input
                 type="radio"
                 name="call_booking_action"
-                value="Update Call Status"
-                checked={selectedAction === "Update Call Status"}
+                value="Reassign Call"
+                checked={selectedAction === "Reassign Call"}
                 onChange={(e) => handleActionChange(e.target.value)}
-                className="mr-2"
+                className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
               />
-              Update Call Status
+              <UserCheck className="w-4 h-4 ml-3 mr-2 text-gray-500" />
+              <span className="text-sm font-medium text-gray-700">Reassign Call</span>
             </label>
+          )}
 
-            {permissions && permissions.includes("Reassign") && (
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  name="call_booking_action"
-                  value="Reassign Call"
-                  checked={selectedAction === "Reassign Call"}
-                  onChange={(e) => handleActionChange(e.target.value)}
-                  className="mr-2"
-                />
-                Reassign Call
-              </label>
-            )}
-
-            {canAssignExternal() && (
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  name="call_booking_action"
-                  value="Assign External"
-                  checked={selectedAction === "Assign External"}
-                  onChange={(e) => handleActionChange(e.target.value)}
-                  className="mr-2"
-                />
-                Assign External
-              </label>
-            )}
-          </div>
+          {canAssignExternal() && (
+            <label className="flex items-center p-3 border border-gray-200 rounded-md hover:bg-gray-50 cursor-pointer transition-colors">
+              <input
+                type="radio"
+                name="call_booking_action"
+                value="Assign External"
+                checked={selectedAction === "Assign External"}
+                onChange={(e) => handleActionChange(e.target.value)}
+                className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+              />
+              <ExternalLink className="w-4 h-4 ml-3 mr-2 text-gray-500" />
+              <span className="text-sm font-medium text-gray-700">Assign External</span>
+            </label>
+          )}
         </div>
       </div>
 
       {/* Update Call Status Form */}
       {selectedAction === "Update Call Status" && (
-        <div className="form-group row form-detls">
-          <div className="col-sm-12">
-            <label className="block mb-2 font-medium">
+        <div className="space-y-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Status <span className="text-red-500">*</span>
             </label>
             <select
               value={consultationStatus}
               onChange={(e) => handleStatusChange(e.target.value)}
-              className="form-control w-1/2"
+              className="w-1/2 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               required
             >
               <option value="">Select Option</option>
@@ -380,32 +386,32 @@ const checkCompletedCallsForSelectedConsultant = async (consultantId) => {
 
           {/* Accept Status Options */}
           {consultationStatus === "Accept" && (
-            <div className="col-sm-12 mt-4">
-              <label className="block mb-2 font-medium">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-3">
                 Select Options <span className="text-red-500">*</span>
               </label>
-              <div className="space-y-2">
-                <label className="flex items-center">
+              <div className="space-y-3">
+                <label className="flex items-center p-3 border border-gray-200 rounded-md hover:bg-gray-50 cursor-pointer">
                   <input
                     type="checkbox"
                     value="I have gone through all the details"
                     onChange={(e) =>
                       handleStatusOptionChange(e.target.value, e.target.checked)
                     }
-                    className="mr-2"
+                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                   />
-                  I have gone through all the details
+                  <span className="ml-3 text-sm text-gray-700">I have gone through all the details</span>
                 </label>
-                <label className="flex items-center">
+                <label className="flex items-center p-3 border border-gray-200 rounded-md hover:bg-gray-50 cursor-pointer">
                   <input
                     type="checkbox"
                     value="I have received the meeting link"
                     onChange={(e) =>
                       handleStatusOptionChange(e.target.value, e.target.checked)
                     }
-                    className="mr-2"
+                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                   />
-                  I have received the meeting link
+                  <span className="ml-3 text-sm text-gray-700">I have received the meeting link</span>
                 </label>
               </div>
             </div>
@@ -413,14 +419,16 @@ const checkCompletedCallsForSelectedConsultant = async (consultantId) => {
 
           {/* Client Did Not Join Comments */}
           {consultationStatus === "Client did not join" && (
-            <div className="col-sm-12 mt-4">
-              <label className="block mb-2 font-medium">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Comments <span className="text-red-500">*</span>
               </label>
               <textarea
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
-                className="form-control w-full"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                rows={4}
+                placeholder="Enter your comments..."
                 required
               />
             </div>
@@ -428,18 +436,18 @@ const checkCompletedCallsForSelectedConsultant = async (consultantId) => {
 
           {/* Reject Status Options */}
           {consultationStatus === "Reject" && (
-            <div className="col-sm-12 mt-4">
-              <label className="block mb-2 font-medium">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-3">
                 Select Relevant Options <span className="text-red-500">*</span>
               </label>
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {[
                   "Details are incomplete",
                   "Meeting link is invalid",
                   "Call not related to my subject area",
                   "Call scheduled by mistake",
                 ].map((option) => (
-                  <label key={option} className="flex items-center">
+                  <label key={option} className="flex items-center p-3 border border-gray-200 rounded-md hover:bg-gray-50 cursor-pointer">
                     <input
                       type="checkbox"
                       value={option}
@@ -449,9 +457,9 @@ const checkCompletedCallsForSelectedConsultant = async (consultantId) => {
                           e.target.checked
                         )
                       }
-                      className="mr-2"
+                      className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                     />
-                    {option}
+                    <span className="ml-3 text-sm text-gray-700">{option}</span>
                   </label>
                 ))}
               </div>
@@ -460,18 +468,18 @@ const checkCompletedCallsForSelectedConsultant = async (consultantId) => {
 
           {/* Rescheduled Status Options */}
           {consultationStatus === "Rescheduled" && (
-            <div className="col-sm-12 mt-4">
-              <label className="block mb-2 font-medium">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-3">
                 Select Options <span className="text-red-500">*</span>
               </label>
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {[
                   "I have another meeting scheduled offline",
                   "I have urgent work delivery",
                   "I have internal team call",
                   "Others",
                 ].map((option) => (
-                  <label key={option} className="flex items-center">
+                  <label key={option} className="flex items-center p-3 border border-gray-200 rounded-md hover:bg-gray-50 cursor-pointer">
                     <input
                       type="radio"
                       name="rescheduled_options"
@@ -479,23 +487,24 @@ const checkCompletedCallsForSelectedConsultant = async (consultantId) => {
                       onChange={(e) =>
                         handleStatusOptionChange(e.target.value, true, true)
                       }
-                      className="mr-2"
+                      className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
                     />
-                    {option}
+                    <span className="ml-3 text-sm text-gray-700">{option}</span>
                   </label>
                 ))}
               </div>
 
               {statusOptions.includes("Others") && (
                 <div className="mt-4">
-                  <label className="block mb-2 font-medium">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     Others <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
                     value={rescheduledOthersText}
                     onChange={(e) => setRescheduledOthersText(e.target.value)}
-                    className="form-control"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Please specify..."
                     required
                   />
                 </div>
@@ -504,124 +513,196 @@ const checkCompletedCallsForSelectedConsultant = async (consultantId) => {
           )}
 
           {/* Completed Status - Rating Questions */}
-          {consultationStatus === "Completed" && userType !== "CONSULTANT" && (
-            <div className="col-sm-12 mt-4 space-y-6">
-              <div>
-                <label className="block mb-2 font-medium">
-                  On Scale of 1, 2 and 3 (1 being Poor, 2 being Average and 3
-                  being Good), Please answer the following questions.
-                </label>
+      {consultationStatus === "Completed" && userType !== "CONSULTANT" && (
+  <div className="space-y-6">
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-4">
+        On Scale of 1, 2 and 3 (1 being Poor, 2 being Average and 3
+        being Good), Please answer the following questions.
+      </label>
 
-                <div className="mt-4">
-                  <div className="mb-2">
-                    Question 1 <span className="text-red-500">*</span>: Was the
-                    CRM able to Bridge the call effectively?
-                  </div>
-                  <div className="flex gap-4">
-                    {["Being Poor", "Being Average", "Being Good"].map(
-                      (option) => (
-                        <label key={option} className="flex items-center">
-                          <input
-                            type="radio"
-                            name="scalequestion1"
-                            value={option}
-                            checked={scaleQuestion1 === option}
-                            onChange={(e) => setScaleQuestion1(e.target.value)}
-                            className="mr-2"
-                          />
-                          {option}
-                        </label>
-                      )
-                    )}
-                  </div>
-                </div>
-
-                <div className="mt-4">
-                  <div className="mb-2">
-                    Question 2 <span className="text-red-500">*</span>: Was the
-                    CRM's voice loud and clear?
-                  </div>
-                  <div className="flex gap-4">
-                    {["Being Poor", "Being Average", "Being Good"].map(
-                      (option) => (
-                        <label key={option} className="flex items-center">
-                          <input
-                            type="radio"
-                            name="scalequestion2"
-                            value={option}
-                            checked={scaleQuestion2 === option}
-                            onChange={(e) => setScaleQuestion2(e.target.value)}
-                            className="mr-2"
-                          />
-                          {option}
-                        </label>
-                      )
-                    )}
-                  </div>
-                </div>
-
-                <div className="mt-4">
-                  <div className="mb-2">
-                    Question 3 <span className="text-red-500">*</span>: Was the
-                    client informed about the call being recorded?
-                  </div>
-                  <div className="flex gap-4">
-                    <label className="flex items-center">
-                      <input
-                        type="radio"
-                        name="scalequestion3"
-                        value="scale8"
-                        checked={scaleQuestion3 === "scale8"}
-                        onChange={(e) => setScaleQuestion3(e.target.value)}
-                        className="mr-2"
-                      />
-                      Yes
-                    </label>
-                    <label className="flex items-center">
-                      <input
-                        type="radio"
-                        name="scalequestion3"
-                        value="scale9"
-                        checked={scaleQuestion3 === "scale9"}
-                        onChange={(e) => setScaleQuestion3(e.target.value)}
-                        className="mr-2"
-                      />
-                      No
-                    </label>
-                  </div>
-                </div>
+      <div className="space-y-6">
+        {/* Question 1 with Scale UI */}
+        <div className="bg-gray-50 p-4 rounded-lg">
+          <div className="mb-4 text-sm font-medium text-gray-700">
+            Question 1 <span className="text-red-500">*</span>: Was the
+            CRM able to Bridge the call effectively?
+          </div>
+          
+          {/* Scale Rating UI */}
+          <div className="flex items-center justify-between mb-4">
+            {[
+              { value: "Being Poor", label: "Poor", number: 1, color: "bg-red-500", hoverColor: "hover:bg-red-400" },
+              { value: "Being Average", label: "Average", number: 2, color: "bg-yellow-500", hoverColor: "hover:bg-yellow-400" },
+              { value: "Being Good", label: "Good", number: 3, color: "bg-green-500", hoverColor: "hover:bg-green-400" }
+            ].map((option, index) => (
+              <div key={option.value} className="flex flex-col items-center flex-1">
+                <button
+                  type="button"
+                  onClick={() => setScaleQuestion1(option.value)}
+                  className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg transition-all duration-200 transform hover:scale-110 ${
+                    scaleQuestion1 === option.value 
+                      ? `${option.color} ring-4 ring-offset-2 ring-blue-200` 
+                      : `bg-gray-300 ${option.hoverColor}`
+                  }`}
+                >
+                  {option.number}
+                </button>
+                <span className={`mt-2 text-sm font-medium transition-colors ${
+                  scaleQuestion1 === option.value ? 'text-gray-900' : 'text-gray-500'
+                }`}>
+                  {option.label}
+                </span>
               </div>
-
-              <div>
-                <label className="block mb-2 font-medium">
-                  Call Summary <span className="text-red-500">*</span>
-                </label>
-                <textarea
-                  value={callSummary}
-                  onChange={(e) => setCallSummary(e.target.value)}
-                  className="form-control w-full"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block mb-2 font-medium">Upload File</label>
-                <input
-                  type="file"
-                  onChange={(e) => setUploadedFile(e.target.files[0])}
-                  className="form-control"
-                />
-              </div>
+            ))}
+          </div>
+          
+          {/* Progress Bar */}
+          <div className="relative">
+            <div className="h-2 bg-gray-200 rounded-full">
+              <div 
+                className={`h-full rounded-full transition-all duration-300 ${
+                  scaleQuestion1 === 'Being Poor' ? 'w-1/3 bg-red-500' :
+                  scaleQuestion1 === 'Being Average' ? 'w-2/3 bg-yellow-500' :
+                  scaleQuestion1 === 'Being Good' ? 'w-full bg-green-500' : 'w-0'
+                }`}
+              />
             </div>
-          )}
+          </div>
+        </div>
 
-          <div className="col-sm-12 mt-4">
+        {/* Question 2 with Scale UI */}
+        <div className="bg-gray-50 p-4 rounded-lg">
+          <div className="mb-4 text-sm font-medium text-gray-700">
+            Question 2 <span className="text-red-500">*</span>: Was the
+            CRM's voice loud and clear?
+          </div>
+          
+          {/* Scale Rating UI */}
+          <div className="flex items-center justify-between mb-4">
+            {[
+              { value: "Being Poor", label: "Poor", number: 1, color: "bg-red-500", hoverColor: "hover:bg-red-400" },
+              { value: "Being Average", label: "Average", number: 2, color: "bg-yellow-500", hoverColor: "hover:bg-yellow-400" },
+              { value: "Being Good", label: "Good", number: 3, color: "bg-green-500", hoverColor: "hover:bg-green-400" }
+            ].map((option, index) => (
+              <div key={option.value} className="flex flex-col items-center flex-1">
+                <button
+                  type="button"
+                  onClick={() => setScaleQuestion2(option.value)}
+                  className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg transition-all duration-200 transform hover:scale-110 ${
+                    scaleQuestion2 === option.value 
+                      ? `${option.color} ring-4 ring-offset-2 ring-blue-200` 
+                      : `bg-gray-300 ${option.hoverColor}`
+                  }`}
+                >
+                  {option.number}
+                </button>
+                <span className={`mt-2 text-sm font-medium transition-colors ${
+                  scaleQuestion2 === option.value ? 'text-gray-900' : 'text-gray-500'
+                }`}>
+                  {option.label}
+                </span>
+              </div>
+            ))}
+          </div>
+          
+          {/* Progress Bar */}
+          <div className="relative">
+            <div className="h-2 bg-gray-200 rounded-full">
+              <div 
+                className={`h-full rounded-full transition-all duration-300 ${
+                  scaleQuestion2 === 'Being Poor' ? 'w-1/3 bg-red-500' :
+                  scaleQuestion2 === 'Being Average' ? 'w-2/3 bg-yellow-500' :
+                  scaleQuestion2 === 'Being Good' ? 'w-full bg-green-500' : 'w-0'
+                }`}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Question 3 with Toggle UI */}
+        <div className="bg-gray-50 p-4 rounded-lg">
+          <div className="mb-4 text-sm font-medium text-gray-700">
+            Question 3 <span className="text-red-500">*</span>: Was the
+            client informed about the call being recorded?
+          </div>
+          
+          <div className="flex items-center space-x-4">
+            <span className={`text-sm font-medium transition-colors ${
+              scaleQuestion3 !== 'scale8' ? 'text-gray-900' : 'text-gray-500'
+            }`}>
+              No
+            </span>
+            
+            <button
+              type="button"
+              onClick={() => setScaleQuestion3(scaleQuestion3 === 'scale8' ? 'scale9' : 'scale8')}
+              className={`relative inline-flex h-8 w-16 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                scaleQuestion3 === 'scale8' ? 'bg-green-500' : 'bg-gray-300'
+              }`}
+            >
+              <span
+                className={`inline-block h-6 w-6 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out ${
+                  scaleQuestion3 === 'scale8' ? 'translate-x-9' : 'translate-x-1'
+                }`}
+              />
+            </button>
+            
+            <span className={`text-sm font-medium transition-colors ${
+              scaleQuestion3 === 'scale8' ? 'text-gray-900' : 'text-gray-500'
+            }`}>
+              Yes
+            </span>
+          </div>
+          
+          {/* Status Indicator */}
+          <div className="flex items-center space-x-2 mt-3">
+            <div className={`w-3 h-3 rounded-full ${
+              scaleQuestion3 === 'scale8' ? 'bg-green-500' : 'bg-red-500'
+            }`} />
+            <span className="text-sm text-gray-600">
+              Client was {scaleQuestion3 === 'scale8' ? '' : 'not '}informed about call recording
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-2">
+        Call Summary <span className="text-red-500">*</span>
+      </label>
+      <textarea
+        value={callSummary}
+        onChange={(e) => setCallSummary(e.target.value)}
+        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+        rows={4}
+        placeholder="Enter call summary..."
+        required
+      />
+    </div>
+
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-2">
+        <Upload className="w-4 h-4 inline mr-1" />
+        Upload File
+      </label>
+      <input
+        type="file"
+        onChange={(e) => setUploadedFile(e.target.files[0])}
+        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+      />
+    </div>
+  </div>
+)}
+
+          <div className="flex justify-end pt-4">
             <button
               type="button"
               onClick={handleUpdateStatus}
-              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
             >
-              <i className="fa fa-arrow-right mr-2" aria-hidden="true"></i>{" "}
+              <ArrowRight className="w-4 h-4 mr-2" />
               Update
             </button>
           </div>
@@ -630,67 +711,69 @@ const checkCompletedCallsForSelectedConsultant = async (consultantId) => {
 
       {/* Reassign Call Form */}
       {selectedAction === "Reassign Call" && (
-        <div className="form-group row form-detls">
-          <div className="col-sm-9">
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Select Consultant <span className="text-red-500">*</span>
+            </label>
+            <div className="flex gap-4">
+              <div className="flex-1">
+                <Select
+                  value={consultantOptions.find(option => option.value === selectedConsultant) || null}
+                  onChange={(selectedOption) => {
+                    const consultantId = selectedOption?.value || '';
+                    setSelectedConsultant(consultantId);
+                    checkCompletedCallsForSelectedConsultant(consultantId);
+                  }}
+                  options={consultantOptions}
+                  placeholder="Select Consultant"
+                  classNamePrefix="react-select"
+                  isClearable
+                  required
+                />
+                <input type="hidden" id="call_completed_consultant_id" value={displayConsultantId} />
+              </div>
 
-
-  <Select
-        value={consultantOptions.find(option => option.value === selectedConsultant) || null}
-        onChange={(selectedOption) => {
-          const consultantId = selectedOption?.value || '';
-          setSelectedConsultant(consultantId);
-          checkCompletedCallsForSelectedConsultant(consultantId);
-        }}
-        options={consultantOptions}
-        placeholder="Select Consultant"
-        classNamePrefix="react-select"
-        isClearable
-        required
-      />
-
-      
-
-      {/* Hidden to store result consultant id if needed */}
-      <input type="hidden" id="call_completed_consultant_id" value={displayConsultantId} />
-          </div>
-
-          <div className="col-sm-3">
-            <button
-              type="button"
-              onClick={handleReassignCall}
-               disabled={isButtonDisabled}
-              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-            >
-              <i className="fa fa-arrow-right mr-2" aria-hidden="true"></i>{" "}
-              Submit
-            </button>
+              <button
+                type="button"
+                onClick={handleReassignCall}
+                disabled={isButtonDisabled}
+                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+              >
+                <ArrowRight className="w-4 h-4 mr-2" />
+                Submit
+              </button>
+            </div>
           </div>
         </div>
       )}
 
       {/* Assign External Form */}
       {selectedAction === "Assign External" && (
-        <div className="form-group row form-detls">
-          <div className="col-sm-9">
-            <input
-              type="text"
-              value={externalConsultantName}
-              onChange={(e) => setExternalConsultantName(e.target.value)}
-              placeholder="Consultant Name"
-              className="form-control"
-              required
-            />
-          </div>
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Consultant Name <span className="text-red-500">*</span>
+            </label>
+            <div className="flex gap-4">
+              <input
+                type="text"
+                value={externalConsultantName}
+                onChange={(e) => setExternalConsultantName(e.target.value)}
+                placeholder="Enter consultant name"
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                required
+              />
 
-          <div className="col-sm-3">
-            <button
-              type="button"
-              onClick={handleAssignExternal}
-              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-            >
-              <i className="fa fa-arrow-right mr-2" aria-hidden="true"></i>{" "}
-              Submit
-            </button>
+              <button
+                type="button"
+                onClick={handleAssignExternal}
+                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+              >
+                <ArrowRight className="w-4 h-4 mr-2" />
+                Submit
+              </button>
+            </div>
           </div>
         </div>
       )}

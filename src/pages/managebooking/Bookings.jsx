@@ -324,18 +324,22 @@ export default function Bookings() {
     });
   };
   const columns = [
-    {
-      title: "Client",
-      data: "client_name",
-      render: (data, type, row) => {
-        const clientId = row.fld_client_id || "";
-        return `
-      <button class="details-btn font-medium text-blue-600 hover:underline" data-id="${row.id}">
+  {
+  title: "Client",
+  data: "client_name",
+  render: (data, type, row) => {
+    const clientId = row.fld_client_id || "";
+    const isDeleted = row.delete_sts === 'Yes';
+    const textStyle = isDeleted ? 'line-through text-gray-400' : '';
+
+    return `
+      <button class="details-btn font-medium text-blue-600 hover:underline ${textStyle}" data-id="${row.id}">
         ${data} - ${clientId}
       </button>
     `;
-      },
-    },
+  },
+},
+
 
     {
       title: "Consultant",
@@ -369,9 +373,17 @@ export default function Bookings() {
     {
       title: "Call Type",
       data: "fld_sale_type",
-      render: (data) =>
-        `<div class="text-indigo-700 font-medium text-sm">${data}</div>`,
+      render: (data) => {
+        if (data === "Presales") {
+          return `<div class="text-blue-600 font-semibold text-sm">Presale</div>`;
+        } else if (data === "Postsales") {
+          return `<div class="text-green-600 font-semibold text-sm">Postsale</div>`;
+        } else {
+          return `<div class="text-gray-600 text-sm">${data}</div>`;
+        }
+      },
     },
+
     {
       title: "Status",
       data: null,

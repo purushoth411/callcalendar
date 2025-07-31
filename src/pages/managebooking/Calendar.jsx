@@ -76,7 +76,7 @@ const CustomCalendar = ({ consultantSettings, onDateClick }) => {
       // const isDisabled = isExcluded || !isAllowedDay || isNthSaturdayOff;
 
       if (isExcluded) classNames += " excluded";
-      else if (!isAllowedDay || isNthSaturdayOff) classNames += " disabled";
+      else if (!isAllowedDay || isNthSaturdayOff || isPastDate) classNames += " disabled";
       else if (dayOfWeek === 0) classNames += " sunday";
       if (
         selectedDate &&
