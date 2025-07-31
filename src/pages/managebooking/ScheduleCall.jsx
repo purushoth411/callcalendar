@@ -150,7 +150,7 @@ const ScheduleCall = () => {
     });
 
     try {
-      // 🔶 API 1: getBookingData
+     
       const res1 = await fetch(
         "http://localhost:5000/api/helpers/getBookingData",
         {

@@ -30,3 +30,33 @@ export const fetchPlanDetails = async () => {
     return [];
   }
 };
+
+export const fetchFollowerData = async (filterData) => {
+  try {
+    const response = await fetch('http://localhost:5000/api/helpers/fetchFollowerData', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(filterData)
+    });
+
+    const result = await response.json();
+
+    if (result.status) {
+      console.log("Data fetched:", result.data);
+      return result; 
+    } else {
+      console.warn("Failed to fetch follower data:", result.message);
+      return result;
+    }
+
+  } catch (error) {
+    console.error("API call error:", error);
+    return {
+      status: false,
+      message: "Network or server error",
+      data: null
+    };
+  }
+};

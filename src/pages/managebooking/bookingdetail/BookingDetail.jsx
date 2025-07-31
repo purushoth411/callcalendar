@@ -18,17 +18,21 @@ import ReassignModal from "./ReassignModal";
 import UserInformation from "./UserInformation";
 import { AnimatePresence, motion } from "framer-motion";
 import ConsultantInformation from "./ConsultantInformation";
-import { fetchAllConsultants } from "../../../helpers/CommonApi";
+import {
+  fetchAllConsultants,
+  fetchFollowerData,
+} from "../../../helpers/CommonApi";
 import Select from "react-select";
 import CallUpdateActions from "./CallUpdateActions";
 import OverallHistory from "./OverallHistory";
 import OtherCalls from "./OtherCalls";
+import CallUpdateOtherActions from "./CallUpdateOtherActions";
 
 const BookingDetail = () => {
   const navigate = useNavigate();
   const { bookingId } = useParams();
   const [bookingData, setBookingData] = useState([]);
-  const { user,priceDiscoutUsernames } = useAuth();
+  const { user, priceDiscoutUsernames } = useAuth();
 
   const [alert, setAlert] = useState({ type: "", message: "" });
   const [statusByCrm, setStatusByCrm] = useState("");
@@ -48,6 +52,10 @@ const BookingDetail = () => {
   const [primaryConsultantId, setPrimaryConsultantId] = useState("");
   const [cancelComment, setCancelComment] = useState("");
   const [consultantList, setConsultantList] = useState([]);
+  const [followerList, setFollowerList] = useState([]);
+  const [followerConsultants, setFollowerConsultants] = useState([]);
+  const [hasFollowers, setHasFollowers] = useState(false);
+  const [loadingFollowers, setLoadingFollowers] = useState(false);
 
   useEffect(() => {
     fetchBookingById(bookingId);
@@ -56,6 +64,8 @@ const BookingDetail = () => {
   const fetchBookingById = async (bookingId) => {
     let tempBooking = null;
     try {
+      setIsProcessing(true);
+      setLoaderMessage("Loading...");
       const response = await fetch(
         `http://localhost:5000/api/bookings/fetchBookingById`,
         {
@@ -74,72 +84,124 @@ const BookingDetail = () => {
         setBookingData(result.data);
         tempBooking = result.data;
       } else {
+        setLoaderMessage("Booking Not Found!");
         console.warn("Booking not found or error:", result.message);
       }
     } catch (error) {
+      setLoaderMessage("Error in Loading!");
       console.error("Error fetching booking:", error);
     } finally {
       fetchMsgData(bookingId);
       getOtherBookings();
       getExternalCallByBookingId(bookingId);
-     if(tempBooking && tempBooking.fld_subject_area && tempBooking.fld_call_related_to){
-
-       fetchConsultants(tempBooking.fld_subject_area, tempBooking.fld_call_related_to);
-     }else{
-
-       fetchConsultants(null, null);
-     }
-      
-      
+      if (
+        tempBooking &&
+        tempBooking.fld_subject_area &&
+        tempBooking.fld_call_related_to
+      ) {
+        fetchConsultants(
+          tempBooking.fld_subject_area,
+          tempBooking.fld_call_related_to
+        );
+      } else {
+        fetchConsultants(null, null);
+      }
+      setIsProcessing(false);
+      setLoaderMessage("Processing...");
     }
   };
 
-  const fetchConsultants = async (subject_area, call_related_to) => {
-  try {
-    let filteredConsultants = [];
-    if (call_related_to === "subject_area_related") {
-     
+  const followerData = {
+    bookingid: bookingId,
+  };
+
+  const loadFollowerList = async () => {
+    const response = await fetchFollowerData(followerData);
+    if (response.status) {
+      setFollowerList(response.data);
+      if (response.data.length > 0) {
+        setHasFollowers(true);
+      } else {
+        setHasFollowers(false);
+      }
+    } else {
+      console.warn("Error fetching followers:", response.message);
+      setFollowerList([]);
+      setHasFollowers(false);
+    }
+  };
+  useEffect(() => {
+    loadFollowerList();
+    // getFollowerConsultant();
+  }, []);
+
+  const getFollowerConsultant = async () => {
+    try {
+      setLoadingFollowers(true);
       const res = await fetch(
-        "http://localhost:5000/api/helpers/getConsultantsBySubjectArea",
+        `http://localhost:5000/api/helpers/getFollowerConsultant`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ subject_area }),
+          body: JSON.stringify({ bookingid: bookingId, user: user }),
         }
       );
-      const data = await res.json();
-      if (res.ok) {
-       
-        setConsultantList(data);
+
+      const result = await res.json();
+
+      if (result.status) {
+        console.log("Follower consultant data:", result.data);
+        setFollowerConsultants(result.data);
+      } else {
+        console.log("Failed to fetch follower consultant:", result.message);
+        return null;
       }
-
-    } else if (call_related_to === "price_and_discount_related") {
-      
-      const consultantsData = await fetchAllConsultants();
-      filteredConsultants = consultantsData.results || [];
-
-     
-
-      filteredConsultants = filteredConsultants.filter((c) =>
-        priceDiscoutUsernames.includes(c.fld_username)
-      );
-
-     
-      setConsultantList(filteredConsultants);
-
-    } else {
-     
-      const consultantsData = await fetchAllConsultants();
-     
-      setConsultantList(consultantsData.results || []);
+    } catch (error) {
+      console.error("Error fetching follower consultant:", error);
+      return null;
+    } finally {
+      setLoadingFollowers(false);
     }
+  };
 
-  } catch (error) {
-    console.error("Error fetching consultants:", error);
-  }
-};
+  const fetchConsultants = async (subject_area, call_related_to) => {
+    try {
+      let filteredConsultants = [];
+      if (call_related_to === "subject_area_related") {
+        const res = await fetch(
+          "http://localhost:5000/api/helpers/getConsultantsBySubjectArea",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ subject_area }),
+          }
+        );
+        const data = await res.json();
+        if (res.ok) {
+          setConsultantList(data);
+        }
+      } else if (call_related_to === "price_and_discount_related") {
+        const consultantsData = await fetchAllConsultants();
+        filteredConsultants = consultantsData.results || [];
+
+        filteredConsultants = filteredConsultants.filter((c) =>
+          priceDiscoutUsernames.includes(c.fld_username)
+        );
+
+        setConsultantList(filteredConsultants);
+      } else {
+        const consultantsData = await fetchAllConsultants();
+
+        setConsultantList(consultantsData.results || []);
+      }
+    } catch (error) {
+      console.error("Error fetching consultants:", error);
+    }
+  };
 
   const fetchMsgData = async (bookingId) => {
     try {
@@ -348,7 +410,7 @@ const BookingDetail = () => {
   };
 
   const getOtherBookings = async () => {
-   // console.log("Booking Data:" + JSON.stringify(bookingData, null, 2));
+    // console.log("Booking Data:" + JSON.stringify(bookingData, null, 2));
     try {
       const queryParams = new URLSearchParams({
         consultantId: bookingData.fld_consultantid,
@@ -486,253 +548,501 @@ const BookingDetail = () => {
   };
 
   const handleReassignToConsultant = async () => {
-  
-
-  if (!primaryConsultantId) {
-    toast.error("Please select a consultant");
-    return;
-  }
-
-  try {
-    setIsProcessing(true);
-    setLoaderMessage("Reassigning Consultant...");
-    const res = await fetch("http://localhost:5000/api/bookings/reassignToConsultant", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        bookingId: bookingData.id,
-        primary_consultant_id: primaryConsultantId,
-        user,
-      }),
-    });
-
-    const data = await res.json();
-    if (data.status) {
-      toast.success("Reassigned successfully");
-      fetchBookingById(bookingData.id);
-    } else {
-      toast.error(data.message || "Reassignment failed");
-    }
-  } catch (err) {
-    console.error("Reassignment error:", err);
-    toast.error("Error while reassigning");
-  }finally{
-     setIsProcessing(false);
-      setLoaderMessage("Processing...");
-  }
-};
-
-const handleCancelBooking = async () => {
- 
-
-  if (!cancelComment.trim()) {
-    toast.error("Please enter a comment");
-    return;
-  }
-
-  try {
-    setIsProcessing(true);
-    setLoaderMessage("Cancelling...");
-    const res = await fetch("http://localhost:5000/api/bookings/updateConsultationStatus", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        bookingid: bookingData.id,
-        comment: cancelComment,
-        consultation_sts: "Cancelled",
-        user,
-      }),
-    });
-
-    const data = await res.json();
-    if (data.status) {
-      toast.success("Call status updated to Cancelled");
-      fetchBookingById(bookingData.id);
-    } else {
-      toast.error(data.message || "Cancellation failed");
-    }
-  } catch (err) {
-    console.error("Cancellation error:", err);
-    toast.error("Error while cancelling");
-  }finally{
-     setIsProcessing(false);
-      setLoaderMessage("Processing...");
-  }
-};
-
-const onUpdateStatus = async (statusData) => {
-  if (!statusData.consultationStatus) {
-    toast.error("Please select a consultation status.");
-    return;
-  }
-
-  // 🟡 Validation by status
-  if (statusData.consultationStatus === "Rescheduled") {
-    if (statusData.statusOptions.length === 0) {
-      toast.error("Please select options for Rescheduling.");
+    if (!primaryConsultantId) {
+      toast.error("Please select a consultant");
       return;
     }
-  }
 
-  if (statusData.consultationStatus === "Accept") {
-    if (statusData.statusOptions.length !== 2) {
-      toast.error("Please select exactly 2 options for Accept.");
-      return;
-    }
-  }
+    try {
+      setIsProcessing(true);
+      setLoaderMessage("Reassigning Consultant...");
+      const res = await fetch(
+        "http://localhost:5000/api/bookings/reassignToConsultant",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            bookingId: bookingData.id,
+            primary_consultant_id: primaryConsultantId,
+            user,
+          }),
+        }
+      );
 
-  if (statusData.consultationStatus === "Client did not join") {
-    if (!statusData.comment || statusData.comment.trim() === "") {
-      toast.error("Enter Comments for 'Client did not join'.");
-      return;
-    }
-  }
-
-  if (statusData.consultationStatus === "Reject") {
-    if (statusData.statusOptions.length === 0) {
-      toast.error("Please select at least one reason for rejection.");
-      return;
-    }
-  }
-
-  if (statusData.consultationStatus === "Completed") {
-    if (!statusData.callSummary || statusData.callSummary.trim() === "") {
-      toast.error("Call Summary is required for completion.");
-      return;
-    }
-  }
-try {
-  setIsProcessing(true);
-    setLoaderMessage("Updating Status...");
-    const response = await fetch("http://localhost:5000/api/bookings/updateConsultationStatus", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        bookingid: statusData.bookingId,
-        comment: statusData.comment,
-        consultation_sts: statusData.consultationStatus,
-        status_options: statusData.statusOptions,
-        status_options_rescheduled_others: statusData.rescheduledOthers,
-        rescheduled_date: statusData.rescheduledDate || null,
-        rescheduled_time: statusData.rescheduledTime || null,
-        scalequestion1: statusData.scaleQuestion1,
-        scalequestion2: statusData.scaleQuestion2,
-        scalequestion3: statusData.scaleQuestion3,
-        specific_commnets_for_the_call: statusData.callSummary,
-        old_video_file: statusData.file || null,
-        user: user, 
-      }),
-    });
-
-    const data = await response.json();
-
-    if (response.ok) {
-      toast.success("Consultation status updated successfully.");
-    } else {
-      toast.error(data.error || "Failed to update status.");
-    }
-  } catch (error) {
-    console.error("API Error:", error);
-    toast.error("Something went wrong while updating the status.");
-  }finally {
+      const data = await res.json();
+      if (data.status) {
+        toast.success("Reassigned successfully");
+        fetchBookingById(bookingData.id);
+      } else {
+        toast.error(data.message || "Reassignment failed");
+      }
+    } catch (err) {
+      console.error("Reassignment error:", err);
+      toast.error("Error while reassigning");
+    } finally {
       setIsProcessing(false);
       setLoaderMessage("Processing...");
     }
-};
+  };
 
-const onAssignExternal = async (externalData) => {
-  const { consultantName, bookingId } = externalData;
+  const handleCancelBooking = async () => {
+    if (!cancelComment.trim()) {
+      toast.error("Please enter a comment");
+      return;
+    }
 
-  if (!consultantName) {
-    toast.error("Consultant Name is Missing");
+    try {
+      setIsProcessing(true);
+      setLoaderMessage("Cancelling...");
+      const res = await fetch(
+        "http://localhost:5000/api/bookings/updateConsultationStatus",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            bookingid: bookingData.id,
+            comment: cancelComment,
+            consultation_sts: "Cancelled",
+            user,
+          }),
+        }
+      );
+
+      const data = await res.json();
+      if (data.status) {
+        toast.success("Call status updated to Cancelled");
+        fetchBookingById(bookingData.id);
+      } else {
+        toast.error(data.message || "Cancellation failed");
+      }
+    } catch (err) {
+      console.error("Cancellation error:", err);
+      toast.error("Error while cancelling");
+    } finally {
+      setIsProcessing(false);
+      setLoaderMessage("Processing...");
+    }
+  };
+
+  const onUpdateStatus = async (statusData) => {
+    if (!statusData.consultationStatus) {
+      toast.error("Please select a consultation status.");
+      return;
+    }
+
+    // 🟡 Validation by status
+    if (statusData.consultationStatus === "Rescheduled") {
+      if (statusData.statusOptions.length === 0) {
+        toast.error("Please select options for Rescheduling.");
+        return;
+      }
+    }
+
+    if (statusData.consultationStatus === "Accept") {
+      if (statusData.statusOptions.length !== 2) {
+        toast.error("Please select exactly 2 options for Accept.");
+        return;
+      }
+    }
+
+    if (statusData.consultationStatus === "Client did not join") {
+      if (!statusData.comment || statusData.comment.trim() === "") {
+        toast.error("Enter Comments for 'Client did not join'.");
+        return;
+      }
+    }
+
+    if (statusData.consultationStatus === "Reject") {
+      if (statusData.statusOptions.length === 0) {
+        toast.error("Please select at least one reason for rejection.");
+        return;
+      }
+    }
+
+    if (statusData.consultationStatus === "Completed") {
+      if (!statusData.callSummary || statusData.callSummary.trim() === "") {
+        toast.error("Call Summary is required for completion.");
+        return;
+      }
+    }
+    try {
+      setIsProcessing(true);
+      setLoaderMessage("Updating Status...");
+      const response = await fetch(
+        "http://localhost:5000/api/bookings/updateConsultationStatus",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            bookingid: statusData.bookingId,
+            comment: statusData.comment,
+            consultation_sts: statusData.consultationStatus,
+            status_options: statusData.statusOptions,
+            status_options_rescheduled_others: statusData.rescheduledOthers,
+            rescheduled_date: statusData.rescheduledDate || null,
+            rescheduled_time: statusData.rescheduledTime || null,
+            scalequestion1: statusData.scaleQuestion1,
+            scalequestion2: statusData.scaleQuestion2,
+            scalequestion3: statusData.scaleQuestion3,
+            specific_commnets_for_the_call: statusData.callSummary,
+            old_video_file: statusData.file || null,
+            user: user,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast.success("Consultation status updated successfully.");
+      } else {
+        toast.error(data.error || "Failed to update status.");
+      }
+    } catch (error) {
+      console.error("API Error:", error);
+      toast.error("Something went wrong while updating the status.");
+    } finally {
+      setIsProcessing(false);
+      setLoaderMessage("Processing...");
+    }
+  };
+
+  const onAssignExternal = async (externalData) => {
+    const { consultantName, bookingId } = externalData;
+
+    if (!consultantName) {
+      toast.error("Consultant Name is Missing");
+      return;
+    }
+
+    if (!bookingId) {
+      toast.error("Booking Id is Missing");
+      return;
+    }
+
+    try {
+      setIsProcessing(true);
+      setLoaderMessage("Assigning External Call...");
+
+      const response = await fetch(
+        "http://localhost:5000/api/bookings/assignExternalCall",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ consultantName, bookingId }),
+        }
+      );
+
+      const result = await response.json();
+
+      if (result.status) {
+        toast.success("External Call Assigned Successfully");
+        fetchBookingById(bookingId); // refresh booking info
+      } else {
+        toast.error(result.message || "Assignment failed");
+      }
+    } catch (error) {
+      console.error("Error during external assignment:", error);
+      toast.error("Something went wrong while assigning external call");
+    } finally {
+      setIsProcessing(false);
+      setLoaderMessage("Processing...");
+    }
+  };
+
+  const onReassignCall = async (reassignData) => {
+    if (!reassignData.consultantId) {
+      toast.error("Please select a consultant");
+      return;
+    }
+
+    try {
+      setIsProcessing(true);
+      setLoaderMessage("Reassigning call...");
+
+      const response = await fetch(
+        "http://localhost:5000/api/bookings/updateReassignCallStatus",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            bookingid: reassignData.bookingId,
+            consultant_id: reassignData.consultantId,
+            bookingdate: reassignData.bookingDate,
+            bookingslot: reassignData.bookingSlot,
+            user: user,
+          }),
+        }
+      );
+
+      const result = await response.json();
+
+      if (response.ok && result.status) {
+        toast.success("Call reassigned successfully");
+        fetchBookingById(reassignData.bookingId); // refresh booking info using the correct ID
+      } else {
+        const errMsg = result.message || "Call reassignment failed";
+        toast.error(errMsg);
+      }
+    } catch (error) {
+      console.error("Reassignment error:", error);
+      toast.error("An error occurred while reassigning the call");
+    } finally {
+      setIsProcessing(false);
+      setLoaderMessage("Processing...");
+    }
+  };
+
+  const onUpdateExternal = async (payload) => {
+    payload.user = user;
+    // Validate Booking ID
+    if (!payload.bookingid) {
+      toast.error("Invalid Booking ID");
+      return;
+    }
+
+    // Validate Consultant Name
+    if (!payload.consultant_name || payload.consultant_name.trim() === "") {
+      toast.error("Enter Consultant Name!");
+      return;
+    }
+
+    // Validate Consultation Status
+    if (!payload.consultation_sts || payload.consultation_sts.trim() === "") {
+      toast.error("Select Status!");
+      return;
+    }
+
+    // Validate Comment
+    if (!payload.externalCallComnt || payload.externalCallComnt.trim() === "") {
+      toast.error("Enter Comments!");
+      return;
+    }
+
+    try {
+      setIsProcessing(true);
+      setLoaderMessage("Updating External Call...");
+
+      const response = await fetch(
+        "http://localhost:5000/api/bookings/updateExternalConsultationStatus",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      const result = await response.json();
+      console.log("Response:", result);
+
+      if (result.status) {
+        toast.success("Call Status Updated successfully!");
+        fetchBookingById(bookingId);
+      } else {
+        toast.error(result.message || "Something went wrong");
+      }
+    } catch (err) {
+      console.error("Submission error:", err);
+      toast.error("Network error");
+    } finally {
+      setIsProcessing(false);
+      setLoaderMessage("Processing...");
+    }
+  };
+
+  const onSubmitCompletedComment = async (payload) => {
+    if (!user) {
+      toast.error("User not logged in");
+      return;
+    }
+
+    payload.user = user;
+
+    if (!payload.bookingid) {
+      toast.error("Invalid Booking ID");
+      return;
+    }
+
+    if (!payload.call_complete_rating) {
+      toast.error("Please provide a rating");
+      return;
+    }
+
+    if (
+      !payload.call_complete_recording ||
+      payload.call_complete_recording.trim() === ""
+    ) {
+      toast.error("Please provide a recording URL");
+      return;
+    }
+
+    if (
+      !payload.call_complete_comment ||
+      payload.call_complete_comment.trim() === ""
+    ) {
+      toast.error("Please enter a comment");
+      return;
+    }
+
+    try {
+      setIsProcessing(true);
+      setLoaderMessage("Submitting...");
+
+      const response = await fetch(
+        "http://localhost:5000/api/bookings/submitCallCompletionComment",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      const result = await response.json();
+      console.log("Response:", result);
+
+      if (result.status) {
+        toast.success("Call Comment Submitted successfully!");
+        fetchBookingById(payload.bookingid); // Use payload.bookingid instead of bookingId
+      } else {
+        toast.error(result.message || "Something went wrong");
+      }
+    } catch (err) {
+      console.error("Submission error:", err);
+      toast.error("Network error");
+    } finally {
+      setIsProcessing(false);
+      setLoaderMessage("Processing...");
+    }
+  };
+
+  const onAddFollower = async(payload) => {
+    if (!user) {
+      toast.error("User not logged in");
+      return;
+    }
+
+    payload.user = user;
+
+    if (!payload.bookingid) {
+      toast.error("Invalid Booking ID");
+      return;
+    }
+
+    if (!payload.followerConsultantId) {
+      toast.error("Please Select Any Follower");
+      return;
+    }
+
+    
+
+    
+    try {
+      setIsProcessing(true);
+      setLoaderMessage("Adding Follower...");
+
+      const response = await fetch(
+        "http://localhost:5000/api/helpers/addFollower",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      const result = await response.json();
+      console.log("Response:", result);
+
+      if (result.status) {
+        toast.success("Follower Added successfully!");
+        fetchBookingById(payload.bookingid);
+      } else {
+        toast.error(result.message || "Something went wrong");
+      }
+    } catch (err) {
+      console.error("Error in adding Follower:", err);
+      toast.error("Network error");
+    } finally {
+      setIsProcessing(false);
+      setLoaderMessage("Processing...");
+    }
+  };
+ const onUpdateExternalBooking = async (payload) => {
+  if (!user) {
+    toast.error("User not logged in");
     return;
   }
 
-  if (!bookingId) {
-    toast.error("Booking Id is Missing");
+  payload.user = user; // Add user to the payload
+
+  if (!payload.bookingid) {
+    toast.error("Invalid Booking ID");
     return;
   }
+
+  if (!payload.call_joining_link) {
+    toast.error("Please enter Call Joining Link");
+    return;
+  }
+
+  if (!payload.external_booking_date) {
+    toast.error("Please select Booking Date");
+    return;
+  }
+
+  if (!payload.external_booking_time) {
+    toast.error("Please select Booking Time");
+    return;
+  }
+
+  // ✅ Confirm only after validation
+  const isConfirmed = window.confirm("Are you sure you want to update booking information?");
+  if (!isConfirmed) return;
 
   try {
     setIsProcessing(true);
-    setLoaderMessage("Assigning External Call...");
+    setLoaderMessage("Updating External Call...");
 
-    const response = await fetch("http://localhost:5000/api/bookings/assignExternalCall", {
+    const response = await fetch("http://localhost:5000/api/helpers/updateExternalBookingInfo", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ consultantName, bookingId }),
+      body: JSON.stringify(payload),
     });
 
     const result = await response.json();
+    console.log("Response:", result);
 
     if (result.status) {
-      toast.success("External Call Assigned Successfully");
-      fetchBookingById(bookingId); // refresh booking info
+      toast.success("Booking Info Updated Successfully!");
+      fetchBookingById(payload.bookingid); // refresh data
     } else {
-      toast.error(result.message || "Assignment failed");
+      toast.error(result.msg || "Something went wrong");
     }
-  } catch (error) {
-    console.error("Error during external assignment:", error);
-    toast.error("Something went wrong while assigning external call");
+  } catch (err) {
+    console.error("Error while updating booking:", err);
+    toast.error("Network error");
   } finally {
     setIsProcessing(false);
     setLoaderMessage("Processing...");
   }
 };
-
-
-
-const onReassignCall = async (reassignData) => {
-  if (!reassignData.consultantId) {
-    toast.error("Please select a consultant");
-    return;
-  }
-
-  try {
-    setIsProcessing(true);
-    setLoaderMessage("Reassigning call...");
-
-    const response = await fetch("http://localhost:5000/api/bookings/updateReassignCallStatus", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        user:user,
-        bookingid: reassignData.bookingId,
-        consultant_id: reassignData.consultantId,
-        bookingdate: reassignData.bookingDate,
-        bookingslot: reassignData.bookingSlot,
-      }),
-    });
-
-    const result = await response.json();
-
-    if (response.ok && result.status) {
-      toast.success("Call reassigned successfully");
-      fetchBookingById(reassignData.bookingId); // refresh booking info using the correct ID
-    } else {
-      const errMsg = result.message || "Call reassignment failed";
-      toast.error(errMsg);
-    }
-  } catch (error) {
-    console.error("Reassignment error:", error);
-    toast.error("An error occurred while reassigning the call");
-  } finally {
-    setIsProcessing(false);
-    setLoaderMessage("Processing...");
-  }
-};
-
-
 
   const scrollToChat = () => {
     const chatBox = document.querySelector(".chatbox");
@@ -786,24 +1096,22 @@ const onReassignCall = async (reassignData) => {
     bookingData.fld_converted_sts === "No" &&
     bookingData.fld_sale_type === "Presales";
 
-  const canShowReasignConsultant=user.fld_admin_type === "EXECUTIVE" &&
-  bookingData.fld_call_related_to !== "I_am_not_sure" &&
-  bookingData.fld_call_request_sts !== "Completed";
+  const canShowReasignConsultant =
+    user.fld_admin_type === "EXECUTIVE" &&
+    bookingData.fld_call_related_to !== "I_am_not_sure" &&
+    bookingData.fld_call_request_sts !== "Completed";
 
-  const canCancelCall=user.fld_admin_type === "EXECUTIVE" &&
-  bookingData.fld_call_related_to !== "I_am_not_sure" &&
-  bookingData.fld_call_request_sts !== "Cancelled" &&
-  bookingData.fld_call_request_sts !== "Completed";
-
-
+  const canCancelCall =
+    user.fld_admin_type === "EXECUTIVE" &&
+    bookingData.fld_call_related_to !== "I_am_not_sure" &&
+    bookingData.fld_call_request_sts !== "Cancelled" &&
+    bookingData.fld_call_request_sts !== "Completed";
 
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-6xl mx-auto">
         <div className="bg-white rounded-lg shadow-sm">
           <div className="p-6">
-      
-
             {/* Header */}
             <div className="flex justify-between items-center mb-6">
               <h4 className="text-2xl font-semibold text-gray-800">
@@ -970,11 +1278,11 @@ const onReassignCall = async (reassignData) => {
               </div>
             )}
 
-          <ConsultantInformation
-          bookingData={bookingData}
-          user={user}
-         bgColor={getStatusColor(bookingData?.fld_call_request_sts)}
-         />
+            <ConsultantInformation
+              bookingData={bookingData}
+              user={user}
+              bgColor={getStatusColor(bookingData?.fld_call_request_sts)}
+            />
             <UserInformation
               data={bookingData}
               user={user}
@@ -983,103 +1291,137 @@ const onReassignCall = async (reassignData) => {
             />
 
             {/* Reassign to Consultant Form */}
-{canShowReasignConsultant && (
-  <div className="flex flex-wrap gap-4">
-    <div className="w-full md:w-1/2">
-      <label className="block mb-2 font-medium">Reassign to another Consultant</label>
-      <Select
-        name="consultant_id"
-        className="react-select-container"
-        classNamePrefix="react-select"
-        options={consultantList
-          .filter((consultant) => consultant.id !== bookingData.fld_consultantid)
-          .map((consultant) => ({
-            value: consultant.id,
-            label: consultant.fld_name,
-          }))
-        }
-        value={
-          consultantList
-            .filter((consultant) => consultant.id !== bookingData.fld_consultantid)
-            .map((consultant) => ({
-              value: consultant.id,
-              label: consultant.fld_name,
-            }))
-            .find((option) => option.value === primaryConsultantId) || null
-        }
-        onChange={(selectedOption) =>
-          setPrimaryConsultantId(selectedOption ? selectedOption.value : "")
-        }
-        placeholder="Select Primary Consultant"
-        isClearable
-      />
-    </div>
+            {canShowReasignConsultant && (
+              <div className="flex flex-wrap gap-4">
+                <div className="w-full md:w-1/2">
+                  <label className="block mb-2 font-medium">
+                    Reassign to another Consultant
+                  </label>
+                  <Select
+                    name="consultant_id"
+                    className="react-select-container"
+                    classNamePrefix="react-select"
+                    options={consultantList
+                      .filter(
+                        (consultant) =>
+                          consultant.id !== bookingData.fld_consultantid
+                      )
+                      .map((consultant) => ({
+                        value: consultant.id,
+                        label: consultant.fld_name,
+                      }))}
+                    value={
+                      consultantList
+                        .filter(
+                          (consultant) =>
+                            consultant.id !== bookingData.fld_consultantid
+                        )
+                        .map((consultant) => ({
+                          value: consultant.id,
+                          label: consultant.fld_name,
+                        }))
+                        .find(
+                          (option) => option.value === primaryConsultantId
+                        ) || null
+                    }
+                    onChange={(selectedOption) =>
+                      setPrimaryConsultantId(
+                        selectedOption ? selectedOption.value : ""
+                      )
+                    }
+                    placeholder="Select Primary Consultant"
+                    isClearable
+                  />
+                </div>
 
-    <div className="w-full md:w-1/3 self-end">
-      <button
-        type="button"
-        onClick={handleReassignToConsultant}
-        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-      >
-        <i className="fa fa-arrow-right mr-2" aria-hidden="true"></i> Update Consultant
-      </button>
-    </div>
-  </div>
-)}
+                <div className="w-full md:w-1/3 self-end">
+                  <button
+                    type="button"
+                    onClick={handleReassignToConsultant}
+                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                  >
+                    <i
+                      className="fa fa-arrow-right mr-2"
+                      aria-hidden="true"
+                    ></i>{" "}
+                    Update Consultant
+                  </button>
+                </div>
+              </div>
+            )}
 
+            {/* Cancel Booking Form */}
+            {canCancelCall && (
+              <>
+                <h5 className="font-semibold mb-3">Call Cancelled</h5>
+                <div className="flex flex-wrap gap-4">
+                  <div className="w-full md:w-1/2">
+                    <label className="block mb-2">
+                      Comments <span className="text-red-500">*</span>
+                    </label>
+                    <textarea
+                      className="w-full border rounded px-4 py-2"
+                      value={cancelComment}
+                      onChange={(e) => setCancelComment(e.target.value)}
+                      placeholder="Add Comments"
+                    />
+                  </div>
 
-{/* Cancel Booking Form */}
-{canCancelCall && (
-    <>
-      <h5 className="font-semibold mb-3">Call Cancelled</h5>
-      <div className="flex flex-wrap gap-4">
-        <div className="w-full md:w-1/2">
-          <label className="block mb-2">Comments <span className="text-red-500">*</span></label>
-          <textarea
-            className="w-full border rounded px-4 py-2"
-            value={cancelComment}
-            onChange={(e) => setCancelComment(e.target.value)}
-            placeholder="Add Comments"
-          />
-        </div>
+                  <div className="w-full md:w-1/3 self-end">
+                    <button
+                      type="button"
+                      onClick={handleCancelBooking}
+                      className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+                    >
+                      <i
+                        className="fa fa-arrow-right mr-2"
+                        aria-hidden="true"
+                      ></i>{" "}
+                      Update
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
 
-        <div className="w-full md:w-1/3 self-end">
-          <button
-            type="button"
-            onClick={handleCancelBooking}
-            className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
-          >
-            <i className="fa fa-arrow-right mr-2" aria-hidden="true"></i> Update
-          </button>
-        </div>
-      </div>
-    </>
-)}
+            <CallUpdateActions
+              bookingData={bookingData}
+              user={user}
+              consultantList={consultantList}
+              onUpdateStatus={onUpdateStatus}
+              onAssignExternal={onAssignExternal}
+              onReassignCall={onReassignCall}
+            />
 
-<CallUpdateActions 
-bookingData={bookingData}
-user={user}
-consultantList={consultantList}
-onUpdateStatus={onUpdateStatus}
-onAssignExternal={onAssignExternal}
-onReassignCall={onReassignCall} />
+            <CallUpdateOtherActions
+              bookingData={bookingData}
+              user={user}
+              consultantList={consultantList}
+              externalCallInfo={externalCallInfo}
+              onUpdateExternal={onUpdateExternal}
+              onSubmitCompletedComment={onSubmitCompletedComment}
+              onAddFollower={onAddFollower}
+              onUpdateExternalBooking={onUpdateExternalBooking}
+              followerConsultants={followerConsultants}
+              hasFollowers={hasFollowers}
+              getFollowerConsultant={getFollowerConsultant}
+              loadingFollowers={loadingFollowers}
+            />
+            <div className="flex flex-wrap -mx-2">
+              {/* Overall History - 1/3 width */}
+              <div className="w-full md:w-1/2 px-2">
+                <OverallHistory bookingData={bookingData} />
+              </div>
 
-<div className="flex flex-wrap -mx-2">
-  {/* Overall History - 1/3 width */}
-  <div className="w-full md:w-1/2 px-2">
-    <OverallHistory bookingData={bookingData} />
-  </div>
-
-  {/* Other Calls - 2/3 width */}
-  <div className="w-full md:w-1/2 px-2">
-    <OtherCalls
-      bookingId={bookingId}
-      clientId={bookingData.fld_client_id}
-      fetchBookingById={fetchBookingById}
-    />
-  </div>
-</div>
-
+              {/* Other Calls - 2/3 width */}
+              <div className="w-full md:w-1/2 px-2">
+                <OtherCalls
+                  bookingId={bookingId}
+                  clientId={bookingData.fld_client_id}
+                  fetchBookingById={fetchBookingById}
+                />
+              </div>
+            </div>
 
             {/* Chat Box Placeholder */}
             <ChatBox
