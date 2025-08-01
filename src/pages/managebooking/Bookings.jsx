@@ -61,7 +61,7 @@ export default function Bookings() {
     try {
       // Fetch consultants first
       const consultantRes = await fetch(
-        "http://localhost:5000/api/helpers/getUsersByRole",
+        "https://callback-2suo.onrender.com/api/helpers/getUsersByRole",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -72,7 +72,7 @@ export default function Bookings() {
 
       // Then fetch CRMs
       const crmRes = await fetch(
-        "http://localhost:5000/api/helpers/getUsersByRole",
+        "https://callback-2suo.onrender.com/api/helpers/getUsersByRole",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -95,7 +95,7 @@ export default function Bookings() {
 
     try {
       const res = await fetch(
-        "http://localhost:5000/api/helpers/getUsersByRole",
+        "https://callback-2suo.onrender.com/api/helpers/getUsersByRole",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -138,7 +138,7 @@ export default function Bookings() {
       };
 
       const response = await fetch(
-        "http://localhost:5000/api/bookings/fetchBooking",
+        "https://callback-2suo.onrender.com/api/bookings/fetchBooking",
         {
           method: "POST",
           headers: {
@@ -221,7 +221,7 @@ export default function Bookings() {
       setIsLoading(true);
 
       const response = await fetch(
-        "http://localhost:5000/api/bookings/fetchBooking",
+        "https://callback-2suo.onrender.com/api/bookings/fetchBooking",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -259,7 +259,7 @@ export default function Bookings() {
 
     try {
       const res = await fetch(
-        `http://localhost:5000/api/bookings/history/${bookingId}`
+        `https://callback-2suo.onrender.com/api/bookings/history/${bookingId}`
       );
       const result = await res.json();
 

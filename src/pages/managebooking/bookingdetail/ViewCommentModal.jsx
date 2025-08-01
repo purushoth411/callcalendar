@@ -55,7 +55,7 @@ const ViewCommentModal = ({ user, bookingData }) => {
               {bookingData.fld_booking_call_file && (
                 <video width="100%" height="240" controls className="mb-4">
                   <source
-                    src={`http://localhost:5000/assets/upload_doc/${bookingData.fld_booking_call_file}`}
+                    src={`https://callback-2suo.onrender.com/assets/upload_doc/${bookingData.fld_booking_call_file}`}
                     type="video/mp4"
                   />
                   Your browser does not support the video tag.

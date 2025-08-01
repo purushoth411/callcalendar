@@ -15,7 +15,7 @@ const OverallHistory = ({ bookingData }) => {
 
   const fetchOverallHistory = async (bookingId) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/bookings/history/${bookingId}`);
+      const res = await fetch(`https://callback-2suo.onrender.com/api/bookings/history/${bookingId}`);
       const data = await res.json();
       setOverallHistory(data.data);
 
@@ -24,7 +24,7 @@ const OverallHistory = ({ bookingData }) => {
         const status = extractStatus(commentText);
         if (status) {
           const statusRes = await fetch(
-            `http://localhost:5000/api/bookings/statusHistory?bookingId=${bookingId}&status=${status}`
+            `https://callback-2suo.onrender.com/api/bookings/statusHistory?bookingId=${bookingId}&status=${status}`
           );
           const statusData = await statusRes.json();
           setStatusHistories((prev) => ({ ...prev, [status]: statusData.data }));
@@ -168,7 +168,7 @@ const OverallHistory = ({ bookingData }) => {
                                 <div className="flex items-center gap-2 mt-2">
                                   <FileText className="w-4 h-4 text-blue-500" />
                                   <a
-                                    href={`http://localhost:5000/assets/upload_doc/${row.fld_booking_call_file}`}
+                                    href={`https://callback-2suo.onrender.com/assets/upload_doc/${row.fld_booking_call_file}`}
                                     target="_blank"
                                     rel="noreferrer"
                                     className="text-blue-600 hover:text-blue-800 underline"
