@@ -1301,7 +1301,7 @@ export default function AddBooking({
                 id="submitBtn"
                 type="button"
                 onClick={handleSubmit}
-                className={`bg-green-600 leading-none text-white px-3 py-2 rounded hover:bg-green-700 text-[13px] flex items-center gap-1 transition ${
+                className={`bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-[11px] flex items-center gap-1 cursor-pointer transition ${
                   submitDisabled
                     ? "opacity-50 cursor-not-allowed"
                     : "hover:bg-blue-700"

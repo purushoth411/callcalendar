@@ -469,11 +469,11 @@ export default function Bookings() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-[1250px] mx-auto py-5">
-        <div className="p-3 bg-gray-100 rounded shadow text-[13px]">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-bold text-gray-800">
+    <div className="">
+      <div className="">
+        <div className="">
+          <div className="mb-4 flex items-center gap-3 justify-between">
+            <h2 className="text-[18px] font-semibold text-gray-900">
               Booking Management
             </h2>
 
@@ -486,25 +486,32 @@ export default function Bookings() {
           </div>
 
           <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-            <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-              <h2 className="text-lg font-semibold text-gray-800">
-                All Bookings
-              </h2>
+            <div className="px-3 py-2 bg-[#d7efff7d]">
+              <div className="flex justify-between items-center">
+                <div className="flex gap-2 items-center">
+                  <h2 className="text-[16px] font-semibold text-gray-900">
+                    All Bookings
+                  </h2>
+                  <div>
+                    <span className="text-sm text-gray-500">Total:</span>
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                      {isLoading ? "..." : bookings.length}
+                    </span>
+                  </div>
+                </div>
 
-              <div className="flex items-center space-x-2">
-                <button
-                  onClick={() => {
-                    setShowFilters(!showFilters);
-                    if (!showFilters) fetchConsultantsAndCrms();
-                  }}
-                  className="bg-gray-500 text-white px-2 py-1 rounded text-[11px] hover:bg-gray-600"
-                >
-                  {showFilters ? "Hide Filters" : "Show Filters"}
-                </button>
-                <span className="text-sm text-gray-500">Total:</span>
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                  {isLoading ? "..." : bookings.length}
-                </span>
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={() => {
+                      setShowFilters(!showFilters);
+                      if (!showFilters) fetchConsultantsAndCrms();
+                    }}
+                    className="bg-gray-500 text-white px-2 py-1 rounded text-[11px] hover:bg-gray-600"
+                  >
+                    {showFilters ? "Hide Filters" : "Show Filters"}
+                  </button>
+                  
+                </div>
               </div>
             </div>
 

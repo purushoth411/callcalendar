@@ -339,7 +339,7 @@ export default function Teams() {
                 <div className="flex justify-end gap-3">
                   <button
                     onClick={handleSave}
-                    className="bg-green-600 leading-none text-white px-3 py-2 rounded hover:bg-green-700 text-[13px] flex items-center gap-1"
+                    className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-[11px] flex items-center gap-1 cursor-pointer"
                   >
                     Save
                   </button>
@@ -406,7 +406,7 @@ export default function Teams() {
                 <div className="flex justify-end gap-3 ">
                   <button
                     onClick={handleUpdate}
-                    className="bg-green-600 leading-none text-white px-3 py-2 rounded hover:bg-green-700 text-[13px] flex items-center gap-1"
+                    className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-[11px] flex items-center gap-1 cursor-pointer"
                   >
                     Update
                   </button>

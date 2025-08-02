@@ -273,7 +273,7 @@ const AddUser = ({
 
         <div className="flex justify-end">
           <button
-            className="bg-green-600 leading-none text-white px-3 py-2 rounded hover:bg-green-700 text-[13px] flex items-center gap-1"
+            className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-[11px] flex items-center gap-1 cursor-pointer"
             onClick={handleSave}
           >
             Save
