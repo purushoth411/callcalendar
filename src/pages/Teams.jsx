@@ -30,7 +30,7 @@ export default function Teams() {
     try {
       setIsLoading(true);
       const response = await fetch(
-        "http://localhost:5000/api/helpers/getAllTeams"
+        "https://callback-2suo.onrender.com/api/helpers/getAllTeams"
       );
       const result = await response.json();
       if (result.status) {
@@ -49,7 +49,7 @@ export default function Teams() {
   const updateTeamStatus = async (teamId, status) => {
     try {
       const res = await fetch(
-        `http://localhost:5000/api/helpers/update-team-status/${teamId}`,
+        `https://callback-2suo.onrender.com/api/helpers/update-team-status/${teamId}`,
         {
           method: "PUT",
           headers: {
@@ -80,7 +80,7 @@ export default function Teams() {
 
     try {
       const method = "POST";
-      const url = "http://localhost:5000/api/helpers/addTeam";
+      const url = "https://callback-2suo.onrender.com/api/helpers/addTeam";
 
       const response = await fetch(url, {
         method,
@@ -115,7 +115,7 @@ export default function Teams() {
 
     try {
       const method = "PUT";
-      const url = `http://localhost:5000/api/helpers/updateTeam/${editId}`;
+      const url = `https://callback-2suo.onrender.com/api/helpers/updateTeam/${editId}`;
 
       const response = await fetch(url, {
         method,
