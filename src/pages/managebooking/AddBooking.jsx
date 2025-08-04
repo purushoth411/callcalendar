@@ -101,7 +101,7 @@ export default function AddBooking({
         try {
           setPageLoading(true);
           const response = await fetch(
-            "https://callback-2suo.onrender.com/api/additional/callrequestrc",
+            "http://localhost:5000/api/additional/callrequestrc",
             {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -151,7 +151,7 @@ export default function AddBooking({
         try {
           setPageLoading(true);
           const response = await fetch(
-            "https://callback-2suo.onrender.com/api/additional/getwritersemail",
+            "http://localhost:5000/api/additional/getwritersemail",
             {
               method: "POST",
               headers: {
@@ -213,7 +213,7 @@ export default function AddBooking({
       if (formData.sale_type === "Presales" && clientId.length > 3) {
         try {
           const res = await fetch(
-            `https://callback-2suo.onrender.com/api/bookings/getPresaleClientDetails/${clientId}`
+            `http://localhost:5000/api/bookings/getPresaleClientDetails/${clientId}`
           );
           const data = await res.json();
 
@@ -233,7 +233,7 @@ export default function AddBooking({
             }));
 
             const recordingRes = await fetch(
-              `https://callback-2suo.onrender.com/api/bookings/checkCallrecording`,
+              `http://localhost:5000/api/bookings/checkCallrecording`,
               {
                 method: "POST",
                 headers: {
@@ -274,7 +274,7 @@ export default function AddBooking({
       if (formData.sale_type === "Postsales" && clientId.length > 3) {
         try {
           const res = await fetch(
-            `https://callback-2suo.onrender.com/api/bookings/getPostsaleClientDetails/${clientId}`
+            `http://localhost:5000/api/bookings/getPostsaleClientDetails/${clientId}`
           );
           const data = await res.json();
 
@@ -312,7 +312,7 @@ export default function AddBooking({
             setProjects(data.data.projects || []);
 
             const recordingRes = await fetch(
-              `https://callback-2suo.onrender.com/api/bookings/checkCallrecording`,
+              `http://localhost:5000/api/bookings/checkCallrecording`,
               {
                 method: "POST",
                 headers: {
@@ -364,7 +364,7 @@ export default function AddBooking({
   const checkConsultantWebsiteCondition = (consultantId, consultantName) => {
     try {
       fetch(
-        `https://callback-2suo.onrender.com/api/bookings/checkConsultantWebsiteCondition`,
+        `http://localhost:5000/api/bookings/checkConsultantWebsiteCondition`,
         {
           method: "POST",
           headers: {
@@ -405,7 +405,7 @@ export default function AddBooking({
 
   const checkConsultantTeamCondition = (consultantId, consultantName) => {
     try {
-      fetch(`https://callback-2suo.onrender.com/api/bookings/checkConsultantTeamCondition`, {
+      fetch(`http://localhost:5000/api/bookings/checkConsultantTeamCondition`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -452,7 +452,7 @@ export default function AddBooking({
   };
 
   const checkPresalesCall = (consultantId, consultantName) => {
-    fetch("https://callback-2suo.onrender.com/api/bookings/checkPresalesCall", {
+    fetch("http://localhost:5000/api/bookings/checkPresalesCall", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -537,7 +537,7 @@ export default function AddBooking({
 
     try {
       const res = await fetch(
-        "https://callback-2suo.onrender.com/api/helpers/getConsultantsBySubjectArea",
+        "http://localhost:5000/api/helpers/getConsultantsBySubjectArea",
         {
           method: "POST",
           headers: {
@@ -564,7 +564,7 @@ export default function AddBooking({
     // const allowedCalls=formData.allowedCalls;
     try {
       const response = await fetch(
-        `https://callback-2suo.onrender.com/api/bookings/checkPostsaleCompletedCalls`,
+        `http://localhost:5000/api/bookings/checkPostsaleCompletedCalls`,
         {
           method: "POST",
           headers: {
@@ -725,7 +725,7 @@ export default function AddBooking({
 
     try {
       const response = await fetch(
-        "https://callback-2suo.onrender.com/api/bookings/addBooking",
+        "http://localhost:5000/api/bookings/addBooking",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -781,7 +781,7 @@ export default function AddBooking({
       }
       try {
         const res = await fetch(
-          `https://callback-2suo.onrender.com/api/bookings/getProjectMilestones/${formData.projectid}`
+          `http://localhost:5000/api/bookings/getProjectMilestones/${formData.projectid}`
         );
         const data = await res.json();
 
@@ -805,7 +805,7 @@ export default function AddBooking({
         animate={{ x: 0 }}
         exit={{ x: "100%" }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className="fixed top-0 right-0 w-[45%] h-full bg-white shadow z-50 overflow-y-auto"
+        className="fixed top-0 right-0 w-[25%] h-full bg-white shadow z-50 overflow-y-auto"
       >
         {/* Header */}
         <div className="flex justify-between items-center px-4 py-3 border-b bg-[#224d68] text-white">
@@ -825,7 +825,7 @@ export default function AddBooking({
             </div>
           )}
           {/* Form */}
-          <div className={`p-4 grid grid-cols-1 md:grid-cols-3 gap-4 ${pageLoading ? "disabled" : ""}`}>
+          <div className={`p-4 space-y-4 row ${pageLoading ? "disabled" : ""}`}>
             <div>
               <label className="block mb-1">Select Call Type</label>
               <select
@@ -835,7 +835,7 @@ export default function AddBooking({
                   handleChange(e);
                   handleSaleTypeChange(e.target.value);
                 }}
-                className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
+                className="w-full border px-3 py-2 rounded text-gray-500 border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
                 required
               >
                 <option value="">Select Call Type</option>
@@ -989,7 +989,7 @@ export default function AddBooking({
                     type="text"
                     name="client_plan_name"
                     value={formData.client_plan_name}
-                    className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
+                    className="w-full border px-3 py-2 rounded border-[#cccccc]  focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
                     required
                     disabled
                     readOnly
@@ -1006,7 +1006,7 @@ export default function AddBooking({
                   handleChange(e);
                   handleCallRelatedToChange(e.target.value);
                 }}
-                className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
+                className="w-full border px-3 py-2 rounded border-[#cccccc] text-gray-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
                 required
               >
                 <option value="">Select Option</option>
@@ -1232,7 +1232,7 @@ export default function AddBooking({
                 name="call_regarding"
                 value={formData.call_regarding}
                 onChange={handleChange}
-                className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
+                className="w-full border px-3 py-2 rounded border-[#cccccc] text-gray-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
                 required
               >
                 <option value="">Select</option>

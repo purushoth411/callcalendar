@@ -11,8 +11,8 @@ const ConsultantInformation = ({ bookingData, user, bgColor }) => {
       {/* Consultant Information */}
       {isSuperAdminOrExecutive && (
         <div
-          className="p-6 rounded-lg mb-6"
-          style={{ backgroundColor: bgColor }}
+          className="p-6 rounded-lg mb-6 bg-[#f1efff] border border-[#c1b9ff]"
+          // style={{ backgroundColor: bgColor }}
         >
           <h5 className="text-xl font-semibold mb-4 text-gray-800">
             Consultant Information

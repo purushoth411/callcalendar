@@ -27,7 +27,7 @@ function CallRequestsFromRc() {
     try {
       setLoading(true);
       const response = await fetch(
-        "https://callback-2suo.onrender.com/api/additional/callrequestrc",
+        "http://localhost:5000/api/additional/callrequestrc",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -83,7 +83,7 @@ function CallRequestsFromRc() {
       width: "100px",
       render: (data, type, row) => {
         return `
-      <div class="text-sm">
+      <div class="">
         <div class="font-medium text-gray-900">${row.st_name || "-"}</div>
         <div class="text-gray-600">${row.student_code || ""}</div>
         <div class="text-gray-500">${row.st_email || ""}</div>
@@ -95,14 +95,14 @@ function CallRequestsFromRc() {
       title: "Call Regarding",
       data: "call_regarding",
       render: (data) =>
-        `<div class="text-gray-700 text-sm">${data || "-"}</div>`,
+        `<div class="text-gray-700 ">${data || "-"}</div>`,
     },
     {
       title: "Message",
       data: "points_for_discussion",
       width: "200px",
       render: (data) =>
-        `<div class="text-gray-700 text-sm">${data || "-"}</div>`,
+        `<div class="text-gray-700 ">${data || "-"}</div>`,
     },
     {
       title: "Booking Info.",
@@ -113,7 +113,7 @@ function CallRequestsFromRc() {
           : "-";
         const time = row.slot_time || "";
         return `
-      <div class="text-gray-700 text-sm">
+      <div class="text-gray-700 ">
         ${date} ${time ? `at ${time}` : ""}
       </div>
     `;
@@ -125,7 +125,7 @@ function CallRequestsFromRc() {
       render: (data) => {
         if (!data) return `<div class="text-gray-500">-</div>`;
         const formatted = moment.unix(data).format("DD MMM YYYY, hh:mm A");
-        return `<div class="text-gray-700 text-sm">${formatted}</div>`;
+        return `<div class="text-gray-700 ">${formatted}</div>`;
       },
     },
     {
@@ -200,9 +200,9 @@ function CallRequestsFromRc() {
   ].filter(Boolean);
 
   return (
-    <div className="p-4 bg-gray-100 mx-auto">
-      <div className="flex items-center max-w-7xl mx-auto rounded px-8 py-3 bg-white">
-        <h2 className="block text-sm font-medium text-gray-700 mb-1">
+    <div className=" bg-gray-100 mx-auto">
+      <div className="flex items-center max-w-7xl  rounded  pb-4">
+        <h2 className="block text-[18px] font-semibold text-gray-800 mb-1">
           Call Requests From RC
         </h2>
 
@@ -213,7 +213,7 @@ function CallRequestsFromRc() {
           <RefreshCcw size={15} />
         </button>
       </div>
-      <div className="p-6">
+      <div className="">
         {loading ? (
           <SkeletonLoader
             rows={25}
@@ -234,7 +234,7 @@ function CallRequestsFromRc() {
               ref={tableRef}
               data={calls}
               columns={columns}
-              className="display table table-auto w-full text-[13px]"
+              className="display table table-auto w-full text-[13px] the_request  border border-gray-300"
               options={{
                 pageLength: 50,
                 ordering: false,

@@ -11,7 +11,7 @@ const OtherCalls = ({ bookingId, clientId, fetchBookingById }) => {
       setLoading(true);
       try {
         const response = await fetch(
-          `https://callback-2suo.onrender.com/api/bookings/getAllClientBookingData?clientId=${clientId}`
+          `http://localhost:5000/api/bookings/getAllClientBookingData?clientId=${clientId}`
         );
 
         const result = await response.json();
@@ -76,10 +76,10 @@ const OtherCalls = ({ bookingId, clientId, fetchBookingById }) => {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6">
+    <div className="bg-white rounded-lg shadow-lg p-4 mt-4">
       <div className="flex items-center gap-3 mb-6">
         <Phone className="w-6 h-6 text-green-600" />
-        <h2 className="text-2xl font-bold text-gray-800">Previous Calls</h2>
+        <h5 className="text-xl font-bold text-gray-800">Previous Calls</h5>
         <span className="bg-gray-100 text-gray-600 px-2 py-1 rounded-full text-sm">
           {allbookingData.length} calls
         </span>
@@ -93,7 +93,7 @@ const OtherCalls = ({ bookingId, clientId, fetchBookingById }) => {
         </div>
       ) : (
         <div className="overflow-hidden rounded-lg border border-gray-200">
-          <div className="overflow-x-auto">
+          <div className="overflow-y-auto h-[16.6rem]">
             <table className="w-full">
               <thead className="bg-gray-50">
                 <tr>

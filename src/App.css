@@ -154,7 +154,7 @@ table.dataTable tbody tr:hover {
 } */
 /* ////////////////////// */
 
-/* From Uiverse.io by Galahhad */ 
+/* From Uiverse.io by Galahhad */
 .custom-checkbox {
   display: none;
 }
@@ -186,15 +186,15 @@ table.dataTable tbody tr:hover {
   box-shadow: 0 0 6px 2px rgba(0, 0, 0, 0.25);
 }
 
-.custom-checkbox:checked ~ .custom-slider::before {
+.custom-checkbox:checked~.custom-slider::before {
   transform: translateX(20px);
 }
 
-.custom-checkbox:checked ~ .custom-slider {
+.custom-checkbox:checked~.custom-slider {
   background-color: #28a745;
 }
 
-.custom-checkbox:active ~ .custom-slider::before {
+.custom-checkbox:active~.custom-slider::before {
   transform: translate(0);
 }
 
@@ -265,9 +265,10 @@ table.dataTable tbody tr:hover {
 .fc-daygrid-day.fc-day-today {
   border: 2px solid var(--prime-color);
 }
+
 /* ////////////callendar style  */
 
-.f-11{
+.f-11 {
   font-size: 11px;
 }
 
@@ -289,19 +290,21 @@ table.dataTable tbody tr:hover {
 /* -------------------------------------------- */
 
 .overflow-y-auto::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-    background-color: #F5F5F5;
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  background-color: #F5F5F5;
 }
 
 .overflow-y-auto::-webkit-scrollbar {
-    width: 5px;
-    background-color: #F5F5F5;
+  width: 5px;
+  background-color: #F5F5F5;
 }
 
 .overflow-y-auto::-webkit-scrollbar-thumb {
-    background-color: #224d68;
-    border: 2px solid #224d68;
+  background-color: #224d68;
+  border: 2px solid #224d68;
 }
+
+
 
 
 
@@ -309,22 +312,197 @@ table.dataTable tbody tr:hover {
 
 
 .n-table-set thead th {
-    border-left: 1px solid #6a6a6a;
+  border-left: 1px solid #6a6a6a;
 }
+
 .n-table-set thead {
-    background: #224d68;
-    color: #fff;
-    border: 1px solid #6a6a6a;
+  background: #224d68;
+  color: #fff;
+  border: 1px solid #6a6a6a;
 }
 
 .dt-column-order {
-    position: sticky !important;
+  position: sticky !important;
 }
-.dt-orderable-asc{
+
+.dt-orderable-asc {
   padding: 5px 10px !important;
 }
 
 
-div.dt-container .dt-paging .dt-paging-button{
+div.dt-container .dt-paging .dt-paging-button {
   padding: 3px 10px;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ============================================== monish start*/
+
+.the-table-set thead th {
+  border-left: 1px solid #6a6a6a;
+}
+
+.the-table-set thead {
+  background: #224d68;
+  color: #fff;
+  border: 1px solid #6a6a6a;
+}
+
+.the-table-set thead tr th:last-of-type {
+  /* background: red; */
+  width: 24%;
+}
+
+/* .text-blue-600 {
+  color: var(--color-gray-900);
+  text-decoration: none;
+} */
+
+table.dataTable.display tbody tr td:first-child {
+  /* background-color: #fafafa;  */
+  box-shadow: inset 0 0 0 9999px rgba(var(--dt-column-ordering), 0.019);
+}
+
+table.dataTable.display tbody tr td:last-child {
+  line-height: 30px;
+}
+
+table.dataTable.display tbody tr td:last-child span {
+  border: 1px solid;
+  padding: 2px 6px;
+}
+
+table.dataTable.display tbody tr td:last-child a {
+  border: 1px solid;
+  padding: 4px 4px;
+  margin-left: 7px;
+  margin-right: 7px;
+}
+
+table.dataTable.display tbody tr td:last-child a:hover {
+  border: 1px solid var(--color-green-800);
+  padding: 4px 4px;
+  color: #fff;
+  background-color: var(--color-green-800);
+}
+
+table.dataTable tbody tr:nth-child(odd) {
+  background-color: transparent;
+}
+
+.show-history-btn {
+  padding: 2px 4px;
+  background-color: #ffffff7d;
+  border: 1px solid #b4b4b47d;
+}
+
+.overflow-x-auto::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  background-color: #F5F5F5;
+}
+
+.overflow-x-auto::-webkit-scrollbar {
+  height: 5px;
+  background-color: #F5F5F5;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb {
+  background-color: #224d68;
+  border: 2px solid #224d68;
+}
+
+.text-gray-700 {
+  /* color: #000; */
+}
+
+
+
+.the_extra thead th {
+  border-left: 1px solid #6a6a6a;
+}
+
+.the_extra thead {
+  background: #224d68;
+  color: #fff;
+  border: 1px solid #6a6a6a;
+}
+
+table.the_extra.display tbody tr td:last-child span {
+  border: 0px solid;
+  padding: 2px 6px;
+}
+
+
+.the_request thead th {
+  border-left: 1px solid #6a6a6a;
+}
+
+.the_request thead {
+  background: #224d68;
+  color: #fff;
+  border: 1px solid #6a6a6a;
+}
+
+
+
+
+.the_request thead tr th:nth-child(2) {
+  width: 10%;
+  text-align: left;
+}
+
+.the_request thead tr td{
+  font-size: 13px;
+}
+
+.the_request thead tr th:first-of-type {
+  width: 7%;
+  text-align: left;
+}
+
+table.the_request.display tbody tr td:first-child {
+  text-align: left;
+}
+
+table.the_request.display tbody tr td:last-child span {
+  border: 0px solid;
+  padding: 1px 4px 3px;
+}
+
+.the_filter{
+      border: 1px solid #ddd;
+    margin: -28px 13px;
+    margin-bottom: 5px;
+}
+
+.clip-left-arrow {
+  clip-path: polygon(100% 0, 100% 0, 0 50%, 100% 100%, 100% 100%, 100% 50%);
+      position: relative;
+    transform: rotate(90deg);
+    right: -96%;
+    top: -13px;
+}
+
+
+
+/* ============================================== monish end */

@@ -8,7 +8,7 @@ const UserInformation = ({ data, user, bgColor,externalCallInfo}) => {
 
   return (
     <>
-    <div className="p-6 rounded-lg mb-6 shadow " style={{ backgroundColor: bgColor }}>
+    <div className="p-6 rounded-lg mb-6 shadow bg-[#f1efff] border border-[#c1b9ff] " >
       <h5 className="text-xl font-semibold mb-4 text-gray-800">User Information</h5>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -185,7 +185,7 @@ const UserInformation = ({ data, user, bgColor,externalCallInfo}) => {
     {/* Booking Information */}
 {/* Booking Information */}
 {data.fld_booking_date && data.fld_booking_slot && (
-  <div className="p-6 rounded-lg mb-6 shadow mt-8" style={{ backgroundColor: bgColor }}>
+  <div className="p-6 rounded-lg mb-6 shadow mt-8 bg-[#f1efff] border border-[#c1b9ff]" >
     <h5 className="text-xl font-semibold mb-4 text-gray-800">Booking Information</h5>
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 

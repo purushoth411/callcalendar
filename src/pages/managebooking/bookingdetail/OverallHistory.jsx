@@ -15,7 +15,7 @@ const OverallHistory = ({ bookingData }) => {
 
   const fetchOverallHistory = async (bookingId) => {
     try {
-      const res = await fetch(`https://callback-2suo.onrender.com/api/bookings/history/${bookingId}`);
+      const res = await fetch(`http://localhost:5000/api/bookings/history/${bookingId}`);
       const data = await res.json();
       setOverallHistory(data.data);
 
@@ -24,7 +24,7 @@ const OverallHistory = ({ bookingData }) => {
         const status = extractStatus(commentText);
         if (status) {
           const statusRes = await fetch(
-            `https://callback-2suo.onrender.com/api/bookings/statusHistory?bookingId=${bookingId}&status=${status}`
+            `http://localhost:5000/api/bookings/statusHistory?bookingId=${bookingId}&status=${status}`
           );
           const statusData = await statusRes.json();
           setStatusHistories((prev) => ({ ...prev, [status]: statusData.data }));
@@ -64,13 +64,13 @@ const OverallHistory = ({ bookingData }) => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6">
+    <div className="bg-white rounded-lg shadow-lg p-4 mt-4">
       <div className="flex items-center gap-3 mb-6">
         <Clock className="w-6 h-6 text-blue-600" />
-        <h2 className="text-2xl font-bold text-gray-800">Overall History</h2>
+        <h5 className="text-xl font-bold text-gray-800">Overall History</h5>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-4 p-3 overflow-y-auto h-[16.6rem]">
         {overallHistory.map((entry, idx) => {
           const arrComment = entry.fld_comment?.split(" on ");
           const commentMain = arrComment[0];
@@ -88,7 +88,7 @@ const OverallHistory = ({ bookingData }) => {
               
               <div className="flex gap-4">
                 {/* Timeline dot */}
-                <div className={`w-8 h-8 rounded-full ${getStatusColor(status)} flex items-center justify-center flex-shrink-0 mt-1`}>
+                <div className={`w-6 h-6 rounded-full ${getStatusColor(status)} flex items-center justify-center flex-shrink-0 mt-1`}>
                   <div className="w-3 h-3 bg-white rounded-full"></div>
                 </div>
 
@@ -168,7 +168,7 @@ const OverallHistory = ({ bookingData }) => {
                                 <div className="flex items-center gap-2 mt-2">
                                   <FileText className="w-4 h-4 text-blue-500" />
                                   <a
-                                    href={`https://callback-2suo.onrender.com/assets/upload_doc/${row.fld_booking_call_file}`}
+                                    href={`http://localhost:5000/assets/upload_doc/${row.fld_booking_call_file}`}
                                     target="_blank"
                                     rel="noreferrer"
                                     className="text-blue-600 hover:text-blue-800 underline"

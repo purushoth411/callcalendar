@@ -4,6 +4,7 @@ import ReactDOMServer from "react-dom/server";
 import DT from "datatables.net-dt";
 import $ from "jquery";
 import { useAuth } from "../../utils/idb.jsx";
+import { PlusIcon} from "lucide-react";
 import {
   formatBookingDateTime,
   formatDate,
@@ -364,7 +365,7 @@ export default function Bookings() {
         <div class="text-gray-600">${formatted}</div>
         <button class="show-history-btn text-xs px-2 py-1 border border-gray-300 rounded" 
                 data-booking-id="${row.booking_id}">
-          🔍 History
+          ⏳ History
         </button>
       </div>`;
       },
@@ -375,9 +376,9 @@ export default function Bookings() {
       data: "fld_sale_type",
       render: (data) => {
         if (data === "Presales") {
-          return `<div class="text-blue-600 font-semibold text-sm">Presale</div>`;
+          return `<div class="text-blue-600 font-semibold">Presale</div>`;
         } else if (data === "Postsales") {
-          return `<div class="text-green-600 font-semibold text-sm">Postsale</div>`;
+          return `<div class="text-green-600 font-semibold">Postsale</div>`;
         } else {
           return `<div class="text-gray-600 text-sm">${data}</div>`;
         }
@@ -407,7 +408,7 @@ export default function Bookings() {
     lengthMenu: [5, 10, 25, 50],
     order: [],
     columnDefs: [{ targets: "_all", orderable: false }],
-    dom: '<"flex justify-between items-center mb-4"lf>rt<"flex justify-between items-center mt-4"ip>',
+    dom: '<"flex justify-between items-center mb-4 text-[13px]"lf>rt<"flex justify-between items-center mt-4"ip>',
     language: {
       search: "",
       searchPlaceholder: "Search bookings...",
@@ -476,12 +477,12 @@ export default function Bookings() {
             <h2 className="text-[18px] font-semibold text-gray-900">
               Booking Management
             </h2>
-
+            
             <button
               onClick={handleAddNewClick}
-              className="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 transition-colors text-[11px]"
+              className="bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700 transition-colors text-[11px] flex items-center gap-1"
             >
-              Add New
+             <PlusIcon size={11} className="leading-none" /> Add New
             </button>
           </div>
 
@@ -517,8 +518,13 @@ export default function Bookings() {
 
             <AnimatePresence>
               {showFilters && (
+ <div className="">
+      {/* Green Arrow Shape */}
+      <div className="w-3 h-10 bg-gray-300 clip-left-arrow"></div>
+
+      {/* Filter Box */}
                 <motion.div
-                  className="bg-white p-4 rounded-lg shadow mb-6 border"
+                  className="bg-white p-4 rounded-lg shadow mb-6 border the_filter"
                   initial={{ opacity: 0, y: -20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
@@ -530,7 +536,7 @@ export default function Bookings() {
                         Call Type
                       </label>
                       <select
-                        className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
+                        className="w-full border border-gray-300 rounded px-3 py-2 text-sm text-gray-700"
                         value={filters.sale_type}
                         onChange={(e) =>
                           setFilters({ ...filters, sale_type: e.target.value })
@@ -575,7 +581,7 @@ export default function Bookings() {
                         onChange={(e) =>
                           handleConsultantTypeChange(e.target.value)
                         }
-                        className="w-full border px-2 py-2 rounded text-sm"
+                        className="w-full border px-2 py-2 rounded text-sm text-gray-700 border-gray-300"
                       >
                         <option value="ACTIVE">Active</option>
                         <option value="INACTIVE">Inactive</option>
@@ -614,7 +620,7 @@ export default function Bookings() {
                         Call Recording Status
                       </label>
                       <select
-                        className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
+                        className="w-full border border-gray-300 rounded px-3 py-2 text-sm text-gray-700"
                         value={filters.call_rcrd_status}
                         onChange={(e) =>
                           setFilters({
@@ -679,7 +685,7 @@ export default function Bookings() {
                       </label>
                       <input
                         type="text"
-                        className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
+                        className="w-full border border-gray-300 rounded px-3 py-2 text-sm text-gray-700"
                         placeholder="Search Name or Email"
                         value={filters.keyword_search}
                         onChange={(e) =>
@@ -696,7 +702,7 @@ export default function Bookings() {
                         Filter Type
                       </label>
                       <select
-                        className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
+                        className="w-full border border-gray-300 rounded px-3 py-2 text-sm text-gray-700"
                         value={filters.filter_type}
                         onChange={(e) =>
                           setFilters({
@@ -730,13 +736,15 @@ export default function Bookings() {
 
                   <div className="mt-4 text-right">
                     <button
-                      className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm"
+                      className="bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700 transition-colors text-[11px]"
                       onClick={handleApplyFilters}
                     >
                       Apply Filters
                     </button>
                   </div>
+                  
                 </motion.div>
+                </div>
               )}
             </AnimatePresence>
 
@@ -759,7 +767,7 @@ export default function Bookings() {
                     ref={tableRef}
                     data={bookings}
                     columns={columns}
-                    className="display table table-auto w-full text-[13px]"
+                    className="display table table-auto w-full text-[13px] border border-gray-300 the-table-set dataTable"
                     options={tableOptions}
                   />
                 </div>

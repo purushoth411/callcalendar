@@ -23,7 +23,7 @@ const ScheduleCall = () => {
   const fetchBookingDetailsWithRc = async () => {
     try {
       const response = await fetch(
-        `https://callback-2suo.onrender.com/api/helpers/getBookingDetailsWithRc?id=26076`
+        `http://localhost:5000/api/helpers/getBookingDetailsWithRc?id=26076`
       );
       const data = await response.json();
 
@@ -46,7 +46,7 @@ const ScheduleCall = () => {
   const fetchTimezones = async () => {
     try {
       const response = await fetch(
-        "https://callback-2suo.onrender.com/api/helpers/getTimezones?viewtype=show_custom_booking"
+        "http://localhost:5000/api/helpers/getTimezones?viewtype=show_custom_booking"
       );
       const result = await response.json();
 
@@ -150,7 +150,7 @@ const ScheduleCall = () => {
 
     try {
       const res1 = await fetch(
-        "https://callback-2suo.onrender.com/api/helpers/getBookingData",
+        "http://localhost:5000/api/helpers/getBookingData",
         {
           method: "POST",
           headers: {
@@ -172,7 +172,7 @@ const ScheduleCall = () => {
 
       // 🔶 API 2: getRcCallBookingRequest
       const res2 = await fetch(
-        "https://callback-2suo.onrender.com/api/helpers/getRcCallBookingRequest",
+        "http://localhost:5000/api/helpers/getRcCallBookingRequest",
         {
           method: "POST",
           headers: {
@@ -259,7 +259,7 @@ const ScheduleCall = () => {
 
     try {
       const response = await fetch(
-        "https://callback-2suo.onrender.com/api/bookings/saveCallScheduling",
+        "http://localhost:5000/api/bookings/saveCallScheduling",
         {
           method: "POST",
           headers: {

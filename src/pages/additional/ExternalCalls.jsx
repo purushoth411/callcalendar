@@ -55,7 +55,7 @@ export default function ExternalCalls() {
       setIsLoading(true);
 
       const response = await fetch(
-        "https://callback-2suo.onrender.com/api/additional/getexternalcalls",
+        "http://localhost:5000/api/additional/getexternalcalls",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -90,7 +90,7 @@ export default function ExternalCalls() {
 
     try {
       const res = await fetch(
-        `https://callback-2suo.onrender.com/api/bookings/history/${bookingId}`
+        `http://localhost:5000/api/bookings/history/${bookingId}`
       );
       const result = await res.json();
 
@@ -293,10 +293,10 @@ export default function ExternalCalls() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-[1250px] mx-auto py-5">
-        <div className="p-3 bg-gray-100 rounded shadow text-[13px]">
+      <div className="">
+        <div className=" bg-gray-100 rounded  text-[13px]">
           <div className="flex justify-start items-center mb-6">
-            <h2 className="text-xl font-bold text-gray-800">External Calls</h2>
+            <h2 className="text-[18px] font-semibold text-gray-800">External Calls</h2>
             <button
               className="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 text-sm ml-3 "
               onClick={fetchAllBookings}
@@ -306,8 +306,8 @@ export default function ExternalCalls() {
           </div>
 
           <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-            <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-              <h2 className="text-lg font-semibold text-gray-800">
+            <div className=" flex justify-between items-center px-3 py-2 bg-[#d7efff7d]">
+              <h2 className="text-[16px] font-semibold text-gray-800">
                 All External Calls
               </h2>
 
@@ -338,7 +338,7 @@ export default function ExternalCalls() {
                     ref={tableRef}
                     data={bookings}
                     columns={columns}
-                    className="display table table-auto w-full text-[13px]"
+                    className="display table table-auto w-full text-[13px] border border-gray-300 the_extra"
                     options={tableOptions}
                   />
                 </div>

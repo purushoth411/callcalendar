@@ -37,7 +37,7 @@ export default function DomainPref() {
     try {
       setIsLoading(true);
       const response = await fetch(
-        "https://callback-2suo.onrender.com/api/helpers/getAllDomains"
+        "http://localhost:5000/api/helpers/getAllDomains"
       );
       const result = await response.json();
       if (result.status) {
@@ -56,7 +56,7 @@ export default function DomainPref() {
   const getConsultants = async () => {
     try {
       const response = await fetch(
-        "https://callback-2suo.onrender.com/api/users/getallusers",
+        "http://localhost:5000/api/users/getallusers",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -90,7 +90,7 @@ export default function DomainPref() {
 
     try {
       const method = "POST";
-      const url = "https://callback-2suo.onrender.com/api/domains";
+      const url = "http://localhost:5000/api/domains";
 
       const response = await fetch(url, {
         method,
@@ -131,7 +131,7 @@ export default function DomainPref() {
 
     try {
       const method = "PUT";
-      const url = `https://callback-2suo.onrender.com/api/domains/${editId}`;
+      const url = `http://localhost:5000/api/domains/${editId}`;
 
       const response = await fetch(url, {
         method,
@@ -182,7 +182,7 @@ export default function DomainPref() {
     if (!window.confirm("Are you sure you want to delete this domain?")) return;
 
     try {
-      const res = await fetch(`https://callback-2suo.onrender.com/api/domains/${id}`, {
+      const res = await fetch(`http://localhost:5000/api/domains/${id}`, {
         method: "DELETE",
       });
       const result = await res.json();
@@ -311,8 +311,8 @@ export default function DomainPref() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-[1250px] mx-auto py-5">
-        <div className="p-3 bg-gray-100 rounded shadow text-[13px]">
+      <div className="">
+        <div className="p-3 bg-gray-100 rounded  text-[13px]">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-bold text-gray-800">
               Domain Preferences

@@ -128,7 +128,7 @@ const StatusUpdate = ({
     return (
       <span className="block text-[12px] text-slate-500 mt-0.5">
         {/* You may use a badge here too */}
-        <span className="inline-flex items-center gap-1 py-[1px] px-[6px] bg-orange-100 text-orange-800 rounded mr-1">
+        <span className="inline-flex items-center gap-1 py-[1px] px-[6px] ml-1 bg-orange-100 text-orange-800 rounded mr-1">
           <CheckCircle size={12} /> Mail Delivered
         </span>
         on {convertDate(new Date())} at {new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}
@@ -140,7 +140,7 @@ const StatusUpdate = ({
     <td className="n-cal-sts">
       {/* Main badge */}
       <span
-        className={`inline-flex items-center gap-1 py-[1px] px-[6px] rounded text-xs font-medium ${meta.bg} ${meta.text} ${strikeout(isDeleted)}`}
+        className={`inline-flex items-center gap-1 py-[1px] px-[6px] ml-1 rounded text-xs font-medium ${meta.bg} ${meta.text} ${strikeout(isDeleted)}`}
       >
         {meta.icon}
         {mainStatus}
