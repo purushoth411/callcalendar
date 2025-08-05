@@ -27,7 +27,7 @@ function CallRequestsFromRc() {
     try {
       setLoading(true);
       const response = await fetch(
-        "https://callback-2suo.onrender.com/api/additional/callrequestrc",
+        "http://localhost:5000/api/additional/callrequestrc",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -207,7 +207,7 @@ function CallRequestsFromRc() {
         </h2>
 
         <button
-          className="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 text-sm ml-3 "
+          className="border border-gray-500 text-gray-500 hover:text-white px-2 py-1 rounded hover:bg-gray-500 text-sm ml-3   "
           onClick={fetchDatas}
         >
           <RefreshCcw size={15} />

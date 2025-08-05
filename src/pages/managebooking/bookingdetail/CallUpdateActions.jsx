@@ -54,7 +54,7 @@ const CallUpdateActions = ({
   const fetchExternalCallCount = async (bookingId) => {
     try {
       const response = await fetch(
-        `https://callback-2suo.onrender.com/api/bookings/getExternalCallCount?bookingId=${bookingId}`
+        `http://localhost:5000/api/bookings/getExternalCallCount?bookingId=${bookingId}`
       );
       const data = await response.json();
 
@@ -263,7 +263,7 @@ const checkCompletedCallsForSelectedConsultant = async (consultantId) => {
     if (!bookingData.fld_email || !consultantId || bookingData.fld_sale_type !== 'Presales') return;
 
     try {
-      const response = await fetch(`https://callback-2suo.onrender.com/api/bookings/checkCompletedCall`, {
+      const response = await fetch(`http://localhost:5000/api/bookings/checkCompletedCall`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
@@ -307,7 +307,7 @@ const checkCompletedCallsForSelectedConsultant = async (consultantId) => {
   };
 
  return (
-    <div className="bg-white border border-gray-200 rounded-lg p-6">
+    <div className="bg-white border border-gray-200 rounded-lg p-4 w-[50%]">
       <div id="msgloader" className="text-center"></div>
 
       <div className="mb-6">
@@ -316,8 +316,8 @@ const checkCompletedCallsForSelectedConsultant = async (consultantId) => {
           Call Booking Action
         </h2>
 
-        <div className="space-y-3">
-          <label className="flex items-center p-3 border border-gray-200 rounded-md hover:bg-gray-50 cursor-pointer transition-colors">
+        <div className="space-y-3  flex gap-3 w-full">
+          <label className="flex items-center p-2 mb-1 border  border-gray-200 rounded-md hover:bg-gray-50 cursor-pointer transition-colors w-1/3">
             <input
               type="radio"
               name="call_booking_action"
@@ -331,7 +331,7 @@ const checkCompletedCallsForSelectedConsultant = async (consultantId) => {
           </label>
 
           {permissions && permissions.includes("Reassign") && (
-            <label className="flex items-center p-3 border border-gray-200 rounded-md hover:bg-gray-50 cursor-pointer transition-colors">
+            <label className="flex items-center p-2 mb-1  border border-gray-200 rounded-md hover:bg-gray-50 cursor-pointer transition-colors w-1/3">
               <input
                 type="radio"
                 name="call_booking_action"
@@ -346,7 +346,7 @@ const checkCompletedCallsForSelectedConsultant = async (consultantId) => {
           )}
 
           {canAssignExternal() && (
-            <label className="flex items-center p-3 border border-gray-200 rounded-md hover:bg-gray-50 cursor-pointer transition-colors">
+            <label className="flex items-center p-2 mb-1 border border-gray-200 rounded-md hover:bg-gray-50 cursor-pointer transition-colors w-1/3">
               <input
                 type="radio"
                 name="call_booking_action"
@@ -372,7 +372,7 @@ const checkCompletedCallsForSelectedConsultant = async (consultantId) => {
             <select
               value={consultationStatus}
               onChange={(e) => handleStatusChange(e.target.value)}
-              className="w-1/2 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-[100%] px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               required
             >
               <option value="">Select Option</option>
@@ -391,7 +391,7 @@ const checkCompletedCallsForSelectedConsultant = async (consultantId) => {
                 Select Options <span className="text-red-500">*</span>
               </label>
               <div className="space-y-3">
-                <label className="flex items-center p-3 border border-gray-200 rounded-md hover:bg-gray-50 cursor-pointer">
+                <label className="flex items-center p-2 mb-4 border border-gray-200 rounded-md hover:bg-gray-50 cursor-pointer">
                   <input
                     type="checkbox"
                     value="I have gone through all the details"
@@ -402,7 +402,7 @@ const checkCompletedCallsForSelectedConsultant = async (consultantId) => {
                   />
                   <span className="ml-3 text-sm text-gray-700">I have gone through all the details</span>
                 </label>
-                <label className="flex items-center p-3 border border-gray-200 rounded-md hover:bg-gray-50 cursor-pointer">
+                <label className="flex items-center p-2 mb-4 border border-gray-200 rounded-md hover:bg-gray-50 cursor-pointer">
                   <input
                     type="checkbox"
                     value="I have received the meeting link"
@@ -447,7 +447,7 @@ const checkCompletedCallsForSelectedConsultant = async (consultantId) => {
                   "Call not related to my subject area",
                   "Call scheduled by mistake",
                 ].map((option) => (
-                  <label key={option} className="flex items-center p-3 border border-gray-200 rounded-md hover:bg-gray-50 cursor-pointer">
+                  <label key={option} className="flex items-center p-2 mb-4 border border-gray-200 rounded-md hover:bg-gray-50 cursor-pointer">
                     <input
                       type="checkbox"
                       value={option}
@@ -479,7 +479,7 @@ const checkCompletedCallsForSelectedConsultant = async (consultantId) => {
                   "I have internal team call",
                   "Others",
                 ].map((option) => (
-                  <label key={option} className="flex items-center p-3 border border-gray-200 rounded-md hover:bg-gray-50 cursor-pointer">
+                  <label key={option} className="flex items-center p-2 mb-4 border border-gray-200 rounded-md hover:bg-gray-50 cursor-pointer">
                     <input
                       type="radio"
                       name="rescheduled_options"
@@ -530,17 +530,17 @@ const checkCompletedCallsForSelectedConsultant = async (consultantId) => {
           </div>
           
           {/* Scale Rating UI */}
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-2 pt-3 the_rbac">
             {[
-              { value: "Being Poor", label: "Poor", number: 1, color: "bg-red-500", hoverColor: "hover:bg-red-400" },
-              { value: "Being Average", label: "Average", number: 2, color: "bg-yellow-500", hoverColor: "hover:bg-yellow-400" },
-              { value: "Being Good", label: "Good", number: 3, color: "bg-green-500", hoverColor: "hover:bg-green-400" }
+              { value: "Being Poor", label: "Poor", number: 1, color: "bg-blue-500", hoverColor: "hover:bg-blue-400" },
+              { value: "Being Average", label: "Average", number: 2, color: "bg-blue-500", hoverColor: "hover:bg-blue-400" },
+              { value: "Being Good", label: "Good", number: 3, color: "bg-blue-500", hoverColor: "hover:bg-blue-400" }
             ].map((option, index) => (
               <div key={option.value} className="flex flex-col items-center flex-1">
                 <button
                   type="button"
                   onClick={() => setScaleQuestion1(option.value)}
-                  className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg transition-all duration-200 transform hover:scale-110 ${
+                  className={`w-12 h-12 rounded-full flex items-center justify-center  text-white font-bold text-lg transition-all duration-200 transform hover:scale-110 ${
                     scaleQuestion1 === option.value 
                       ? `${option.color} ring-4 ring-offset-2 ring-blue-200` 
                       : `bg-gray-300 ${option.hoverColor}`
@@ -548,7 +548,7 @@ const checkCompletedCallsForSelectedConsultant = async (consultantId) => {
                 >
                   {option.number}
                 </button>
-                <span className={`mt-2 text-sm font-medium transition-colors ${
+                <span className={`mt-3 text-sm font-medium transition-colors ${
                   scaleQuestion1 === option.value ? 'text-gray-900' : 'text-gray-500'
                 }`}>
                   {option.label}
@@ -558,13 +558,13 @@ const checkCompletedCallsForSelectedConsultant = async (consultantId) => {
           </div>
           
           {/* Progress Bar */}
-          <div className="relative">
+          <div className="relative the_rever">
             <div className="h-2 bg-gray-200 rounded-full">
               <div 
                 className={`h-full rounded-full transition-all duration-300 ${
-                  scaleQuestion1 === 'Being Poor' ? 'w-1/3 bg-red-500' :
-                  scaleQuestion1 === 'Being Average' ? 'w-2/3 bg-yellow-500' :
-                  scaleQuestion1 === 'Being Good' ? 'w-full bg-green-500' : 'w-0'
+                  scaleQuestion1 === 'Being Poor' ? 'w-1/3 bg-blue-500' :
+                  scaleQuestion1 === 'Being Average' ? 'w-2/3 bg-blue-500' :
+                  scaleQuestion1 === 'Being Good' ? 'w-full bg-blue-500' : 'w-0'
                 }`}
               />
             </div>
@@ -579,11 +579,11 @@ const checkCompletedCallsForSelectedConsultant = async (consultantId) => {
           </div>
           
           {/* Scale Rating UI */}
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-2 pt-3  the_rbac">
             {[
-              { value: "Being Poor", label: "Poor", number: 1, color: "bg-red-500", hoverColor: "hover:bg-red-400" },
-              { value: "Being Average", label: "Average", number: 2, color: "bg-yellow-500", hoverColor: "hover:bg-yellow-400" },
-              { value: "Being Good", label: "Good", number: 3, color: "bg-green-500", hoverColor: "hover:bg-green-400" }
+              { value: "Being Poor", label: "Poor", number: 1, color: "bg-blue-500", hoverColor: "hover:bg-blue-400" },
+              { value: "Being Average", label: "Average", number: 2, color: "bg-blue-500", hoverColor: "hover:bg-blue-400" },
+              { value: "Being Good", label: "Good", number: 3, color: "bg-blue-500", hoverColor: "hover:bg-blue-400" }
             ].map((option, index) => (
               <div key={option.value} className="flex flex-col items-center flex-1">
                 <button
@@ -597,7 +597,7 @@ const checkCompletedCallsForSelectedConsultant = async (consultantId) => {
                 >
                   {option.number}
                 </button>
-                <span className={`mt-2 text-sm font-medium transition-colors ${
+                <span className={`mt-3 text-sm font-medium transition-colors ${
                   scaleQuestion2 === option.value ? 'text-gray-900' : 'text-gray-500'
                 }`}>
                   {option.label}
@@ -607,13 +607,13 @@ const checkCompletedCallsForSelectedConsultant = async (consultantId) => {
           </div>
           
           {/* Progress Bar */}
-          <div className="relative">
+          <div className="relative the_rever">
             <div className="h-2 bg-gray-200 rounded-full">
               <div 
                 className={`h-full rounded-full transition-all duration-300 ${
-                  scaleQuestion2 === 'Being Poor' ? 'w-1/3 bg-red-500' :
-                  scaleQuestion2 === 'Being Average' ? 'w-2/3 bg-yellow-500' :
-                  scaleQuestion2 === 'Being Good' ? 'w-full bg-green-500' : 'w-0'
+                  scaleQuestion2 === 'Being Poor' ? 'w-1/3 bg-blue-500' :
+                  scaleQuestion2 === 'Being Average' ? 'w-2/3 bg-blue-500' :
+                  scaleQuestion2 === 'Being Good' ? 'w-full bg-blue-500' : 'w-0'
                 }`}
               />
             </div>
@@ -658,7 +658,7 @@ const checkCompletedCallsForSelectedConsultant = async (consultantId) => {
           {/* Status Indicator */}
           <div className="flex items-center space-x-2 mt-3">
             <div className={`w-3 h-3 rounded-full ${
-              scaleQuestion3 === 'scale8' ? 'bg-green-500' : 'bg-red-500'
+              scaleQuestion3 === 'scale8' ? 'bg-green-500' : 'bg-blue-500'
             }`} />
             <span className="text-sm text-gray-600">
               Client was {scaleQuestion3 === 'scale8' ? '' : 'not '}informed about call recording
@@ -696,13 +696,13 @@ const checkCompletedCallsForSelectedConsultant = async (consultantId) => {
   </div>
 )}
 
-          <div className="flex justify-end pt-4">
+          <div className="flex justify-end pt-0">
             <button
               type="button"
               onClick={handleUpdateStatus}
-              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+              className="inline-flex items-center px-2 py-1 bg-[#ff6800] text-white text-[13px] font-medium rounded-sm hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-colors"
             >
-              <ArrowRight className="w-4 h-4 mr-2" />
+              <ArrowRight className="w-4 h-4 mr-1" />
               Update
             </button>
           </div>
@@ -727,7 +727,7 @@ const checkCompletedCallsForSelectedConsultant = async (consultantId) => {
                   }}
                   options={consultantOptions}
                   placeholder="Select Consultant"
-                  classNamePrefix="react-select"
+                  classNamePrefix="react-select the_hei"
                   isClearable
                   required
                 />
@@ -738,7 +738,7 @@ const checkCompletedCallsForSelectedConsultant = async (consultantId) => {
                 type="button"
                 onClick={handleReassignCall}
                 disabled={isButtonDisabled}
-                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                className="inline-flex items-center px-2 py-1 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
                 <ArrowRight className="w-4 h-4 mr-2" />
                 Submit
@@ -768,7 +768,7 @@ const checkCompletedCallsForSelectedConsultant = async (consultantId) => {
               <button
                 type="button"
                 onClick={handleAssignExternal}
-                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+                className="inline-flex items-center px-2 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
               >
                 <ArrowRight className="w-4 h-4 mr-2" />
                 Submit

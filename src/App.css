@@ -412,8 +412,16 @@ table.dataTable tbody tr:nth-child(odd) {
 
 .show-history-btn {
   padding: 2px 4px;
-  background-color: #ffffff7d;
-  border: 1px solid #b4b4b47d;
+  /* background-color: #ffffff7d; */
+  cursor: pointer;
+  /* border: 1px solid #b4b4b47d; */
+}
+
+.show-history-btn:hover {
+  padding: 2px 4px;
+  background-color: #fff;
+  cursor: pointer;
+  /* border: 1px solid #b4b4b47d; */
 }
 
 .overflow-x-auto::-webkit-scrollbar-track {
@@ -490,8 +498,8 @@ table.the_request.display tbody tr td:last-child span {
 }
 
 .the_filter{
-      border: 1px solid #ddd;
-    margin: -28px 13px;
+     border: 1px solid #ddd;
+    margin: 12px 13px;
     margin-bottom: 5px;
 }
 
@@ -499,10 +507,53 @@ table.the_request.display tbody tr td:last-child span {
   clip-path: polygon(100% 0, 100% 0, 0 50%, 100% 100%, 100% 100%, 100% 50%);
       position: relative;
     transform: rotate(90deg);
-    right: -96%;
+    right: -54%;
     top: -13px;
 }
 
+.the_tcn{
+  padding: 1px 3px;
+}
+
+.the_left p{
+padding-left: 23px;
+}
+
+.the_rbac{
+      position: relative;
+    z-index: 1;
+        margin-left: -15%;
+}
+
+.the_rever{
+          top: -67px;
+    left: 5%;
+    width: 78%;
+    position: relative;
+}
+
+.the_line{
+      background: #6a7282;
+    z-index: 0;
+  top: 20px;
+    left: 8px;
+    width: 2px;
+}
+
+.the_line1{
+  z-index: 1;
+  width: 17px;
+  height: 17px;
+  background-color: var(--color-gray-500);
+  border-radius: 20px;
+}
+
+.the_line2{
+  width: 8px;
+  height: 8px;
+  background-color: #fff;
+  border-radius: 20px;
+}
 
 
 /* ============================================== monish end */

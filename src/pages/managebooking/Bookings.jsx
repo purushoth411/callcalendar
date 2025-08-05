@@ -62,7 +62,7 @@ export default function Bookings() {
     try {
       // Fetch consultants first
       const consultantRes = await fetch(
-        "https://callback-2suo.onrender.com/api/helpers/getUsersByRole",
+        "http://localhost:5000/api/helpers/getUsersByRole",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -73,7 +73,7 @@ export default function Bookings() {
 
       // Then fetch CRMs
       const crmRes = await fetch(
-        "https://callback-2suo.onrender.com/api/helpers/getUsersByRole",
+        "http://localhost:5000/api/helpers/getUsersByRole",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -96,7 +96,7 @@ export default function Bookings() {
 
     try {
       const res = await fetch(
-        "https://callback-2suo.onrender.com/api/helpers/getUsersByRole",
+        "http://localhost:5000/api/helpers/getUsersByRole",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -139,7 +139,7 @@ export default function Bookings() {
       };
 
       const response = await fetch(
-        "https://callback-2suo.onrender.com/api/bookings/fetchBooking",
+        "http://localhost:5000/api/bookings/fetchBooking",
         {
           method: "POST",
           headers: {
@@ -222,7 +222,7 @@ export default function Bookings() {
       setIsLoading(true);
 
       const response = await fetch(
-        "https://callback-2suo.onrender.com/api/bookings/fetchBooking",
+        "http://localhost:5000/api/bookings/fetchBooking",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -260,7 +260,7 @@ export default function Bookings() {
 
     try {
       const res = await fetch(
-        `https://callback-2suo.onrender.com/api/bookings/history/${bookingId}`
+        `http://localhost:5000/api/bookings/history/${bookingId}`
       );
       const result = await res.json();
 
@@ -363,9 +363,9 @@ export default function Bookings() {
         return `
       <div class="flex items-center gap-2">
         <div class="text-gray-600">${formatted}</div>
-        <button class="show-history-btn text-xs px-2 py-1 border border-gray-300 rounded" 
+        <button class="show-history-btn text-xs px-2 py-1 rounded" 
                 data-booking-id="${row.booking_id}">
-          ⏳ History
+          ⏳ 
         </button>
       </div>`;
       },
@@ -518,7 +518,7 @@ export default function Bookings() {
 
             <AnimatePresence>
               {showFilters && (
- <div className="">
+ <div className="flex justify-end">
       {/* Green Arrow Shape */}
       <div className="w-3 h-10 bg-gray-300 clip-left-arrow"></div>
 

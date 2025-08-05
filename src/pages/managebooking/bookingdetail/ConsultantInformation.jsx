@@ -18,7 +18,7 @@ const ConsultantInformation = ({ bookingData, user, bgColor }) => {
             Consultant Information
           </h5>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 the_left">
             <div>
               <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
                 <User size={16} className="mr-2" />
@@ -56,14 +56,14 @@ const ConsultantInformation = ({ bookingData, user, bgColor }) => {
       {isSuperAdminOrExecutive &&
         bookingData?.fld_secondary_consultant_id > 0 && (
           <div
-            className="p-6 rounded-lg mb-6"
-            style={{ backgroundColor: bgColor }}
+            className="p-6 rounded-lg mb-6 bg-[#f1efff] border border-[#c1b9ff]"
+            // style={{ backgroundColor: bgColor }}
           >
             <h5 className="text-xl font-semibold mb-4 text-gray-800">
               Secondary Consultant Information
             </h5>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 the_left">
               <div>
                 <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
                   <User size={16} className="mr-2" />

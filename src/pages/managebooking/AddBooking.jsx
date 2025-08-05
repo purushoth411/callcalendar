@@ -101,7 +101,7 @@ export default function AddBooking({
         try {
           setPageLoading(true);
           const response = await fetch(
-            "https://callback-2suo.onrender.com/api/additional/callrequestrc",
+            "http://localhost:5000/api/additional/callrequestrc",
             {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -151,7 +151,7 @@ export default function AddBooking({
         try {
           setPageLoading(true);
           const response = await fetch(
-            "https://callback-2suo.onrender.com/api/additional/getwritersemail",
+            "http://localhost:5000/api/additional/getwritersemail",
             {
               method: "POST",
               headers: {
@@ -178,10 +178,10 @@ export default function AddBooking({
 
             const subWriter = sub_writer_email
               ? consultants.find(
-                  (c) =>
-                    c.fld_email?.toLowerCase() ==
-                    sub_writer_email?.toLowerCase()
-                )
+                (c) =>
+                  c.fld_email?.toLowerCase() ==
+                  sub_writer_email?.toLowerCase()
+              )
               : null;
             console.log("sub writer", subWriter);
 
@@ -213,7 +213,7 @@ export default function AddBooking({
       if (formData.sale_type === "Presales" && clientId.length > 3) {
         try {
           const res = await fetch(
-            `https://callback-2suo.onrender.com/api/bookings/getPresaleClientDetails/${clientId}`
+            `http://localhost:5000/api/bookings/getPresaleClientDetails/${clientId}`
           );
           const data = await res.json();
 
@@ -233,7 +233,7 @@ export default function AddBooking({
             }));
 
             const recordingRes = await fetch(
-              `https://callback-2suo.onrender.com/api/bookings/checkCallrecording`,
+              `http://localhost:5000/api/bookings/checkCallrecording`,
               {
                 method: "POST",
                 headers: {
@@ -274,7 +274,7 @@ export default function AddBooking({
       if (formData.sale_type === "Postsales" && clientId.length > 3) {
         try {
           const res = await fetch(
-            `https://callback-2suo.onrender.com/api/bookings/getPostsaleClientDetails/${clientId}`
+            `http://localhost:5000/api/bookings/getPostsaleClientDetails/${clientId}`
           );
           const data = await res.json();
 
@@ -292,17 +292,17 @@ export default function AddBooking({
               client_plan_name: plan
                 ? plan.plan
                 : data.data.plan_type == "1"
-                ? "Basic"
-                : data.data.plan_type == "2"
-                ? "Standard"
-                : "Advanced",
+                  ? "Basic"
+                  : data.data.plan_type == "2"
+                    ? "Standard"
+                    : "Advanced",
               allowedCalls: plan
                 ? plan.allowedCalls
                 : data.data.plan_type == "1"
-                ? "1"
-                : data.data.plan_type == "2"
-                ? "2"
-                : "3",
+                  ? "1"
+                  : data.data.plan_type == "2"
+                    ? "2"
+                    : "3",
             };
             setFormData((prev) => ({
               ...prev,
@@ -312,7 +312,7 @@ export default function AddBooking({
             setProjects(data.data.projects || []);
 
             const recordingRes = await fetch(
-              `https://callback-2suo.onrender.com/api/bookings/checkCallrecording`,
+              `http://localhost:5000/api/bookings/checkCallrecording`,
               {
                 method: "POST",
                 headers: {
@@ -364,7 +364,7 @@ export default function AddBooking({
   const checkConsultantWebsiteCondition = (consultantId, consultantName) => {
     try {
       fetch(
-        `https://callback-2suo.onrender.com/api/bookings/checkConsultantWebsiteCondition`,
+        `http://localhost:5000/api/bookings/checkConsultantWebsiteCondition`,
         {
           method: "POST",
           headers: {
@@ -405,7 +405,7 @@ export default function AddBooking({
 
   const checkConsultantTeamCondition = (consultantId, consultantName) => {
     try {
-      fetch(`https://callback-2suo.onrender.com/api/bookings/checkConsultantTeamCondition`, {
+      fetch(`http://localhost:5000/api/bookings/checkConsultantTeamCondition`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -452,7 +452,7 @@ export default function AddBooking({
   };
 
   const checkPresalesCall = (consultantId, consultantName) => {
-    fetch("https://callback-2suo.onrender.com/api/bookings/checkPresalesCall", {
+    fetch("http://localhost:5000/api/bookings/checkPresalesCall", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -537,7 +537,7 @@ export default function AddBooking({
 
     try {
       const res = await fetch(
-        "https://callback-2suo.onrender.com/api/helpers/getConsultantsBySubjectArea",
+        "http://localhost:5000/api/helpers/getConsultantsBySubjectArea",
         {
           method: "POST",
           headers: {
@@ -564,7 +564,7 @@ export default function AddBooking({
     // const allowedCalls=formData.allowedCalls;
     try {
       const response = await fetch(
-        `https://callback-2suo.onrender.com/api/bookings/checkPostsaleCompletedCalls`,
+        `http://localhost:5000/api/bookings/checkPostsaleCompletedCalls`,
         {
           method: "POST",
           headers: {
@@ -659,43 +659,43 @@ export default function AddBooking({
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if(!formData.sale_type){
+    if (!formData.sale_type) {
       toast.error("Please select a sale type");
       return;
     }
-    if(!formData.client_id){
+    if (!formData.client_id) {
       toast.error("Please select a client");
       return;
     }
-    if(!formData.name || !formData.email || !formData.phone){
+    if (!formData.name || !formData.email || !formData.phone) {
       toast.error("Please fill client name, email and phone");
       return;
     }
-    if(!formData.topic_of_research){
+    if (!formData.topic_of_research) {
       toast.error("Please select a topic of research");
       return;
     }
-    if(!formData.call_regarding){
+    if (!formData.call_regarding) {
       toast.error("Please select a call regarding");
       return;
     }
-    if(!formData.asana_link){
+    if (!formData.asana_link) {
       toast.error("Please provide Asana URL / Quote ID");
       return;
     }
-    if(formData.set_int_comments && !formData.internal_comments){
+    if (formData.set_int_comments && !formData.internal_comments) {
       toast.error("Please fill internal comments");
       return;
     }
 
-    if(formData.sale_type == "Presales"){
-      if(!formData.call_related_to){
+    if (formData.sale_type == "Presales") {
+      if (!formData.call_related_to) {
         toast.error("Please select a call related to");
         return;
-      }else if(!formData.consultant_id){
+      } else if (!formData.consultant_id) {
         toast.error("Please select a Consultant");
         return;
-      }else if(showReassignOptions && !formData.consultant_another_option){
+      } else if (showReassignOptions && !formData.consultant_another_option) {
         toast.error("Please select a Consultant SubOption");
         return;
       }
@@ -703,17 +703,17 @@ export default function AddBooking({
 
     }
 
-    if(formData.sale_type == "Postsales"){
-      if(!formData.consultant_id){
+    if (formData.sale_type == "Postsales") {
+      if (!formData.consultant_id) {
         toast.error("Please select a Consultant");
         return;
-      }else if(!formData.secondary_consultant_id){
+      } else if (!formData.secondary_consultant_id) {
         toast.error("Please select a Secondary Consultant")
         return;
-      }else if(!formData.projectid){
+      } else if (!formData.projectid) {
         toast.error("Please select a Project ID");
         return;
-      }else if(!formData.project_milestone){
+      } else if (!formData.project_milestone) {
         toast.error("Please select a Project Milestone");
         return;
       }
@@ -725,7 +725,7 @@ export default function AddBooking({
 
     try {
       const response = await fetch(
-        "https://callback-2suo.onrender.com/api/bookings/addBooking",
+        "http://localhost:5000/api/bookings/addBooking",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -781,7 +781,7 @@ export default function AddBooking({
       }
       try {
         const res = await fetch(
-          `https://callback-2suo.onrender.com/api/bookings/getProjectMilestones/${formData.projectid}`
+          `http://localhost:5000/api/bookings/getProjectMilestones/${formData.projectid}`
         );
         const data = await res.json();
 
@@ -846,38 +846,38 @@ export default function AddBooking({
 
             {(formData.sale_type === "Presales" ||
               formData.sale_type === "Postsales") && (
-              <div>
-                <label className="block mb-1">
-                  {formData.sale_type === "Presales"
-                    ? "Insta CRM RefId"
-                    : "RC Student Code"}
-                </label>
-                <input
-                  type="text"
-                  name="client_id"
-                  value={formData.client_id}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    setFormData((prev) => ({
-                      ...prev,
-                      client_id: value,
-                      client_plan_id: "",
-                      client_plan_name: "",
-                      // projectid: "",
-                      project_milestone: "",
-                      project_milestone_name: "",
-                      allowedCalls: "",
-                      completedCalls: "",
-                      insta_website: "",
-                      company_name: "",
-                    }));
-                    setProjects([]);
-                  }}
-                  className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
-                  required
-                />
-              </div>
-            )}
+                <div>
+                  <label className="block mb-1">
+                    {formData.sale_type === "Presales"
+                      ? "Insta CRM RefId"
+                      : "RC Student Code"}
+                  </label>
+                  <input
+                    type="text"
+                    name="client_id"
+                    value={formData.client_id}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setFormData((prev) => ({
+                        ...prev,
+                        client_id: value,
+                        client_plan_id: "",
+                        client_plan_name: "",
+                        // projectid: "",
+                        project_milestone: "",
+                        project_milestone_name: "",
+                        allowedCalls: "",
+                        completedCalls: "",
+                        insta_website: "",
+                        company_name: "",
+                      }));
+                      setProjects([]);
+                    }}
+                    className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
+                    required
+                  />
+                </div>
+              )}
 
             {formData.sale_type === "Presales" && (
               <>
@@ -1301,14 +1301,13 @@ export default function AddBooking({
                 id="submitBtn"
                 type="button"
                 onClick={handleSubmit}
-                className={`bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-[11px] flex items-center gap-1 cursor-pointer transition ${
-                  submitDisabled
-                    ? "opacity-50 cursor-not-allowed"
-                    : "hover:bg-blue-700"
-                }`}
+                className={`bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700 text-[11px] flex items-center gap-1 cursor-pointer transition ${submitDisabled
+                  ? "opacity-50 cursor-not-allowed"
+                  : "hover:bg-blue-700"
+                  }`}
                 disabled={submitDisabled || submitting}
               >
-                {submitting ? "Submitting..." : submitButtonText}
+                {submitting ? "Submitting..." : submitButtonText}<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevrons-right-icon lucide-chevrons-right"><path d="m6 17 5-5-5-5"/><path d="m13 17 5-5-5-5"/></svg>
               </button>
             </div>
           </div>

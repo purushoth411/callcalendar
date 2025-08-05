@@ -67,7 +67,7 @@ const BookingDetail = () => {
       setIsProcessing(true);
       setLoaderMessage("Loading...");
       const response = await fetch(
-        `https://callback-2suo.onrender.com/api/bookings/fetchBookingById`,
+        `http://localhost:5000/api/bookings/fetchBookingById`,
         {
           method: "POST",
           headers: {
@@ -139,7 +139,7 @@ const BookingDetail = () => {
     try {
       setLoadingFollowers(true);
       const res = await fetch(
-        `https://callback-2suo.onrender.com/api/helpers/getFollowerConsultant`,
+        `http://localhost:5000/api/helpers/getFollowerConsultant`,
         {
           method: "POST",
           headers: {
@@ -171,7 +171,7 @@ const BookingDetail = () => {
       let filteredConsultants = [];
       if (call_related_to === "subject_area_related") {
         const res = await fetch(
-          "https://callback-2suo.onrender.com/api/helpers/getConsultantsBySubjectArea",
+          "http://localhost:5000/api/helpers/getConsultantsBySubjectArea",
           {
             method: "POST",
             headers: {
@@ -206,7 +206,7 @@ const BookingDetail = () => {
   const fetchMsgData = async (bookingId) => {
     try {
       const response = await fetch(
-        `https://callback-2suo.onrender.com/api/helpers/getMessageData?bookingId=${bookingId}`
+        `http://localhost:5000/api/helpers/getMessageData?bookingId=${bookingId}`
       );
       const data = await response.json();
       if (data.status) {
@@ -220,7 +220,7 @@ const BookingDetail = () => {
   const getExternalCallByBookingId = async (bookingId) => {
     try {
       const response = await fetch(
-        `https://callback-2suo.onrender.com/api/bookings/getExternalCallByBookingId?bookingId=${bookingId}`
+        `http://localhost:5000/api/bookings/getExternalCallByBookingId?bookingId=${bookingId}`
       );
       const data = await response.json();
       if (data.status) {
@@ -257,7 +257,7 @@ const BookingDetail = () => {
     }
 
     try {
-      const response = await fetch(`https://callback-2suo.onrender.com/bookings/delete`, {
+      const response = await fetch(`http://localhost:5000/bookings/delete`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -293,7 +293,7 @@ const BookingDetail = () => {
 
     try {
       const response = await fetch(
-        `https://callback-2suo.onrender.com/api/bookings/setAsConverted`,
+        `http://localhost:5000/api/bookings/setAsConverted`,
         {
           method: "POST",
           headers: {
@@ -339,7 +339,7 @@ const BookingDetail = () => {
     try {
       setIsMsgSending(true);
       const response = await fetch(
-        "https://callback-2suo.onrender.com/api/helpers/sendMessage",
+        "http://localhost:5000/api/helpers/sendMessage",
         {
           method: "POST",
           headers: {
@@ -377,7 +377,7 @@ const BookingDetail = () => {
     try {
       setIsSubmitting(true);
       const response = await fetch(
-        "https://callback-2suo.onrender.com/api/bookings/updateStatusByCrm",
+        "http://localhost:5000/api/bookings/updateStatusByCrm",
         {
           method: "POST",
           headers: {
@@ -419,7 +419,7 @@ const BookingDetail = () => {
       });
 
       const response = await fetch(
-        `https://callback-2suo.onrender.com/api/bookings/getBookingData?bookingId=${bookingId}`
+        `http://localhost:5000/api/bookings/getBookingData?bookingId=${bookingId}`
       );
 
       const result = await response.json();
@@ -449,7 +449,7 @@ const BookingDetail = () => {
 
     try {
       const response = await fetch(
-        `https://callback-2suo.onrender.com/api/bookings/markAsConfirmByClient`,
+        `http://localhost:5000/api/bookings/markAsConfirmByClient`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -466,7 +466,7 @@ const BookingDetail = () => {
           setLoaderMessage("Rescheduling other calls...");
 
           const res2 = await fetch(
-            `https://callback-2suo.onrender.com/api/bookings/rescheduleOtherBookings`,
+            `http://localhost:5000/api/bookings/rescheduleOtherBookings`,
             {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -510,7 +510,7 @@ const BookingDetail = () => {
       setIsReassigning(true); // optional: for disabling button or showing spinner
 
       const response = await fetch(
-        "https://callback-2suo.onrender.com/api/bookings/reassignComment",
+        "http://localhost:5000/api/bookings/reassignComment",
         {
           method: "POST",
           headers: {
@@ -557,7 +557,7 @@ const BookingDetail = () => {
       setIsProcessing(true);
       setLoaderMessage("Reassigning Consultant...");
       const res = await fetch(
-        "https://callback-2suo.onrender.com/api/bookings/reassignToConsultant",
+        "http://localhost:5000/api/bookings/reassignToConsultant",
         {
           method: "POST",
           headers: {
@@ -597,7 +597,7 @@ const BookingDetail = () => {
       setIsProcessing(true);
       setLoaderMessage("Cancelling...");
       const res = await fetch(
-        "https://callback-2suo.onrender.com/api/bookings/updateConsultationStatus",
+        "http://localhost:5000/api/bookings/updateConsultationStatus",
         {
           method: "POST",
           headers: {
@@ -673,7 +673,7 @@ const BookingDetail = () => {
       setIsProcessing(true);
       setLoaderMessage("Updating Status...");
       const response = await fetch(
-        "https://callback-2suo.onrender.com/api/bookings/updateConsultationStatus",
+        "http://localhost:5000/api/bookings/updateConsultationStatus",
         {
           method: "POST",
           headers: {
@@ -731,7 +731,7 @@ const BookingDetail = () => {
       setLoaderMessage("Assigning External Call...");
 
       const response = await fetch(
-        "https://callback-2suo.onrender.com/api/bookings/assignExternalCall",
+        "http://localhost:5000/api/bookings/assignExternalCall",
         {
           method: "POST",
           headers: {
@@ -769,7 +769,7 @@ const BookingDetail = () => {
       setLoaderMessage("Reassigning call...");
 
       const response = await fetch(
-        "https://callback-2suo.onrender.com/api/bookings/updateReassignCallStatus",
+        "http://localhost:5000/api/bookings/updateReassignCallStatus",
         {
           method: "POST",
           headers: {
@@ -834,7 +834,7 @@ const BookingDetail = () => {
       setLoaderMessage("Updating External Call...");
 
       const response = await fetch(
-        "https://callback-2suo.onrender.com/api/bookings/updateExternalConsultationStatus",
+        "http://localhost:5000/api/bookings/updateExternalConsultationStatus",
         {
           method: "POST",
           headers: {
@@ -901,7 +901,7 @@ const BookingDetail = () => {
       setLoaderMessage("Submitting...");
 
       const response = await fetch(
-        "https://callback-2suo.onrender.com/api/bookings/submitCallCompletionComment",
+        "http://localhost:5000/api/bookings/submitCallCompletionComment",
         {
           method: "POST",
           headers: {
@@ -955,7 +955,7 @@ const BookingDetail = () => {
       setLoaderMessage("Adding Follower...");
 
       const response = await fetch(
-        "https://callback-2suo.onrender.com/api/helpers/addFollower",
+        "http://localhost:5000/api/helpers/addFollower",
         {
           method: "POST",
           headers: {
@@ -1018,7 +1018,7 @@ const BookingDetail = () => {
     setIsProcessing(true);
     setLoaderMessage("Updating External Call...");
 
-    const response = await fetch("https://callback-2suo.onrender.com/api/helpers/updateExternalBookingInfo", {
+    const response = await fetch("http://localhost:5000/api/helpers/updateExternalBookingInfo", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -1114,7 +1114,7 @@ const BookingDetail = () => {
           <div className="p-6">
             {/* Header */}
             <div className="flex justify-between items-center mb-6">
-              <h4 className="text-2xl font-semibold text-gray-800">
+              <h4 className="text-xl font-semibold text-gray-800">
                 View Booking Information
               </h4>
 
@@ -1241,9 +1241,10 @@ const BookingDetail = () => {
                   )}
                 <button
                   onClick={() => navigate(-1)}
-                  className="bg-gray-500 hover:bg-gray-600 text-white px-2 py-1 rounded-md flex items-center space-x-2 transition-colors"
+                  className="bg-none hover:bg-gray-600 border hover:border-black text-black text-[11px] the_tcn rounded-sm flex items-center space-x-2 transition-colors hover:text-white
+"
                 >
-                  <ArrowLeft size={16} />
+                  <ArrowLeft className="mr-1" size={12} />
                   <span>Back</span>
                 </button>
               </div>
@@ -1383,7 +1384,7 @@ const BookingDetail = () => {
                 </div>
               </>
             )}
-
+            <div className="flex gap-3">
             <CallUpdateActions
               bookingData={bookingData}
               user={user}
@@ -1407,6 +1408,7 @@ const BookingDetail = () => {
               getFollowerConsultant={getFollowerConsultant}
               loadingFollowers={loadingFollowers}
             />
+            </div>
             <div className="flex flex-col md:flex-row md:flex-nowrap md:gap-4">
               {/* Overall History - 1/3 width */}
               <div className="w-full md:basis-[35%]">

@@ -55,7 +55,7 @@ export default function ExternalCalls() {
       setIsLoading(true);
 
       const response = await fetch(
-        "https://callback-2suo.onrender.com/api/additional/getexternalcalls",
+        "http://localhost:5000/api/additional/getexternalcalls",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -90,7 +90,7 @@ export default function ExternalCalls() {
 
     try {
       const res = await fetch(
-        `https://callback-2suo.onrender.com/api/bookings/history/${bookingId}`
+        `http://localhost:5000/api/bookings/history/${bookingId}`
       );
       const result = await res.json();
 
@@ -186,9 +186,9 @@ export default function ExternalCalls() {
           : "—";
 
         const historyButton = hasBookingInfo
-          ? `<button class="show-history-btn text-xs px-2 py-1 border border-gray-300 rounded" 
+          ? `<button class="show-history-btn text-xs px-2 py-1 rounded" 
                   data-booking-id="${row.bookingid}">
-            ⏳ History
+            ⏳ 
          </button>`
           : "";
 
@@ -298,7 +298,7 @@ export default function ExternalCalls() {
           <div className="flex justify-start items-center mb-6">
             <h2 className="text-[18px] font-semibold text-gray-800">External Calls</h2>
             <button
-              className="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 text-sm ml-3 "
+              className="border border-gray-500 text-gray-500 hover:text-white px-2 py-1 rounded hover:bg-gray-500 text-sm ml-3  "
               onClick={fetchAllBookings}
             >
               <RefreshCcw size={15} />

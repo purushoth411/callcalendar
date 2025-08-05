@@ -129,7 +129,7 @@ const CallUpdateOtherActions = ({
   }));
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-[50%]">
       {/* Call Booking Action */}
       {isSubadmin && isPendingStatus && (
         <div className="bg-white border border-gray-200 rounded-lg p-6">
@@ -193,7 +193,7 @@ const CallUpdateOtherActions = ({
               <button
                 type="button"
                 onClick={handleExternalSubmit}
-                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+                className="inline-flex items-center px-4 py-2 bg-orange-600 text-white text-sm font-medium rounded-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-colors"
               >
                 <ArrowRight className="w-4 h-4 mr-2" />
                 Update
@@ -208,62 +208,67 @@ const CallUpdateOtherActions = ({
         bookingData.fld_consultation_sts === "Completed" &&
         !bookingData.fld_call_complete_comment &&
         bookingData.callRecordingSts === "Call Recording Pending" && (
-          <div className="bg-white border border-gray-200 rounded-lg p-6">
+          <div className="bg-white border border-gray-200 rounded-lg p-4">
             <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
               <Star className="w-5 h-5 mr-2" />
               After Call Comments
             </h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Comments
-                </label>
-                <textarea
-                  value={callCompleteComment}
-                  onChange={(e) => setCallCompleteComment(e.target.value)}
-                  placeholder="Add Comments"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none h-24"
-                />
-              </div>
+           <div className="grid grid-cols-1 gap-4">
+  {/* Comments - Full Width */}
+  <div>
+    <label className="block text-sm font-medium text-gray-700 mb-1">
+      Comments
+    </label>
+    <textarea
+      value={callCompleteComment}
+      onChange={(e) => setCallCompleteComment(e.target.value)}
+      placeholder="Add Comments"
+      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none h-24"
+    />
+  </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Rating
-                </label>
-                <select
-                  value={callCompleteRating}
-                  onChange={(e) => setCallCompleteRating(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="">Select Rating</option>
-                  {getRatings().map((r) => (
-                    <option key={r} value={r}>
-                      {r}
-                    </option>
-                  ))}
-                </select>
-              </div>
+  {/* Rating + Call Recording in 2 Columns */}
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-1">
+        Rating
+      </label>
+      <select
+        value={callCompleteRating}
+        onChange={(e) => setCallCompleteRating(e.target.value)}
+        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+      >
+        <option value="">Select Rating</option>
+        {getRatings().map((r) => (
+          <option key={r} value={r}>
+            {r}
+          </option>
+        ))}
+      </select>
+    </div>
 
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Call Recording URL
-                </label>
-                <input
-                  type="text"
-                  value={callRecordingUrl}
-                  onChange={(e) => setCallRecordingUrl(e.target.value)}
-                  placeholder="G-Drive URL"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-            </div>
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-1">
+        Call Recording URL
+      </label>
+      <input
+        type="text"
+        value={callRecordingUrl}
+        onChange={(e) => setCallRecordingUrl(e.target.value)}
+        placeholder="G-Drive URL"
+        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+      />
+    </div>
+  </div>
+</div>
+
 
             <div className="flex justify-end pt-4">
               <button
                 type="button"
                 onClick={handleCompletionSubmit}
-                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+                className="inline-flex items-center px-2 py-1 bg-[#ff6800] text-white text-sm font-medium rounded-sm hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-colors"
               >
                 <ArrowRight className="w-4 h-4 mr-2" />
                 Submit
@@ -333,17 +338,19 @@ const CallUpdateOtherActions = ({
             </div>
           </div>
         )}
+ 
+        
 
       {/* Add Follower */}
       {showFollowerSection && (
-        <div className="bg-white border border-gray-200 rounded-lg p-6">
+        <div className="bg-white border border-gray-200 rounded-lg p-4">
           <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
             <UserPlus className="w-5 h-5 mr-2" />
             Add Follower
           </h2>
 
           <button
-            className="inline-flex items-center px-2 py-1 bg-orange-500 text-white text-[11px] text-sm font-medium rounded-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-colors mb-4"
+            className="inline-flex items-center px-2 py-1 bg-orange-500 text-white text-[13px] text-sm font-medium rounded-sm hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-colors mb-4"
             onClick={() => {
               setShowFollowerForm(!showFollowerForm);
               getFollowerConsultant();
@@ -376,14 +383,17 @@ const CallUpdateOtherActions = ({
                     className="basic-single"
                     classNamePrefix="select"
                   />
-                  <button
-                    type="button"
-                    onClick={handleFollowerSubmit}
-                    className="inline-flex items-center px-2 py-1 bg-blue-600 text-white text-[11px] text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
-                  >
-                    <ArrowRight className="w-4 h-4 mr-2" />
-                    Add
-                  </button>
+
+                  <div className="flex justify-end">
+                    <button
+                      type="button"
+                      onClick={handleFollowerSubmit}
+                      className="inline-flex items-center px-2 py-1 bg-blue-600 text-white text-[13px] text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+                    >
+                      <ArrowRight className="w-4 h-4 mr-1" />
+                      Add
+                    </button>
+                  </div>
                 </>
               )}
             </div>

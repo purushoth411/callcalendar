@@ -11,7 +11,7 @@ const OtherCalls = ({ bookingId, clientId, fetchBookingById }) => {
       setLoading(true);
       try {
         const response = await fetch(
-          `https://callback-2suo.onrender.com/api/bookings/getAllClientBookingData?clientId=${clientId}`
+          `http://localhost:5000/api/bookings/getAllClientBookingData?clientId=${clientId}`
         );
 
         const result = await response.json();
@@ -76,10 +76,10 @@ const OtherCalls = ({ bookingId, clientId, fetchBookingById }) => {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-4 mt-4">
+    <div className="bg-white rounded-lg shadow-md p-4 mt-6">
       <div className="flex items-center gap-3 mb-6">
-        <Phone className="w-6 h-6 text-green-600" />
-        <h5 className="text-xl font-bold text-gray-800">Previous Calls</h5>
+        <Phone className="w-5 h-5 text-green-600" />
+        <h5 className="text-[18px] font-semibold text-gray-800">Previous Calls</h5>
         <span className="bg-gray-100 text-gray-600 px-2 py-1 rounded-full text-sm">
           {allbookingData.length} calls
         </span>
@@ -94,19 +94,19 @@ const OtherCalls = ({ bookingId, clientId, fetchBookingById }) => {
       ) : (
         <div className="overflow-hidden rounded-lg border border-gray-200">
           <div className="overflow-y-auto h-[16.6rem]">
-            <table className="w-full">
+            <table className="w-full text-[13px]">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 py-4 text-left font-medium text-gray-500 uppercase tracking-wider">
                     Call Type
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 py-4 text-left font-medium text-gray-500 uppercase tracking-wider">
                     Consultant
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 py-4 text-left font-medium text-gray-500 uppercase tracking-wider">
                     Booking Date
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 py-4 text-left font-medium text-gray-500 uppercase tracking-wider">
                     Status
                   </th>
                 </tr>
@@ -122,38 +122,38 @@ const OtherCalls = ({ bookingId, clientId, fetchBookingById }) => {
                         : ''
                     }`}
                   >
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-4 py-2 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="bg-blue-100 p-2 rounded-lg mr-3">
                           <Phone className="w-4 h-4 text-blue-600" />
                         </div>
                         <div>
-                          <div className="text-sm font-medium text-gray-900">
+                          <div className="font-medium text-gray-900">
                             {item.fld_sale_type || 'General Call'}
                           </div>
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-4 py-2 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="bg-green-100 p-2 rounded-full mr-3">
                           <User className="w-4 h-4 text-green-600" />
                         </div>
-                        <div className="text-sm text-gray-900">
+                        <div className="text-gray-900">
                           {item.admin_name || 'Unassigned'}
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-4 py-2 whitespace-nowrap">
                       <div className="flex items-center">
                         <Calendar className="w-4 h-4 text-gray-400 mr-2" />
                         <div>
-                          <div className="text-sm text-gray-900">{item.fld_booking_date}</div>
-                          <div className="text-sm text-gray-500">{item.fld_booking_slot}</div>
+                          <div className="text-gray-900">{item.fld_booking_date}</div>
+                          <div className="text-gray-500">{item.fld_booking_slot}</div>
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-4 py-2 whitespace-nowrap">
                       {getStatusBadge(item.fld_call_request_sts)}
                     </td>
                   </tr>

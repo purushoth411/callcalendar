@@ -15,7 +15,7 @@ const OverallHistory = ({ bookingData }) => {
 
   const fetchOverallHistory = async (bookingId) => {
     try {
-      const res = await fetch(`https://callback-2suo.onrender.com/api/bookings/history/${bookingId}`);
+      const res = await fetch(`http://localhost:5000/api/bookings/history/${bookingId}`);
       const data = await res.json();
       setOverallHistory(data.data);
 
@@ -24,7 +24,7 @@ const OverallHistory = ({ bookingData }) => {
         const status = extractStatus(commentText);
         if (status) {
           const statusRes = await fetch(
-            `https://callback-2suo.onrender.com/api/bookings/statusHistory?bookingId=${bookingId}&status=${status}`
+            `http://localhost:5000/api/bookings/statusHistory?bookingId=${bookingId}&status=${status}`
           );
           const statusData = await statusRes.json();
           setStatusHistories((prev) => ({ ...prev, [status]: statusData.data }));
@@ -64,13 +64,13 @@ const OverallHistory = ({ bookingData }) => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-4 mt-4">
-      <div className="flex items-center gap-3 mb-6">
-        <Clock className="w-6 h-6 text-blue-600" />
-        <h5 className="text-xl font-bold text-gray-800">Overall History</h5>
+    <div className="bg-white rounded-lg shadow-md p-4 mt-6">
+      <div className="flex items-center gap-3 mb-4">
+        <Clock className="w-5 h-5 text-blue-600" />
+        <h5 className="text-[18px] font-semibold text-gray-800">Overall History</h5>
       </div>
 
-      <div className="space-y-4 p-3 overflow-y-auto h-[16.6rem]">
+      <div className="space-y-4 pr-3 overflow-y-auto h-[17.3rem] text-[13px]">
         {overallHistory.map((entry, idx) => {
           const arrComment = entry.fld_comment?.split(" on ");
           const commentMain = arrComment[0];
@@ -83,17 +83,17 @@ const OverallHistory = ({ bookingData }) => {
             <div key={idx} className="relative">
               {/* Timeline line */}
               {idx < overallHistory.length - 1 && (
-                <div className="absolute left-4 top-10 w-0.5 h-full bg-gray-200 -z-10"></div>
+                <div className="absolute left-4 top-10 w-0.5 h-full bg-gray-200 -z-10 the_line"></div>
               )}
               
-              <div className="flex gap-4">
+              <div className="flex gap-2">
                 {/* Timeline dot */}
-                <div className={`w-6 h-6 rounded-full ${getStatusColor(status)} flex items-center justify-center flex-shrink-0 mt-1`}>
-                  <div className="w-3 h-3 bg-white rounded-full"></div>
+                <div className={`w-6 h-6 rounded-full the_line1  ${getStatusColor(status)} flex items-center justify-center flex-shrink-0 mt-1`}>
+                  <div className="w-3 h-3 bg-white rounded-full the_line2"></div>
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 bg-gray-50 rounded-lg p-4 border border-gray-200 hover:shadow-md transition-shadow">
+                <div className="flex-1 bg-gray-50 rounded-lg p-2 border border-gray-200 hover:shadow-md transition-shadow">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <p className="text-gray-800 font-medium mb-2">{commentMain}</p>
@@ -101,13 +101,13 @@ const OverallHistory = ({ bookingData }) => {
                       {entry.fld_rescheduled_date_time && (
                         <div className="flex items-center gap-2 mb-2">
                           <Calendar className="w-4 h-4 text-orange-500" />
-                          <span className="text-sm text-orange-600 bg-orange-50 px-2 py-1 rounded">
+                          <span className=" text-orange-600 bg-orange-50 px-2 py-1 rounded">
                             Rescheduled: {entry.fld_rescheduled_date_time}
                           </span>
                         </div>
                       )}
                       
-                      <div className="flex items-center gap-2 text-sm text-gray-500">
+                      <div className="flex items-center gap-2  text-gray-500">
                         <Clock className="w-4 h-4" />
                         <span>{dateInfo}</span>
                       </div>
@@ -168,7 +168,7 @@ const OverallHistory = ({ bookingData }) => {
                                 <div className="flex items-center gap-2 mt-2">
                                   <FileText className="w-4 h-4 text-blue-500" />
                                   <a
-                                    href={`https://callback-2suo.onrender.com/assets/upload_doc/${row.fld_booking_call_file}`}
+                                    href={`http://localhost:5000/assets/upload_doc/${row.fld_booking_call_file}`}
                                     target="_blank"
                                     rel="noreferrer"
                                     className="text-blue-600 hover:text-blue-800 underline"
