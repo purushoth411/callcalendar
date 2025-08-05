@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from "react";
 import "./Calendar.css"; // For CSS styles
 
-const CustomCalendar = ({ consultantSettings, onDateClick }) => {
+const CustomCalendar = ({ consultantSettings, onDateClick,selectedDateState }) => {
   const today = new Date();
   const [currentMonth, setCurrentMonth] = useState(today.getMonth());
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(
+  selectedDateState ? new Date(selectedDateState) : null
+);
+  
+
 
   // Extract exclusions and selected weekdays
   const excludedDates = consultantSettings.fld_days_exclusion

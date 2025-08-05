@@ -5,8 +5,9 @@ import Calendar from "./Calendar";
 import CalendarLoader from "./CalendarLoader.jsx";
 import toast from "react-hot-toast";
 import { TimeZones } from "../../helpers/TimeZones";
+import { formatDateTimeStr } from "../../helpers/CommonHelper.jsx";
 
-const ScheduleCall = () => {
+const EditBooking = () => {
   const [loading, setLoading] = useState(true);
   const [timezoneList, setTimezoneList] = useState(TimeZones);
   const [selectedTimezone, setSelectedTimezone] = useState("");
@@ -23,8 +24,6 @@ const ScheduleCall = () => {
   const [loadingSlots, setLoadingSlots] = useState(false);
    const { bookingId } = useParams();
 
-   
-
   const fetchBookingDetailsWithRc = async () => {
     try {
       const response = await fetch(
@@ -36,6 +35,17 @@ const ScheduleCall = () => {
         setBookingDetails(data.bookingDetails);
         setConsultantSettings(data.consultantSettings);
         setConsultantName(data.consultantSettings?.fld_consultant_name || "");
+        setSelectedDate(data.bookingDetails?.fld_booking_date ?? null);
+        setSelectedSlot(data.bookingDetails?.fld_booking_slot ?? null);
+        setCallLink(data.bookingDetails?.fld_call_joining_link ?? "");
+        const bookingDate = data.bookingDetails.fld_booking_date;
+       const dayName = bookingDate
+        ? new Date(bookingDate).toLocaleDateString("en-US", { weekday: "short" }).toLowerCase()
+        : "";
+
+        handleDateSelect(bookingDate, dayName, false)
+        
+       
         setError("");
       } else {
         setError(data.message || "Failed to fetch booking details");
@@ -48,21 +58,33 @@ const ScheduleCall = () => {
     }
   };
 
-  
-
   useEffect(() => {
     fetchBookingDetailsWithRc();
   }, []);
 
+  useEffect(()=>{
+    if(!selectedDate){
+        return
+    }
+    console.log("selectedDate", selectedDate)
+    handleDateSelect(selectedDate , 'tue')
+  },[selectedDate])
+
+  useEffect(()=>{
+    console.log("selectedSlot", selectedSlot)
+  },[selectedSlot])
 
   const handleTimezoneChange = (e) => {
     setSelectedTimezone(e.target.value);
   };
 
-  const handleDateSelect = async (dateStr, dayKey) => {
+  const handleDateSelect = async (dateStr, dayKey, emptySlot = true) => {
     setLoadingSlots(true);
     setSelectedDate(dateStr);
-    setSelectedSlot(""); // Reset selected slot
+    if(emptySlot){
+
+        setSelectedSlot(""); 
+    }
 
     if (!consultantSettings) return;
 
@@ -295,13 +317,16 @@ const ScheduleCall = () => {
       <div className="card shadow">
         <div className="card-body">
           <div className="flex justify-between items-center mb-4">
-            <h4 className="text-xl font-bold">Schedule Call</h4>
-            {consultantName && (
-              <span className="text-sm text-gray-600">
-                Consultant: <strong>{consultantName}</strong>
-              </span>
-            )}
+            <h4 className="text-xl font-bold">Re-Schedule Call</h4>
+             <strong>
+    {bookingDetails?.fld_name} -{" "}
+    {formatDateTimeStr(
+      bookingDetails?.fld_booking_date,
+      bookingDetails?.fld_booking_slot
+    )}
+  </strong>
           </div>
+
 
           <form>
             <input type="hidden" name="booking_date" value={selectedDate} />
@@ -332,6 +357,7 @@ const ScheduleCall = () => {
                         height={700}
                         onDateClick={handleDateSelect}
                         consultantSettings={consultantSettings}
+                        selectedDateState={selectedDate}
                       />
                     </div>
                   </>
@@ -387,7 +413,7 @@ const ScheduleCall = () => {
                           onClick={() => setSelectedSlot(slot)}
                           className={`cursor-pointer border rounded-md text-center py-2 px-3 text-sm transition
           ${
-            selectedSlot === slot
+            selectedSlot == slot
               ? "bg-blue-600 text-white border-blue-600"
               : "bg-gray-50 hover:bg-blue-100"
           }`}
@@ -424,7 +450,7 @@ const ScheduleCall = () => {
                       onClick={handleSubmit}
                       className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
                     >
-                      Submit
+                      Update
                     </button>
 
                     {submitMessage && (
@@ -443,4 +469,4 @@ const ScheduleCall = () => {
   );
 };
 
-export default ScheduleCall;
+export default EditBooking;
