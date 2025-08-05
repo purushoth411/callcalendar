@@ -10,7 +10,7 @@ import { formatDateTimeStr } from "../../helpers/CommonHelper.jsx";
 const EditBooking = () => {
   const [loading, setLoading] = useState(true);
   const [timezoneList, setTimezoneList] = useState(TimeZones);
-  const [selectedTimezone, setSelectedTimezone] = useState("");
+  const [selectedTimezone, setSelectedTimezone] = useState("Asia/Kolkata");
   const [questionData, setQuestionData] = useState({ count: 0, questions: "" });
   const [consultantName, setConsultantName] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
@@ -275,7 +275,7 @@ const EditBooking = () => {
 
     try {
       const response = await fetch(
-        "http://localhost:5000/api/bookings/saveCallScheduling",
+        "http://localhost:5000/api/bookings/updateCallScheduling",
         {
           method: "POST",
           headers: {
@@ -377,7 +377,7 @@ const EditBooking = () => {
                     onChange={handleTimezoneChange}
                   >
                     {timezoneList.map((value, index) => (
-                      <option key={index} value={value.value}>
+                      <option key={index} value={value.timezone}>
                         {value.timezone}
                       </option>
                     ))}
