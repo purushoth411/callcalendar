@@ -13,6 +13,7 @@ import ScheduleCall from "../pages/managebooking/ScheduleCall";
 import BookingDetail from "../pages/managebooking/bookingdetail/BookingDetail";
 import CallRequestsFromRc from "../pages/additional/CallRequestsFromRc";
 import ExternalCalls from "../pages/additional/ExternalCalls";
+import EditBooking from "../pages/managebooking/EditBooking";
 
 
 
@@ -31,13 +32,13 @@ export default function AppRouter() {
             <Route path="/teams" element={<Teams />} />
             <Route path="/bookings" element={<Bookings />} />
             <Route path="/bookings/:dashboard_status" element={<Bookings />} />
-            <Route path="/schedulecall/:id" element={<ScheduleCall />} />
+            <Route path="/schedulecall/:bookingId" element={<ScheduleCall />} />
             <Route path="/admin/booking_detail/:bookingId" element={<BookingDetail />} />
-             <Route path="/admin/booking_detail/:bookingId/convert" element={<BookingDetail />} />
+            <Route path="/admin/booking_detail/:bookingId/convert" element={<BookingDetail />} />
             <Route path="/call_request_from_rc" element={<CallRequestsFromRc />} />
             <Route path="/external_calls" element={<ExternalCalls />} />
             <Route path="/admin/add_call_request/:bookingid/enq" element={<Bookings />} />
-
+            <Route path="/admin/edit_booking/:bookingId" element={<EditBooking />} />
 
             
           </Route>

@@ -72,6 +72,38 @@ export const callRegardingOptions = {
   },
 };
 
+export const formatDateTimeStr = (dateStr, slotStr = "00:00 AM") => {
+  if (!dateStr) return "Invalid date";
+
+  // Normalize slot (e.g., 2:30 PM → 14:30)
+  const [time, period] = slotStr.split(" ");
+  let [hours, minutes] = time.split(":").map(Number);
+
+  if (period?.toUpperCase() === "PM" && hours !== 12) hours += 12;
+  if (period?.toUpperCase() === "AM" && hours === 12) hours = 0;
+
+  const formattedTime = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:00`;
+
+  const isoString = `${dateStr}T${formattedTime}`;
+  const date = new Date(isoString);
+
+  if (isNaN(date.getTime())) return "Invalid date";
+
+  const options = {
+    weekday: "short",
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  };
+
+  return new Intl.DateTimeFormat("en-GB", options).format(date).replace(",", "");
+};
+
+
+
 
 
 
