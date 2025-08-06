@@ -22,12 +22,8 @@ const EditBooking = () => {
   const [callLink, setCallLink] = useState("");
   const [submitMessage, setSubmitMessage] = useState("");
   const [loadingSlots, setLoadingSlots] = useState(false);
-<<<<<<< HEAD
    const { bookingId } = useParams();
    const [isSubmitting,setIsSubmitting]=useState(false);
-=======
-  const { bookingId } = useParams();
->>>>>>> c81a44e96c898841d25d409432402bd61fed72ce
 
   const fetchBookingDetailsWithRc = async () => {
     try {
@@ -51,12 +47,8 @@ const EditBooking = () => {
 
         handleDateSelect(bookingDate, dayName, false)
 
-<<<<<<< HEAD
         
        
-=======
-
->>>>>>> c81a44e96c898841d25d409432402bd61fed72ce
         setError("");
       } else {
         setError(data.message || "Failed to fetch booking details");
@@ -93,7 +85,6 @@ const EditBooking = () => {
     setSelectedTimezone(e.target.value);
   };
 
-<<<<<<< HEAD
  const handleDateSelect = async (dateStr, dayKey, emptySlot = true) => {
   setLoadingSlots(true);
   setSelectedDate(dateStr);
@@ -102,15 +93,6 @@ const EditBooking = () => {
   }
 
   if (!consultantSettings) return;
-=======
-  const handleDateSelect = async (dateStr, dayKey, emptySlot = true) => {
-    setLoadingSlots(true);
-    setSelectedDate(dateStr);
-    if (emptySlot) {
-
-      setSelectedSlot("");
-    }
->>>>>>> c81a44e96c898841d25d409432402bd61fed72ce
 
   const dayFieldMap = {
     sun: "fld_sun_time_data",
@@ -501,7 +483,6 @@ const EditBooking = () => {
                       />
                     </div>
 
-<<<<<<< HEAD
                     <button
                       type="button"
                       onClick={handleSubmit}
@@ -510,16 +491,6 @@ const EditBooking = () => {
                     >
                       {isSubmitting ? "Updating...":"Update"}
                     </button>
-=======
-                    <div className="flex justify-end"> 
-                      <button
-                        type="button"
-                        onClick={handleSubmit}
-                        className="bg-[#fa713b] text-white px-2 py-1 rounded hover:bg-[#f55a1d] transition flex"
-                      >
-                        Update<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" className="ms-1" class="lucide lucide-chevrons-right-icon lucide-chevrons-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 17 5-5-5-5"></path><path d="m13 17 5-5-5-5"></path></svg>
-                      </button></div>
->>>>>>> c81a44e96c898841d25d409432402bd61fed72ce
 
                     {submitMessage && (
                       <p className="text-sm text-green-600 mt-2">
