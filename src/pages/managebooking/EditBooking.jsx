@@ -339,7 +339,7 @@ const EditBooking = () => {
 
         setTimeout(() => {
           window.location.href = "http://localhost:5173/bookings";
-        }, 1500); // optional delay to let toast show
+        }, 1500); 
       } else {
         toast.errro("Failed to submit booking.");
       }

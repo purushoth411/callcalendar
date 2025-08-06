@@ -179,8 +179,8 @@ export default function Header() {
               Call Request From RC
             </NavLink>
           )}
-          {/* <NavLink
-      to="/domainpref"
+          <NavLink
+      to="/domain_pref"
       className={({ isActive }) =>
         isActive
           ? "flex items-center text-white underline font-semibold"
@@ -189,7 +189,7 @@ export default function Header() {
     >
       <Globe2 className="mr-1" size={16} />
       Domain Pref
-    </NavLink> */}
+    </NavLink>
         </div>
         </div>
       </nav>

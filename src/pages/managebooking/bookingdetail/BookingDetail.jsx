@@ -386,6 +386,7 @@ const BookingDetail = () => {
           body: JSON.stringify({
             bookingid: bookingId,
             statusByCrm: statusByCrm,
+            user:user
           }),
         }
       );

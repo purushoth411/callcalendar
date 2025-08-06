@@ -90,7 +90,7 @@ export default function DomainPref() {
 
     try {
       const method = "POST";
-      const url = "http://localhost:5000/api/domains";
+      const url = "http://localhost:5000/api/domains/addDomain";
 
       const response = await fetch(url, {
         method,
@@ -131,7 +131,7 @@ export default function DomainPref() {
 
     try {
       const method = "PUT";
-      const url = `http://localhost:5000/api/domains/${editId}`;
+      const url = `http://localhost:5000/api/domains/updateDomain/${editId}`;
 
       const response = await fetch(url, {
         method,
@@ -182,9 +182,12 @@ export default function DomainPref() {
     if (!window.confirm("Are you sure you want to delete this domain?")) return;
 
     try {
-      const res = await fetch(`http://localhost:5000/api/domains/${id}`, {
-        method: "DELETE",
-      });
+      const res = await fetch(
+        `http://localhost:5000/api/domains/deleteDomain/${id}`,
+        {
+          method: "DELETE",
+        }
+      );
       const result = await res.json();
       if (result.status) {
         toast.success("Deleted successfully");
@@ -195,6 +198,31 @@ export default function DomainPref() {
     } catch (error) {
       console.error("Delete error:", error);
       toast.error("Failed to delete");
+    }
+  };
+
+  const updateDomainStatus = async (domainId, status) => {
+    try {
+      const res = await fetch(
+        `http://localhost:5000/api/domains/updateDomainStatus/${domainId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ status }),
+        }
+      );
+
+      const data = await res.json();
+      if (data.status) {
+        toast.success("Status updated");
+      } else {
+        toast.error(data.message || "Status update failed");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Error updating status");
     }
   };
 
@@ -229,6 +257,20 @@ export default function DomainPref() {
       title: "Pref 6",
       data: "cosultantId",
       render: (data) => data?.split(",")[5]?.trim() || "",
+    },
+    {
+      title: "Status",
+      data: "status",
+      orderable: false,
+      render: function (data, type, row) {
+        const checked = data === "Active" ? "checked" : "";
+        return `
+      <label class="custom-switch">
+        <input type="checkbox" class="custom-checkbox" data-id="${row.id}" ${checked}>
+        <div class="custom-slider"></div>
+      </label>
+    `;
+      },
     },
     {
       title: "Actions",
@@ -267,11 +309,20 @@ export default function DomainPref() {
     dom: '<"flex justify-between items-center mb-4"lf>rt<"flex justify-between items-center mt-4"ip>',
     language: {
       search: "",
-      searchPlaceholder: "Search users...",
+      searchPlaceholder: "Search Domains...",
       lengthMenu: "Show _MENU_ entries",
       info: "Showing _START_ to _END_ of _TOTAL_ entries",
       infoEmpty: "No entries available",
       infoFiltered: "(filtered from _MAX_ total entries)",
+    },
+    createdRow: (row, data) => {
+      $(row)
+        .find(".custom-checkbox")
+        .on("change", function () {
+          const domainId = $(this).data("id");
+          const newStatus = this.checked ? "ACTIVE" : "INACTIVE";
+          updateDomainStatus(domainId, newStatus);
+        });
     },
     drawCallback: function () {
       const container = $(this.api().table().container());
@@ -307,8 +358,6 @@ export default function DomainPref() {
     setShowEditForm(false);
   };
 
-
-
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="">
@@ -326,10 +375,20 @@ export default function DomainPref() {
           </div>
 
           {isLoading ? (
-                          <SkeletonLoader
-  rows={6}
-  columns={["Domain", "Pref 1","Pref 2","Pref 3","Pref 4","Pref 5","Pref 6", "Actions"]}
-/>
+            <SkeletonLoader
+              rows={6}
+              columns={[
+                "Domain",
+                "Pref 1",
+                "Pref 2",
+                "Pref 3",
+                "Pref 4",
+                "Pref 5",
+                "Pref 6",
+                "Status",
+                "Actions",
+              ]}
+            />
           ) : domains.length > 0 ? (
             <DataTable
               data={domains}
@@ -338,7 +397,9 @@ export default function DomainPref() {
               options={tableOptions}
             />
           ) : (
-            <div className="text-center text-gray-600">No domains available.</div>
+            <div className="text-center text-gray-600">
+              No domains available.
+            </div>
           )}
         </div>
       </div>
@@ -413,30 +474,50 @@ export default function DomainPref() {
                           <label className="block text-sm font-medium text-gray-700 mb-2">
                             Preference {n}
                           </label>
-                         <Select
-  className="react-select-container"
-  classNamePrefix="react-select"
-  options={allConsultants.map((consultant) => ({
-    value: consultant.fld_name,
-    label: consultant.fld_name,
-  }))}
-  value={
-    allConsultants
-      .map((consultant) => ({
-        value: consultant.fld_name,
-        label: consultant.fld_name,
-      }))
-      .find((option) => option.value === formData[`pref_${n}`]) || null
-  }
-  onChange={(selected) =>
-    setFormData({
-      ...formData,
-      [`pref_${n}`]: selected ? selected.value : "",
-    })
-  }
-  placeholder="Select Consultant"
-/>
+                          <Select
+                            className="react-select-container"
+                            classNamePrefix="react-select"
+                            options={allConsultants.map((consultant) => {
+                              const trimmedName = consultant.fld_name.trim();
+                              const isDisabled = [1, 2, 3, 4, 5, 6]
+                                .map((i) =>
+                                  (formData[`pref_${i}`] || "").trim()
+                                )
+                                .filter(
+                                  (v) =>
+                                    v &&
+                                    v !== (formData[`pref_${n}`] || "").trim()
+                                )
+                                .includes(trimmedName);
 
+                              return {
+                                value: trimmedName,
+                                label: trimmedName,
+                                isDisabled,
+                              };
+                            })}
+                            value={
+                              allConsultants
+                                .map((consultant) => ({
+                                  value: consultant.fld_name.trim(),
+                                  label: consultant.fld_name.trim(),
+                                }))
+                                .find(
+                                  (option) =>
+                                    option.value ===
+                                    (formData[`pref_${n}`] || "").trim()
+                                ) || null
+                            }
+                            onChange={(selected) =>
+                              setFormData({
+                                ...formData,
+                                [`pref_${n}`]: selected
+                                  ? selected.value.trim()
+                                  : "",
+                              })
+                            }
+                            placeholder="Select Consultant"
+                          />
                         </div>
                       ))}
                     </div>
@@ -524,27 +605,50 @@ export default function DomainPref() {
                           <label className="block text-sm font-medium text-gray-700 mb-2">
                             Preference {n}
                           </label>
-                          <select
-                            className="w-full border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            value={formData[`pref_${n}`] || ""}
-                            onChange={(e) =>
+                          <Select
+                            className="react-select-container"
+                            classNamePrefix="react-select"
+                            options={allConsultants.map((consultant) => {
+                              const trimmedName = consultant.fld_name.trim();
+                              const isDisabled = [1, 2, 3, 4, 5, 6]
+                                .map((i) =>
+                                  (formData[`pref_${i}`] || "").trim()
+                                )
+                                .filter(
+                                  (v) =>
+                                    v &&
+                                    v !== (formData[`pref_${n}`] || "").trim()
+                                )
+                                .includes(trimmedName);
+
+                              return {
+                                value: trimmedName,
+                                label: trimmedName,
+                                isDisabled,
+                              };
+                            })}
+                            value={
+                              allConsultants
+                                .map((consultant) => ({
+                                  value: consultant.fld_name.trim(),
+                                  label: consultant.fld_name.trim(),
+                                }))
+                                .find(
+                                  (option) =>
+                                    option.value ===
+                                    (formData[`pref_${n}`] || "").trim()
+                                ) || null
+                            }
+                            onChange={(selected) =>
                               setFormData({
                                 ...formData,
-                                [`pref_${n}`]: e.target.value,
+                                [`pref_${n}`]: selected
+                                  ? selected.value.trim()
+                                  : "",
                               })
                             }
-                          >
-                            <option value="">Select Consultant</option>
-                            {allConsultants.length > 0 &&
-                              allConsultants.map((consultant) => (
-                                <option
-                                  key={consultant.id}
-                                  value={consultant.fld_name}
-                                >
-                                  {consultant.fld_name}
-                                </option>
-                              ))}
-                          </select>
+                            placeholder="Select Consultant"
+                          />
                         </div>
                       ))}
                     </div>

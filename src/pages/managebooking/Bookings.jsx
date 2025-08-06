@@ -17,6 +17,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Select from "react-select";
 import { useNavigate, useParams } from "react-router-dom";
+import toast from "react-hot-toast";
 
 export default function Bookings() {
   const { user } = useAuth();
@@ -316,14 +317,37 @@ export default function Bookings() {
   `;
   };
 
-  const handleCrmStatusUpdate = (id, status) => {
-    if (!status) return;
-    // Replace BASE_URL or use axios/fetch as needed
-    fetch(`/api/update-crm-status`, {
+const handleCrmStatusUpdate = async (id, status) => {
+  if (!status) {
+    toast.error("Select any status");
+    return;
+  }
+  
+  try {
+    const response = await fetch(`http://localhost:5000/api/bookings/updateStatusByCrm`, {
       method: "POST",
-      body: JSON.stringify({ id, status }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ bookingid: id, statusByCrm: status,user:user }),
     });
-  };
+
+    const result = await response.json();
+    console.log("Response result:", result); // Debug log
+
+    if (result.status === true || result.status === "true") {
+      toast.success("Status Updated Successfully");
+      fetchAllBookings();
+    } else {
+      toast.error(result.message || "Failed to update status");
+    }
+  } catch (error) {
+    toast.error("An error occurred while updating status");
+    console.error("Update error:", error);
+  }
+};
+
+
   const columns = [
   {
   title: "Client",
@@ -451,6 +475,24 @@ export default function Bookings() {
             }
           }
         });
+
+        container.find(".the_status").off("change").on("change", function () {
+    const selectedStatus = $(this).val();
+    const classList = $(this).attr("class");
+    const match = classList.match(/statusByCrm(\d+)/);
+    const id = match ? match[1] : null;
+
+    
+     if (id && selectedStatus) {
+      if (window.confirm(`Are you sure you want to mark this as "${selectedStatus}"?`)) {
+        handleCrmStatusUpdate(id, selectedStatus);
+      } else {
+       
+        $(this).val("");
+      }
+    }
+    
+  });
 
       // Add search & select styling
       container
