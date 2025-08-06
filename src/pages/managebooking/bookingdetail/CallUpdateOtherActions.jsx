@@ -61,7 +61,7 @@ const CallUpdateOtherActions = ({
   const showFollowerSection =
     bookingData.fld_consultant_another_option !== "TEAM";
   bookingData.fld_call_confirmation_status === "Call Confirmed by Client" &&
-    isBeforeBookingTime &&
+    isBeforeBookingTime && isSubadmin && isConsultant
     bookingData.fld_call_request_sts !== "Completed" &&
     bookingData.fld_call_related_to !== "I_am_not_sure" &&
     hasFollowers === false;

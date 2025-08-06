@@ -41,8 +41,7 @@ const CallUpdateActions = ({
   const shouldShowComponent = () => {
     return (
       (userType === "CONSULTANT" ||
-        userType === "SUBADMIN" ||
-        userType === "SUPERADMIN") &&
+        userType === "SUBADMIN" ) &&
       !["Completed", "Reject", "Cancelled"].includes(
         bookingData.fld_consultation_sts
       ) &&

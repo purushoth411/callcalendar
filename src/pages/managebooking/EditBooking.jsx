@@ -23,6 +23,7 @@ const EditBooking = () => {
   const [submitMessage, setSubmitMessage] = useState("");
   const [loadingSlots, setLoadingSlots] = useState(false);
    const { bookingId } = useParams();
+   const [isSubmitting,setIsSubmitting]=useState(false);
 
   const fetchBookingDetailsWithRc = async () => {
     try {
@@ -38,12 +39,14 @@ const EditBooking = () => {
         setSelectedDate(data.bookingDetails?.fld_booking_date ?? null);
         setSelectedSlot(data.bookingDetails?.fld_booking_slot ?? null);
         setCallLink(data.bookingDetails?.fld_call_joining_link ?? "");
+        setSelectedTimezone(data.bookingDetails?.fld_timezone)
         const bookingDate = data.bookingDetails.fld_booking_date;
        const dayName = bookingDate
         ? new Date(bookingDate).toLocaleDateString("en-US", { weekday: "short" }).toLowerCase()
         : "";
 
         handleDateSelect(bookingDate, dayName, false)
+
         
        
         setError("");
@@ -74,189 +77,222 @@ const EditBooking = () => {
     console.log("selectedSlot", selectedSlot)
   },[selectedSlot])
 
+    useEffect(()=>{
+    console.log("selectedTimezone", selectedTimezone)
+  },[selectedTimezone])
+
   const handleTimezoneChange = (e) => {
     setSelectedTimezone(e.target.value);
   };
 
-  const handleDateSelect = async (dateStr, dayKey, emptySlot = true) => {
-    setLoadingSlots(true);
-    setSelectedDate(dateStr);
-    if(emptySlot){
+ const handleDateSelect = async (dateStr, dayKey, emptySlot = true) => {
+  setLoadingSlots(true);
+  setSelectedDate(dateStr);
+  if(emptySlot){
+    setSelectedSlot(""); 
+  }
 
-        setSelectedSlot(""); 
-    }
+  if (!consultantSettings) return;
 
-    if (!consultantSettings) return;
-
-    const dayFieldMap = {
-      sun: "fld_sun_time_data",
-      mon: "fld_mon_time_data",
-      tue: "fld_tue_time_data",
-      wed: "fld_wed_time_data",
-      thu: "fld_thu_time_data",
-      fri: "fld_fri_time_data",
-      sat: "fld_sat_time_data",
-    };
-
-    const blockFieldMap = {
-      sun: "fld_sun_time_block",
-      mon: "fld_mon_time_block",
-      tue: "fld_tue_time_block",
-      wed: "fld_wed_time_block",
-      thu: "fld_thu_time_block",
-      fri: "fld_fri_time_block",
-      sat: "fld_sat_time_block",
-    };
-
-    const normalizeTime = (time) =>
-      time
-        .replace(/^0+/, "") // Remove leading 0s
-        .replace(/\u202F|\u00A0/g, " ") // Normalize non-breaking spaces
-        .trim()
-        .toUpperCase();
-
-    const timeData = consultantSettings[dayFieldMap[dayKey]];
-    const blockData = consultantSettings[blockFieldMap[dayKey]] || "";
-
-    if (!timeData) return setAvailableSlots([]);
-
-    const blockedSlots = blockData
-      .split("-")
-      .map((s) => normalizeTime(s))
-      .filter((s) => s !== "");
-
-    const slotRanges = timeData.split("~");
-    let generatedSlots = [];
-
-    slotRanges.forEach((range) => {
-      const [start, end] = range.split("||");
-      if (!start || !end) return;
-
-      const [startHour, startMinute] = start.split(":").map(Number);
-      const [endHour, endMinute] = end.split(":").map(Number);
-
-      let current = new Date();
-      current.setHours(startHour, startMinute, 0, 0);
-
-      const endTime = new Date();
-      endTime.setHours(endHour, endMinute, 0, 0);
-
-      while (current <= endTime) {
-        const slot = current.toLocaleTimeString([], {
-          hour: "numeric",
-          minute: "2-digit",
-          hour12: true,
-        });
-
-        const normalizedSlot = normalizeTime(slot);
-        if (!blockedSlots.includes(normalizedSlot)) {
-          generatedSlots.push(normalizedSlot);
-        }
-
-        current = new Date(current.getTime() + 30 * 60 * 1000); // 30 min
-      }
-    });
-
-    try {
-      const res1 = await fetch(
-        "http://localhost:5000/api/helpers/getBookingData",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            consultantId: bookingDetails.fld_consultantid,
-            selectedDate: dateStr,
-            status: "Reject",
-            hideSubOption: "HIDE_SUB_OPT",
-            callExternalAssign: "No",
-            showAcceptedCall: "Yes",
-            checkType: "CHECK_BOTH",
-          }),
-        }
-      );
-
-      const data1 = await res1.json();
-
-      // 🔶 API 2: getRcCallBookingRequest
-      const res2 = await fetch(
-        "http://localhost:5000/api/helpers/getRcCallBookingRequest",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            consultantId: 143,
-            selectedDate: dateStr,
-          }),
-        }
-      );
-
-      const data2 = await res2.json();
-
-      const bookedSlots = [];
-
-      if (data1?.data?.length) {
-        data1.data.forEach((item) => {
-          if (!item.fld_booking_slot) return;
-
-          const normalizedSlot = normalizeTime(item.fld_booking_slot);
-          bookedSlots.push(normalizedSlot);
-
-          if (
-            item.fld_sale_type === "Postsales" &&
-            item.fld_call_confirmation_status === "Call Confirmed by Client" &&
-            item.fld_consultation_sts === "Accept"
-          ) {
-            const slotTime = new Date(`1970-01-01 ${normalizedSlot}`);
-            const prev = new Date(slotTime.getTime() - 30 * 60 * 1000);
-            const next = new Date(slotTime.getTime() + 30 * 60 * 1000);
-
-            const prevSlot = prev.toLocaleTimeString([], {
-              hour: "numeric",
-              minute: "2-digit",
-              hour12: true,
-            });
-
-            const nextSlot = next.toLocaleTimeString([], {
-              hour: "numeric",
-              minute: "2-digit",
-              hour12: true,
-            });
-
-            bookedSlots.push(normalizeTime(prevSlot));
-            bookedSlots.push(normalizeTime(nextSlot));
-          }
-        });
-      }
-
-      if (data2?.data?.length) {
-        data2.data.forEach((item) => {
-          if (item.slot_time) {
-            bookedSlots.push(normalizeTime(item.slot_time));
-          }
-        });
-      }
-
-      const finalAvailableSlots = generatedSlots.filter(
-        (slot) => !bookedSlots.includes(slot)
-      );
-
-      console.log("Generated:", generatedSlots);
-      console.log("Blocked:", blockedSlots);
-      console.log("Booked:", bookedSlots);
-      console.log("Available:", finalAvailableSlots);
-
-      setAvailableSlots(finalAvailableSlots);
-    } catch (error) {
-      console.error("Error fetching booking data:", error);
-      setAvailableSlots([]);
-    } finally {
-      setLoadingSlots(false);
-    }
+  const dayFieldMap = {
+    sun: "fld_sun_time_data",
+    mon: "fld_mon_time_data",
+    tue: "fld_tue_time_data",
+    wed: "fld_wed_time_data",
+    thu: "fld_thu_time_data",
+    fri: "fld_fri_time_data",
+    sat: "fld_sat_time_data",
   };
+
+  const blockFieldMap = {
+    sun: "fld_sun_time_block",
+    mon: "fld_mon_time_block",
+    tue: "fld_tue_time_block",
+    wed: "fld_wed_time_block",
+    thu: "fld_thu_time_block",
+    fri: "fld_fri_time_block",
+    sat: "fld_sat_time_block",
+  };
+
+  const normalizeTime = (time) =>
+    time
+      .replace(/^0+/, "") // Remove leading 0s
+      .replace(/\u202F|\u00A0/g, " ") // Normalize non-breaking spaces
+      .trim()
+      .toUpperCase();
+
+  const timeData = consultantSettings[dayFieldMap[dayKey]];
+  const blockData = consultantSettings[blockFieldMap[dayKey]] || "";
+
+  if (!timeData) return setAvailableSlots([]);
+
+  const blockedSlots = blockData
+    .split("-")
+    .map((s) => normalizeTime(s))
+    .filter((s) => s !== "");
+
+  const slotRanges = timeData.split("~");
+  let generatedSlots = [];
+
+  slotRanges.forEach((range) => {
+    const [start, end] = range.split("||");
+    if (!start || !end) return;
+
+    const [startHour, startMinute] = start.split(":").map(Number);
+    const [endHour, endMinute] = end.split(":").map(Number);
+
+    let current = new Date();
+    current.setHours(startHour, startMinute, 0, 0);
+
+    const endTime = new Date();
+    endTime.setHours(endHour, endMinute, 0, 0);
+
+    while (current <= endTime) {
+      const slot = current.toLocaleTimeString([], {
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+      });
+
+      const normalizedSlot = normalizeTime(slot);
+      if (!blockedSlots.includes(normalizedSlot)) {
+        generatedSlots.push(normalizedSlot);
+      }
+
+      current = new Date(current.getTime() + 30 * 60 * 1000); // 30 min
+    }
+  });
+
+  try {
+    const res1 = await fetch(
+      "http://localhost:5000/api/helpers/getBookingData",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          consultantId: bookingDetails.fld_consultantid,
+          selectedDate: dateStr,
+          status: "Reject",
+          hideSubOption: "HIDE_SUB_OPT",
+          callExternalAssign: "No",
+          showAcceptedCall: "Yes",
+          checkType: "CHECK_BOTH",
+        }),
+      }
+    );
+
+    const data1 = await res1.json();
+
+    const res2 = await fetch(
+      "http://localhost:5000/api/helpers/getRcCallBookingRequest",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          consultantId: 143,
+          selectedDate: dateStr,
+        }),
+      }
+    );
+
+    const data2 = await res2.json();
+
+    const bookedSlots = [];
+
+    if (data1?.data?.length) {
+      data1.data.forEach((item) => {
+        if (!item.fld_booking_slot) return;
+
+        const normalizedSlot = normalizeTime(item.fld_booking_slot);
+        bookedSlots.push(normalizedSlot);
+
+        if (
+          item.fld_sale_type === "Postsales" &&
+          item.fld_call_confirmation_status === "Call Confirmed by Client" &&
+          item.fld_consultation_sts === "Accept"
+        ) {
+          const slotTime = new Date(`1970-01-01 ${normalizedSlot}`);
+          const prev = new Date(slotTime.getTime() - 30 * 60 * 1000);
+          const next = new Date(slotTime.getTime() + 30 * 60 * 1000);
+
+          const prevSlot = prev.toLocaleTimeString([], {
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true,
+          });
+
+          const nextSlot = next.toLocaleTimeString([], {
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true,
+          });
+
+          bookedSlots.push(normalizeTime(prevSlot));
+          bookedSlots.push(normalizeTime(nextSlot));
+        }
+      });
+    }
+
+    if (data2?.data?.length) {
+      data2.data.forEach((item) => {
+        if (item.slot_time) {
+          bookedSlots.push(normalizeTime(item.slot_time));
+        }
+      });
+    }
+
+    let finalAvailableSlots = generatedSlots.filter(
+      (slot) => !bookedSlots.includes(slot)
+    );
+
+  
+    const selectedDateObj = new Date(dateStr);
+    const today = new Date();
+    
+  
+    if (selectedDateObj.toDateString() === today.toDateString()) {
+      const currentTime = new Date();
+      
+     
+      const timeBuffer = bookingDetails.fld_sale_type === "Postsales" ? 4 * 60 : 30; // 4 hours or 30 minutes in minutes
+      const minTime = new Date(currentTime.getTime() + timeBuffer * 60 * 1000);
+      
+      finalAvailableSlots = finalAvailableSlots.filter((slot) => {
+      
+        const [time, period] = slot.split(' ');
+        const [hour, minute] = time.split(':').map(Number);
+        
+        let slotHour = hour;
+        if (period === 'PM' && hour !== 12) {
+          slotHour += 12;
+        } else if (period === 'AM' && hour === 12) {
+          slotHour = 0;
+        }
+        
+        const slotTime = new Date();
+        slotTime.setHours(slotHour, minute, 0, 0);
+        
+        return slotTime >= minTime;
+      });
+    }
+
+    console.log("Generated:", generatedSlots);
+    console.log("Blocked:", blockedSlots);
+    console.log("Booked:", bookedSlots);
+    console.log("Available:", finalAvailableSlots);
+
+    setAvailableSlots(finalAvailableSlots);
+  } catch (error) {
+    console.error("Error fetching booking data:", error);
+    setAvailableSlots([]);
+  } finally {
+    setLoadingSlots(false);
+  }
+};
 
   const handleSubmit = async () => {
     if (!selectedDate) {
@@ -274,6 +310,7 @@ const EditBooking = () => {
   
 
     try {
+      setIsSubmitting(true);
       const response = await fetch(
         "http://localhost:5000/api/bookings/updateCallScheduling",
         {
@@ -309,6 +346,8 @@ const EditBooking = () => {
     } catch (err) {
       console.error("Submission error:", err);
       toast.error("An error occurred during submission.");
+    }finally{
+      setIsSubmitting(false);
     }
   };
 
@@ -448,9 +487,10 @@ const EditBooking = () => {
                     <button
                       type="button"
                       onClick={handleSubmit}
+                      disabled={isSubmitting}
                       className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
                     >
-                      Update
+                      {isSubmitting ? "Updating...":"Update"}
                     </button>
 
                     {submitMessage && (
