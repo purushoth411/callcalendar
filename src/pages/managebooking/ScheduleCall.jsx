@@ -291,7 +291,7 @@ const ScheduleCall = () => {
   };
 
   return (
-    <div className="p-6">
+    <div className="p-6 bg-white">
       <div className="card">
         <div className="card-body">
           <div className="flex justify-between items-center mb-4">
@@ -324,10 +324,10 @@ const ScheduleCall = () => {
                   <CalendarLoader />
                 ) : (
                   <>
-                    <h4 className="text-lg font-semibold mb-3">
+                    <h4 className="text-[13px] font-medium mb-3 text-gray-700">
                       Select a Date
                     </h4>
-                    <div className="border rounded shadow-sm p-2 bg-white">
+                    <div className="">
                       <Calendar
                         height={700}
                         onDateClick={handleDateSelect}
@@ -345,7 +345,7 @@ const ScheduleCall = () => {
                     Select Time Zone
                   </label>
                   <select
-                    className="w-full border rounded px-3 py-2"
+                    className="w-full border border-gray-200 rounded px-3 py-2"
                     name="timeZone"
                     value={selectedTimezone}
                     onChange={handleTimezoneChange}
@@ -368,7 +368,7 @@ const ScheduleCall = () => {
 
                   {loadingSlots ? (
                     // Skeleton loader
-                    <div className="grid grid-cols-2 gap-2 max-h-80 overflow-y-auto">
+                    <div className="grid grid-cols-2 gap-2 max-h-80 overflow-y-auto p-3">
                       {Array(16)
                         .fill("")
                         .map((_, i) => (
@@ -380,12 +380,12 @@ const ScheduleCall = () => {
                     </div>
                   ) : availableSlots.length > 0 ? (
                     // Slots display
-                    <div className="grid grid-cols-2 gap-2 max-h-80 overflow-y-auto">
+                    <div className="grid grid-cols-2 gap-2 max-h-80 overflow-y-auto p-3">
                       {availableSlots.map((slot, i) => (
                         <div
                           key={i}
                           onClick={() => setSelectedSlot(slot)}
-                          className={`cursor-pointer border rounded-md text-center py-2 px-3 text-sm transition
+                          className={`cursor-pointer border border-gray-200 rounded-md text-center py-2 px-3 text-sm transition
           ${
             selectedSlot === slot
               ? "bg-blue-600 text-white border-blue-600"

@@ -42,7 +42,7 @@ const ChatBox = ({ bookingId, user, messageData, onSend,isMsgSending }) => {
     user?.fld_admin_type === "EXECUTIVE";
 
   return (
-    <div className="bg-white  border border-gray-200  rounded-md p-4 w-[35%] mt-6">
+    <div className="bg-white  border border-gray-200  rounded-md p-4 w-[50%] mt-6">
       <div className="flex items-center gap-2 mb-3 pb-2">
         <MessageCircle className="text-gray-700" />
         <h5 className="font-semibold text-gray-700 text-lg">Chat</h5>

@@ -58,11 +58,11 @@ const SetAsConvertedModal = ({ isOpen, onClose, onConvert, isSubmitting }) => {
               <button
                 onClick={handleSubmit}
                 disabled={isSubmitting}
-                className={`px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition ${
+                className={`px-2 py-1 bg-green-600 text-white rounded hover:bg-green-600 transition flex ${
                   isSubmitting ? "opacity-50 cursor-not-allowed" : ""
                 }`}
               >
-                {isSubmitting ? "Submitting..." : "Submit"}
+                {isSubmitting ? "Submitting..." : "Submit"}<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" class="ms-1 lucide lucide-chevrons-right-icon lucide-chevrons-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 17 5-5-5-5"></path><path d="m13 17 5-5-5-5"></path></svg>
               </button>
             </div>
           </motion.div>

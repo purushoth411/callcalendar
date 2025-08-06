@@ -26,7 +26,7 @@ const CallUpdateActions = ({
   const [uploadedFile, setUploadedFile] = useState(null);
   const userType = user.fld_admin_type;
   const permissions = user.fld_permission;
-   const [externalCount, setExternalCount] = useState(0);
+  const [externalCount, setExternalCount] = useState(0);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [displayConsultantId, setDisplayConsultantId] = useState('');
 
@@ -37,7 +37,7 @@ const CallUpdateActions = ({
   }, [bookingData?.id]);
 
 
-   // Check if component should be visible
+  // Check if component should be visible
   const shouldShowComponent = () => {
     return (
       (userType === "CONSULTANT" ||
@@ -59,7 +59,7 @@ const CallUpdateActions = ({
       const data = await response.json();
 
       if (response.ok) {
-        setExternalCount(data.totalExternalCalls); 
+        setExternalCount(data.totalExternalCalls);
       } else {
         console.error("Error:", data.error);
       }
@@ -68,14 +68,14 @@ const CallUpdateActions = ({
     }
   };
 
- 
+
 
   // Check if external assignment is allowed
   const canAssignExternal = () => {
     return (
       (bookingData.fld_consultation_sts !== "Accept" ||
         bookingData.fld_call_confirmation_status ===
-          "Call Confirmed by Client") &&
+        "Call Confirmed by Client") &&
       externalCount == 0
     );
   };
@@ -253,13 +253,13 @@ const CallUpdateActions = ({
   }
 
   const consultantOptions = consultantList
-  .filter((consultant) => consultant.id !== bookingData.fld_consultantid)
-  .map((consultant) => ({
-    value: consultant.id,
-    label: consultant.fld_name,
-  }));
+    .filter((consultant) => consultant.id !== bookingData.fld_consultantid)
+    .map((consultant) => ({
+      value: consultant.id,
+      label: consultant.fld_name,
+    }));
 
-const checkCompletedCallsForSelectedConsultant = async (consultantId) => {
+  const checkCompletedCallsForSelectedConsultant = async (consultantId) => {
     if (!bookingData.fld_email || !consultantId || bookingData.fld_sale_type !== 'Presales') return;
 
     try {
@@ -270,7 +270,7 @@ const checkCompletedCallsForSelectedConsultant = async (consultantId) => {
         },
         body: new URLSearchParams({
           primaryconsultantid: consultantId,
-          clientemail: bookingData.fld_email ,
+          clientemail: bookingData.fld_email,
           saletype: bookingData.fld_sale_type,
         }),
       });
@@ -279,7 +279,7 @@ const checkCompletedCallsForSelectedConsultant = async (consultantId) => {
 
       if (resultText === 'call not completed' || resultText === 'add call') {
         setIsButtonDisabled(false);
-       // toast.success('Call not completed. You can proceed.');
+        // toast.success('Call not completed. You can proceed.');
         return;
       }
 
@@ -296,7 +296,7 @@ const checkCompletedCallsForSelectedConsultant = async (consultantId) => {
       if (displayMsg) {
         toast.error(displayMsg);
         //toast.error('You cannot reassign the call. Call already completed!');
-      }else{
+      } else {
         toast.error('You cannot reassign the call. Call already completed!');
       }
 
@@ -306,18 +306,18 @@ const checkCompletedCallsForSelectedConsultant = async (consultantId) => {
     }
   };
 
- return (
+  return (
     <div className="bg-white border border-gray-200 rounded-lg p-4 w-[50%]">
       <div id="msgloader" className="text-center"></div>
 
-      <div className="mb-6">
+      <div className="mb-4">
         <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
           <Settings className="w-5 h-5 mr-2" />
           Call Booking Action
         </h2>
 
         <div className="space-y-3  flex gap-3 w-full">
-          <label className="flex items-center p-2 mb-1 border  border-gray-200 rounded-md hover:bg-gray-50 cursor-pointer transition-colors w-1/3">
+          <label className="flex items-center p-2 mb-1  rounded-md hover:bg-gray-50 cursor-pointer transition-colors w-1/3">
             <input
               type="radio"
               name="call_booking_action"
@@ -331,7 +331,7 @@ const checkCompletedCallsForSelectedConsultant = async (consultantId) => {
           </label>
 
           {permissions && permissions.includes("Reassign") && (
-            <label className="flex items-center p-2 mb-1  border border-gray-200 rounded-md hover:bg-gray-50 cursor-pointer transition-colors w-1/3">
+            <label className="flex items-center p-2 mb-1   rounded-md hover:bg-gray-50 cursor-pointer transition-colors w-1/3">
               <input
                 type="radio"
                 name="call_booking_action"
@@ -346,7 +346,7 @@ const checkCompletedCallsForSelectedConsultant = async (consultantId) => {
           )}
 
           {canAssignExternal() && (
-            <label className="flex items-center p-2 mb-1 border border-gray-200 rounded-md hover:bg-gray-50 cursor-pointer transition-colors w-1/3">
+            <label className="flex items-center p-2 mb-1  rounded-md hover:bg-gray-50 cursor-pointer transition-colors w-1/3">
               <input
                 type="radio"
                 name="call_booking_action"
@@ -372,7 +372,7 @@ const checkCompletedCallsForSelectedConsultant = async (consultantId) => {
             <select
               value={consultationStatus}
               onChange={(e) => handleStatusChange(e.target.value)}
-              className="w-[100%] px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-[100%] px-3 py-2 border border-gray-300 text-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               required
             >
               <option value="">Select Option</option>
@@ -513,188 +513,177 @@ const checkCompletedCallsForSelectedConsultant = async (consultantId) => {
           )}
 
           {/* Completed Status - Rating Questions */}
-      {consultationStatus === "Completed" && userType !== "CONSULTANT" && (
-  <div className="space-y-6">
-    <div>
-      <label className="block text-sm font-medium text-gray-700 mb-4">
-        On Scale of 1, 2 and 3 (1 being Poor, 2 being Average and 3
-        being Good), Please answer the following questions.
-      </label>
+          {consultationStatus === "Completed" && userType !== "CONSULTANT" && (
+            <div className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-4">
+                  On Scale of 1, 2 and 3 (1 being Poor, 2 being Average and 3
+                  being Good), Please answer the following questions.
+                </label>
 
-      <div className="space-y-6">
-        {/* Question 1 with Scale UI */}
-        <div className="bg-gray-50 p-4 rounded-lg">
-          <div className="mb-4 text-sm font-medium text-gray-700">
-            Question 1 <span className="text-red-500">*</span>: Was the
-            CRM able to Bridge the call effectively?
-          </div>
-          
-          {/* Scale Rating UI */}
-          <div className="flex items-center justify-between mb-2 pt-3 the_rbac">
-            {[
-              { value: "Being Poor", label: "Poor", number: 1, color: "bg-blue-500", hoverColor: "hover:bg-blue-400" },
-              { value: "Being Average", label: "Average", number: 2, color: "bg-blue-500", hoverColor: "hover:bg-blue-400" },
-              { value: "Being Good", label: "Good", number: 3, color: "bg-blue-500", hoverColor: "hover:bg-blue-400" }
-            ].map((option, index) => (
-              <div key={option.value} className="flex flex-col items-center flex-1">
-                <button
-                  type="button"
-                  onClick={() => setScaleQuestion1(option.value)}
-                  className={`w-12 h-12 rounded-full flex items-center justify-center  text-white font-bold text-lg transition-all duration-200 transform hover:scale-110 ${
-                    scaleQuestion1 === option.value 
-                      ? `${option.color} ring-4 ring-offset-2 ring-blue-200` 
-                      : `bg-gray-300 ${option.hoverColor}`
-                  }`}
-                >
-                  {option.number}
-                </button>
-                <span className={`mt-3 text-sm font-medium transition-colors ${
-                  scaleQuestion1 === option.value ? 'text-gray-900' : 'text-gray-500'
-                }`}>
-                  {option.label}
-                </span>
+                <div className="space-y-6">
+                  {/* Question 1 with Scale UI */}
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <div className="mb-4 text-sm font-medium text-gray-700">
+                      Question 1 <span className="text-red-500">*</span>: Was the
+                      CRM able to Bridge the call effectively?
+                    </div>
+
+                    {/* Scale Rating UI */}
+                    <div className="flex items-center justify-between mb-2 pt-3 the_rbac">
+                      {[
+                        { value: "Being Poor", label: "Poor", number: 1, color: "bg-blue-500", hoverColor: "hover:bg-blue-400" },
+                        { value: "Being Average", label: "Average", number: 2, color: "bg-blue-500", hoverColor: "hover:bg-blue-400" },
+                        { value: "Being Good", label: "Good", number: 3, color: "bg-blue-500", hoverColor: "hover:bg-blue-400" }
+                      ].map((option, index) => (
+                        <div key={option.value} className="flex flex-col items-center flex-1">
+                          <button
+                            type="button"
+                            onClick={() => setScaleQuestion1(option.value)}
+                            className={`w-12 h-12 rounded-full flex items-center justify-center  text-white font-bold text-lg transition-all duration-200 transform hover:scale-110 ${scaleQuestion1 === option.value
+                                ? `${option.color} ring-4 ring-offset-2 ring-blue-200`
+                                : `bg-gray-300 ${option.hoverColor}`
+                              }`}
+                          >
+                            {option.number}
+                          </button>
+                          <span className={`mt-3 text-sm font-medium transition-colors ${scaleQuestion1 === option.value ? 'text-gray-900' : 'text-gray-500'
+                            }`}>
+                            {option.label}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Progress Bar */}
+                    <div className="relative the_rever">
+                      <div className="h-2 bg-gray-200 rounded-full">
+                        <div
+                          className={`h-full rounded-full transition-all duration-300 ${scaleQuestion1 === 'Being Poor' ? 'w-1/3 bg-blue-500' :
+                              scaleQuestion1 === 'Being Average' ? 'w-2/3 bg-blue-500' :
+                                scaleQuestion1 === 'Being Good' ? 'w-full bg-blue-500' : 'w-0'
+                            }`}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Question 2 with Scale UI */}
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <div className="mb-4 text-sm font-medium text-gray-700">
+                      Question 2 <span className="text-red-500">*</span>: Was the
+                      CRM's voice loud and clear?
+                    </div>
+
+                    {/* Scale Rating UI */}
+                    <div className="flex items-center justify-between mb-2 pt-3  the_rbac">
+                      {[
+                        { value: "Being Poor", label: "Poor", number: 1, color: "bg-blue-500", hoverColor: "hover:bg-blue-400" },
+                        { value: "Being Average", label: "Average", number: 2, color: "bg-blue-500", hoverColor: "hover:bg-blue-400" },
+                        { value: "Being Good", label: "Good", number: 3, color: "bg-blue-500", hoverColor: "hover:bg-blue-400" }
+                      ].map((option, index) => (
+                        <div key={option.value} className="flex flex-col items-center flex-1">
+                          <button
+                            type="button"
+                            onClick={() => setScaleQuestion2(option.value)}
+                            className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg transition-all duration-200 transform hover:scale-110 ${scaleQuestion2 === option.value
+                                ? `${option.color} ring-4 ring-offset-2 ring-blue-200`
+                                : `bg-gray-300 ${option.hoverColor}`
+                              }`}
+                          >
+                            {option.number}
+                          </button>
+                          <span className={`mt-3 text-sm font-medium transition-colors ${scaleQuestion2 === option.value ? 'text-gray-900' : 'text-gray-500'
+                            }`}>
+                            {option.label}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Progress Bar */}
+                    <div className="relative the_rever">
+                      <div className="h-2 bg-gray-200 rounded-full">
+                        <div
+                          className={`h-full rounded-full transition-all duration-300 ${scaleQuestion2 === 'Being Poor' ? 'w-1/3 bg-blue-500' :
+                              scaleQuestion2 === 'Being Average' ? 'w-2/3 bg-blue-500' :
+                                scaleQuestion2 === 'Being Good' ? 'w-full bg-blue-500' : 'w-0'
+                            }`}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Question 3 with Toggle UI */}
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <div className="mb-4 text-sm font-medium text-gray-700">
+                      Question 3 <span className="text-red-500">*</span>: Was the
+                      client informed about the call being recorded?
+                    </div>
+
+                    <div className="flex items-center space-x-4">
+                      <span className={`text-sm font-medium transition-colors ${scaleQuestion3 !== 'scale8' ? 'text-gray-900' : 'text-gray-500'
+                        }`}>
+                        No
+                      </span>
+
+                      <button
+                        type="button"
+                        onClick={() => setScaleQuestion3(scaleQuestion3 === 'scale8' ? 'scale9' : 'scale8')}
+                        className={`relative inline-flex h-8 w-16 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${scaleQuestion3 === 'scale8' ? 'bg-green-500' : 'bg-gray-300'
+                          }`}
+                      >
+                        <span
+                          className={`inline-block h-6 w-6 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out ${scaleQuestion3 === 'scale8' ? 'translate-x-9' : 'translate-x-1'
+                            }`}
+                        />
+                      </button>
+
+                      <span className={`text-sm font-medium transition-colors ${scaleQuestion3 === 'scale8' ? 'text-gray-900' : 'text-gray-500'
+                        }`}>
+                        Yes
+                      </span>
+                    </div>
+
+                    {/* Status Indicator */}
+                    <div className="flex items-center space-x-2 mt-3">
+                      <div className={`w-3 h-3 rounded-full ${scaleQuestion3 === 'scale8' ? 'bg-green-500' : 'bg-blue-500'
+                        }`} />
+                      <span className="text-sm text-gray-600">
+                        Client was {scaleQuestion3 === 'scale8' ? '' : 'not '}informed about call recording
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
-            ))}
-          </div>
-          
-          {/* Progress Bar */}
-          <div className="relative the_rever">
-            <div className="h-2 bg-gray-200 rounded-full">
-              <div 
-                className={`h-full rounded-full transition-all duration-300 ${
-                  scaleQuestion1 === 'Being Poor' ? 'w-1/3 bg-blue-500' :
-                  scaleQuestion1 === 'Being Average' ? 'w-2/3 bg-blue-500' :
-                  scaleQuestion1 === 'Being Good' ? 'w-full bg-blue-500' : 'w-0'
-                }`}
-              />
-            </div>
-          </div>
-        </div>
 
-        {/* Question 2 with Scale UI */}
-        <div className="bg-gray-50 p-4 rounded-lg">
-          <div className="mb-4 text-sm font-medium text-gray-700">
-            Question 2 <span className="text-red-500">*</span>: Was the
-            CRM's voice loud and clear?
-          </div>
-          
-          {/* Scale Rating UI */}
-          <div className="flex items-center justify-between mb-2 pt-3  the_rbac">
-            {[
-              { value: "Being Poor", label: "Poor", number: 1, color: "bg-blue-500", hoverColor: "hover:bg-blue-400" },
-              { value: "Being Average", label: "Average", number: 2, color: "bg-blue-500", hoverColor: "hover:bg-blue-400" },
-              { value: "Being Good", label: "Good", number: 3, color: "bg-blue-500", hoverColor: "hover:bg-blue-400" }
-            ].map((option, index) => (
-              <div key={option.value} className="flex flex-col items-center flex-1">
-                <button
-                  type="button"
-                  onClick={() => setScaleQuestion2(option.value)}
-                  className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg transition-all duration-200 transform hover:scale-110 ${
-                    scaleQuestion2 === option.value 
-                      ? `${option.color} ring-4 ring-offset-2 ring-blue-200` 
-                      : `bg-gray-300 ${option.hoverColor}`
-                  }`}
-                >
-                  {option.number}
-                </button>
-                <span className={`mt-3 text-sm font-medium transition-colors ${
-                  scaleQuestion2 === option.value ? 'text-gray-900' : 'text-gray-500'
-                }`}>
-                  {option.label}
-                </span>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Call Summary <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  value={callSummary}
+                  onChange={(e) => setCallSummary(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                  rows={4}
+                  placeholder="Enter call summary..."
+                  required
+                />
               </div>
-            ))}
-          </div>
-          
-          {/* Progress Bar */}
-          <div className="relative the_rever">
-            <div className="h-2 bg-gray-200 rounded-full">
-              <div 
-                className={`h-full rounded-full transition-all duration-300 ${
-                  scaleQuestion2 === 'Being Poor' ? 'w-1/3 bg-blue-500' :
-                  scaleQuestion2 === 'Being Average' ? 'w-2/3 bg-blue-500' :
-                  scaleQuestion2 === 'Being Good' ? 'w-full bg-blue-500' : 'w-0'
-                }`}
-              />
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <Upload className="w-4 h-4 inline mr-1" />
+                  Upload File
+                </label>
+                <input
+                  type="file"
+                  onChange={(e) => setUploadedFile(e.target.files[0])}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
             </div>
-          </div>
-        </div>
-
-        {/* Question 3 with Toggle UI */}
-        <div className="bg-gray-50 p-4 rounded-lg">
-          <div className="mb-4 text-sm font-medium text-gray-700">
-            Question 3 <span className="text-red-500">*</span>: Was the
-            client informed about the call being recorded?
-          </div>
-          
-          <div className="flex items-center space-x-4">
-            <span className={`text-sm font-medium transition-colors ${
-              scaleQuestion3 !== 'scale8' ? 'text-gray-900' : 'text-gray-500'
-            }`}>
-              No
-            </span>
-            
-            <button
-              type="button"
-              onClick={() => setScaleQuestion3(scaleQuestion3 === 'scale8' ? 'scale9' : 'scale8')}
-              className={`relative inline-flex h-8 w-16 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-                scaleQuestion3 === 'scale8' ? 'bg-green-500' : 'bg-gray-300'
-              }`}
-            >
-              <span
-                className={`inline-block h-6 w-6 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out ${
-                  scaleQuestion3 === 'scale8' ? 'translate-x-9' : 'translate-x-1'
-                }`}
-              />
-            </button>
-            
-            <span className={`text-sm font-medium transition-colors ${
-              scaleQuestion3 === 'scale8' ? 'text-gray-900' : 'text-gray-500'
-            }`}>
-              Yes
-            </span>
-          </div>
-          
-          {/* Status Indicator */}
-          <div className="flex items-center space-x-2 mt-3">
-            <div className={`w-3 h-3 rounded-full ${
-              scaleQuestion3 === 'scale8' ? 'bg-green-500' : 'bg-blue-500'
-            }`} />
-            <span className="text-sm text-gray-600">
-              Client was {scaleQuestion3 === 'scale8' ? '' : 'not '}informed about call recording
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div>
-      <label className="block text-sm font-medium text-gray-700 mb-2">
-        Call Summary <span className="text-red-500">*</span>
-      </label>
-      <textarea
-        value={callSummary}
-        onChange={(e) => setCallSummary(e.target.value)}
-        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-        rows={4}
-        placeholder="Enter call summary..."
-        required
-      />
-    </div>
-
-    <div>
-      <label className="block text-sm font-medium text-gray-700 mb-2">
-        <Upload className="w-4 h-4 inline mr-1" />
-        Upload File
-      </label>
-      <input
-        type="file"
-        onChange={(e) => setUploadedFile(e.target.files[0])}
-        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-      />
-    </div>
-  </div>
-)}
+          )}
 
           <div className="flex justify-end pt-0">
             <button
@@ -716,7 +705,7 @@ const checkCompletedCallsForSelectedConsultant = async (consultantId) => {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Select Consultant <span className="text-red-500">*</span>
             </label>
-            <div className="flex gap-4">
+            <div className=" gap-4">
               <div className="flex-1">
                 <Select
                   value={consultantOptions.find(option => option.value === selectedConsultant) || null}
@@ -734,15 +723,18 @@ const checkCompletedCallsForSelectedConsultant = async (consultantId) => {
                 <input type="hidden" id="call_completed_consultant_id" value={displayConsultantId} />
               </div>
 
-              <button
-                type="button"
-                onClick={handleReassignCall}
-                disabled={isButtonDisabled}
-                className="inline-flex items-center px-2 py-1 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
-              >
-                <ArrowRight className="w-4 h-4 mr-2" />
-                Submit
-              </button>
+
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={handleReassignCall}
+                  disabled={isButtonDisabled}
+                  className="inline-flex items-center px-2 py-1 mt-4 bg-[#ff6800] text-white text-sm font-medium rounded-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                >
+                  <ArrowRight className="w-4 h-4 mr-2" />
+                  Submit
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -755,7 +747,7 @@ const checkCompletedCallsForSelectedConsultant = async (consultantId) => {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Consultant Name <span className="text-red-500">*</span>
             </label>
-            <div className="flex gap-4">
+            <div className=" gap-4">
               <input
                 type="text"
                 value={externalConsultantName}
@@ -765,14 +757,16 @@ const checkCompletedCallsForSelectedConsultant = async (consultantId) => {
                 required
               />
 
-              <button
-                type="button"
-                onClick={handleAssignExternal}
-                className="inline-flex items-center px-2 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
-              >
-                <ArrowRight className="w-4 h-4 mr-2" />
-                Submit
-              </button>
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={handleAssignExternal}
+                  className="inline-flex items-center px-2 py-2 mt-4 bg-[#ff6800] text-white text-sm font-medium rounded-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+                >
+                  <ArrowRight className="w-4 h-4 mr-2" />
+                  Submit
+                </button>
+              </div>
             </div>
           </div>
         </div>

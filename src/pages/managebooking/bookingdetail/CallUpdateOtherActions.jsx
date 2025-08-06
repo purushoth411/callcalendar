@@ -270,8 +270,8 @@ const CallUpdateOtherActions = ({
                 onClick={handleCompletionSubmit}
                 className="inline-flex items-center px-2 py-1 bg-[#ff6800] text-white text-sm font-medium rounded-sm hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-colors"
               >
-                <ArrowRight className="w-4 h-4 mr-2" />
-                Submit
+                
+                Submit<ArrowRight className="w-4 h-4 ml-2" />
               </button>
             </div>
           </div>

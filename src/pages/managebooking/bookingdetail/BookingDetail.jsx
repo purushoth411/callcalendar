@@ -1135,7 +1135,7 @@ const BookingDetail = () => {
                   <>
                     <button
                       onClick={() => setShowConvertModal(true)}
-                      className="bg-green-500 hover:bg-green-600 text-white px-4 rounded-sm the_act"
+                      className="bg-green-600 hover:bg-green-600 text-white px-4 rounded-sm the_act"
                     >
                       Set as Converted
                     </button>
@@ -1241,7 +1241,7 @@ const BookingDetail = () => {
                   )}
                 <button
                   onClick={() => navigate(-1)}
-                  className="bg-none hover:bg-gray-600 border hover:border-black text-black text-[11px] the_tcn rounded-sm flex items-center space-x-2 transition-colors hover:text-white
+                  className="bg-none hover:bg-gray-600  text-black text-[11px] the_tcn rounded-sm flex items-center space-x-2 transition-colors hover:text-white
 "
                 >
                   <ArrowLeft className="mr-1" size={12} />
@@ -1252,7 +1252,7 @@ const BookingDetail = () => {
 
             {/* Status Update Section */}
             {canUpdateStatus && (
-              <div className="mb-6 p-4 bg-white border border-gray-200 rounded-lg">
+              <div className="mb-6 bg-white  rounded-lg">
                 <div className="flex items-center justify-end space-x-4">
                   <select
                     value={statusByCrm}
@@ -1414,6 +1414,16 @@ const BookingDetail = () => {
                 loadingFollowers={loadingFollowers}
               />
             </div>
+
+            {/* Chat Box Placeholder */}
+            <ChatBox
+              user={user}
+              messageData={messageData}
+              onSend={(message) => {
+                sendMessage(message);
+              }}
+              isMsgSending={isMsgSending}
+            /> 
             <div className="flex flex-col md:flex-row md:flex-nowrap md:gap-4">
               {/* Overall History - 1/3 width */}
               <div className="w-full md:basis-[35%]">
@@ -1430,15 +1440,7 @@ const BookingDetail = () => {
               </div>
             </div>
 
-            {/* Chat Box Placeholder */}
-            <ChatBox
-              user={user}
-              messageData={messageData}
-              onSend={(message) => {
-                sendMessage(message);
-              }}
-              isMsgSending={isMsgSending}
-            />
+            
           </div>
         </div>
       </div>

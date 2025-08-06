@@ -116,9 +116,9 @@ const CustomCalendar = ({ consultantSettings, onDateClick,selectedDateState }) =
   };
 
   return (
-    <div className="calendar-wrapper">
+    <div className="calendar-wrapper the_mg">
       <div className="calendar-header">
-        <button type="button" onClick={handlePrev}>
+        <button type="button" className="flex items-center" onClick={handlePrev}><svg xmlns="http://www.w3.org/2000/svg"width="20" height="20" className="me-1 "  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevrons-left-icon lucide-chevrons-left"><path d="m11 17-5-5 5-5"/><path d="m18 17-5-5 5-5"/></svg>
           Prev
         </button>
         <div className="month-label">
@@ -127,8 +127,8 @@ const CustomCalendar = ({ consultantSettings, onDateClick,selectedDateState }) =
             year: "numeric",
           })}
         </div>
-        <button type="button" onClick={handleNext}>
-          Next
+        <button type="button" className="flex items-center" onClick={handleNext}>
+          Next<svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" className="ms-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevrons-right-icon lucide-chevrons-right"><path d="m6 17 5-5-5-5"/><path d="m13 17 5-5-5-5"/></svg>
         </button>
       </div>
       <div className="day-names">
