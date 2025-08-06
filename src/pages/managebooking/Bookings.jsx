@@ -4,7 +4,7 @@ import ReactDOMServer from "react-dom/server";
 import DT from "datatables.net-dt";
 import $ from "jquery";
 import { useAuth } from "../../utils/idb.jsx";
-import { PlusIcon} from "lucide-react";
+import { PlusIcon } from "lucide-react";
 import {
   formatBookingDateTime,
   formatDate,
@@ -317,54 +317,59 @@ export default function Bookings() {
   `;
   };
 
-const handleCrmStatusUpdate = async (id, status) => {
-  if (!status) {
-    toast.error("Select any status");
-    return;
-  }
-  
-  try {
-    const response = await fetch(`http://localhost:5000/api/bookings/updateStatusByCrm`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ bookingid: id, statusByCrm: status,user:user }),
-    });
-
-    const result = await response.json();
-    console.log("Response result:", result); // Debug log
-
-    if (result.status === true || result.status === "true") {
-      toast.success("Status Updated Successfully");
-      fetchAllBookings();
-    } else {
-      toast.error(result.message || "Failed to update status");
+  const handleCrmStatusUpdate = async (id, status) => {
+    if (!status) {
+      toast.error("Select any status");
+      return;
     }
-  } catch (error) {
-    toast.error("An error occurred while updating status");
-    console.error("Update error:", error);
-  }
-};
 
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/bookings/updateStatusByCrm`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            bookingid: id,
+            statusByCrm: status,
+            user: user,
+          }),
+        }
+      );
+
+      const result = await response.json();
+      console.log("Response result:", result); // Debug log
+
+      if (result.status === true || result.status === "true") {
+        toast.success("Status Updated Successfully");
+        fetchAllBookings();
+      } else {
+        toast.error(result.message || "Failed to update status");
+      }
+    } catch (error) {
+      toast.error("An error occurred while updating status");
+      console.error("Update error:", error);
+    }
+  };
 
   const columns = [
-  {
-  title: "Client",
-  data: "client_name",
-  render: (data, type, row) => {
-    const clientId = row.fld_client_id || "";
-    const isDeleted = row.delete_sts === 'Yes';
-    const textStyle = isDeleted ? 'line-through text-gray-400' : '';
+    {
+      title: "Client",
+      data: "client_name",
+      render: (data, type, row) => {
+        const clientId = row.fld_client_id || "";
+        const isDeleted = row.delete_sts === "Yes";
+        const textStyle = isDeleted ? "line-through text-gray-400" : "";
 
-    return `
+        return `
       <button class="details-btn font-medium text-blue-600 hover:underline ${textStyle}" data-id="${row.id}">
         ${data} - ${clientId}
       </button>
     `;
-  },
-},
-
+      },
+    },
 
     {
       title: "Consultant",
@@ -476,23 +481,27 @@ const handleCrmStatusUpdate = async (id, status) => {
           }
         });
 
-        container.find(".the_status").off("change").on("change", function () {
-    const selectedStatus = $(this).val();
-    const classList = $(this).attr("class");
-    const match = classList.match(/statusByCrm(\d+)/);
-    const id = match ? match[1] : null;
+      container
+        .find(".the_status")
+        .off("change")
+        .on("change", function () {
+          const selectedStatus = $(this).val();
+          const classList = $(this).attr("class");
+          const match = classList.match(/statusByCrm(\d+)/);
+          const id = match ? match[1] : null;
 
-    
-     if (id && selectedStatus) {
-      if (window.confirm(`Are you sure you want to mark this as "${selectedStatus}"?`)) {
-        handleCrmStatusUpdate(id, selectedStatus);
-      } else {
-       
-        $(this).val("");
-      }
-    }
-    
-  });
+          if (id && selectedStatus) {
+            if (
+              window.confirm(
+                `Are you sure you want to mark this as "${selectedStatus}"?`
+              )
+            ) {
+              handleCrmStatusUpdate(id, selectedStatus);
+            } else {
+              $(this).val("");
+            }
+          }
+        });
 
       // Add search & select styling
       container
@@ -519,12 +528,12 @@ const handleCrmStatusUpdate = async (id, status) => {
             <h2 className="text-[18px] font-semibold text-gray-900">
               Booking Management
             </h2>
-            
+
             <button
               onClick={handleAddNewClick}
               className="bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700 transition-colors text-[11px] flex items-center gap-1"
             >
-             <PlusIcon size={11} className="leading-none" /> Add New
+              <PlusIcon size={11} className="leading-none" /> Add New
             </button>
           </div>
 
@@ -553,239 +562,240 @@ const handleCrmStatusUpdate = async (id, status) => {
                   >
                     {showFilters ? "Hide Filters" : "Show Filters"}
                   </button>
-                  
                 </div>
               </div>
             </div>
 
             <AnimatePresence>
               {showFilters && (
- <div className="flex justify-end">
-      {/* Green Arrow Shape */}
-      <div className="w-3 h-10 bg-gray-300 clip-left-arrow"></div>
+                <div className="flex justify-end">
+                  {/* Green Arrow Shape */}
+                  <div className="w-3 h-10 bg-gray-300 clip-left-arrow"></div>
 
-      {/* Filter Box */}
-                <motion.div
-                  className="bg-white p-4 rounded-lg shadow mb-6 border the_filter"
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.5, ease: "easeInOut" }}
-                >
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Call Type
-                      </label>
-                      <select
-                        className="w-full border border-gray-300 rounded px-3 py-2 text-sm text-gray-700"
-                        value={filters.sale_type}
-                        onChange={(e) =>
-                          setFilters({ ...filters, sale_type: e.target.value })
-                        }
+                  {/* Filter Box */}
+                  <motion.div
+                    className="bg-white p-4 rounded-lg shadow mb-6 border the_filter"
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 0.5, ease: "easeInOut" }}
+                  >
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Call Type
+                        </label>
+                        <select
+                          className="w-full border border-gray-300 rounded px-3 py-2 text-sm text-gray-700"
+                          value={filters.sale_type}
+                          onChange={(e) =>
+                            setFilters({
+                              ...filters,
+                              sale_type: e.target.value,
+                            })
+                          }
+                        >
+                          <option value="">Select Call Type</option>
+                          <option value="Presales">Presales</option>
+                          <option value="Postsales">Postsales</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Select CRM
+                        </label>
+                        <Select
+                          options={crms.map((c) => ({
+                            value: c.id,
+                            label: c.fld_name,
+                          }))}
+                          value={
+                            crms.find((c) => c.id === selectedCRM)
+                              ? {
+                                  value: selectedCRM,
+                                  label: crms.find((c) => c.id === selectedCRM)
+                                    .fld_name,
+                                }
+                              : null
+                          }
+                          onChange={(opt) => setSelectedCRM(opt.value)}
+                          placeholder="Select CRM"
+                        />
+                      </div>
+
+                      {/* Consultant Type */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Consultant Type
+                        </label>
+                        <select
+                          value={consultantType}
+                          onChange={(e) =>
+                            handleConsultantTypeChange(e.target.value)
+                          }
+                          className="w-full border px-2 py-2 rounded text-sm text-gray-700 border-gray-300"
+                        >
+                          <option value="ACTIVE">Active</option>
+                          <option value="INACTIVE">Inactive</option>
+                        </select>
+                      </div>
+
+                      {/* Consultant Dropdown */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Select Consultant
+                        </label>
+                        <Select
+                          options={filteredConsultants.map((c) => ({
+                            value: c.id,
+                            label: c.fld_name,
+                          }))}
+                          value={
+                            filteredConsultants.find(
+                              (c) => c.id === selectedConsultant
+                            )
+                              ? {
+                                  value: selectedConsultant,
+                                  label: filteredConsultants.find(
+                                    (c) => c.id === selectedConsultant
+                                  ).fld_name,
+                                }
+                              : null
+                          }
+                          onChange={(opt) => setSelectedConsultant(opt.value)}
+                          placeholder="Select Consultant"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Call Recording Status
+                        </label>
+                        <select
+                          className="w-full border border-gray-300 rounded px-3 py-2 text-sm text-gray-700"
+                          value={filters.call_rcrd_status}
+                          onChange={(e) =>
+                            setFilters({
+                              ...filters,
+                              call_rcrd_status: e.target.value,
+                            })
+                          }
+                        >
+                          <option value="">Select Call Recording Status</option>
+                          <option value="Call Recording Updated">
+                            Call Recording Updated
+                          </option>
+                          <option value="Call Recording Pending">
+                            Call Recording Pending
+                          </option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Booking Status
+                        </label>
+                        <Select
+                          isMulti
+                          options={[
+                            "Pending",
+                            "Call Scheduled",
+                            "Call Rescheduled",
+                            "Consultant Assigned",
+                            "Accept",
+                            "Reject",
+                            "Completed",
+                            "Rescheduled",
+                            "Converted",
+                            "Cancelled",
+                            "Client did not join",
+                            "Postponed",
+                          ].map((status) => ({
+                            value: status,
+                            label: status,
+                          }))}
+                          value={filters.booking_status.map((status) => ({
+                            value: status,
+                            label: status,
+                          }))}
+                          onChange={(selected) =>
+                            setFilters({
+                              ...filters,
+                              booking_status: selected.map(
+                                (option) => option.value
+                              ),
+                            })
+                          }
+                          placeholder="Select booking statuses"
+                          className="text-sm"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Keyword Search
+                        </label>
+                        <input
+                          type="text"
+                          className="w-full border border-gray-300 rounded px-3 py-2 text-sm text-gray-700"
+                          placeholder="Search Name or Email"
+                          value={filters.keyword_search}
+                          onChange={(e) =>
+                            setFilters({
+                              ...filters,
+                              keyword_search: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Filter Type
+                        </label>
+                        <select
+                          className="w-full border border-gray-300 rounded px-3 py-2 text-sm text-gray-700"
+                          value={filters.filter_type}
+                          onChange={(e) =>
+                            setFilters({
+                              ...filters,
+                              filter_type: e.target.value,
+                            })
+                          }
+                        >
+                          <option value="Booking">Booking Date</option>
+                          <option value="Created">Created Date</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Date Range
+                        </label>
+                        <DatePicker
+                          className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
+                          selectsRange
+                          startDate={filters.date_range[0]}
+                          endDate={filters.date_range[1]}
+                          onChange={(update) =>
+                            setFilters({ ...filters, date_range: update })
+                          }
+                          isClearable
+                          placeholderText="Select date range"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="mt-4 text-right">
+                      <button
+                        className="bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700 transition-colors text-[11px]"
+                        onClick={handleApplyFilters}
                       >
-                        <option value="">Select Call Type</option>
-                        <option value="Presales">Presales</option>
-                        <option value="Postsales">Postsales</option>
-                      </select>
+                        Apply Filters
+                      </button>
                     </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Select CRM
-                      </label>
-                      <Select
-                        options={crms.map((c) => ({
-                          value: c.id,
-                          label: c.fld_name,
-                        }))}
-                        value={
-                          crms.find((c) => c.id === selectedCRM)
-                            ? {
-                                value: selectedCRM,
-                                label: crms.find((c) => c.id === selectedCRM)
-                                  .fld_name,
-                              }
-                            : null
-                        }
-                        onChange={(opt) => setSelectedCRM(opt.value)}
-                        placeholder="Select CRM"
-                      />
-                    </div>
-
-                    {/* Consultant Type */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Consultant Type
-                      </label>
-                      <select
-                        value={consultantType}
-                        onChange={(e) =>
-                          handleConsultantTypeChange(e.target.value)
-                        }
-                        className="w-full border px-2 py-2 rounded text-sm text-gray-700 border-gray-300"
-                      >
-                        <option value="ACTIVE">Active</option>
-                        <option value="INACTIVE">Inactive</option>
-                      </select>
-                    </div>
-
-                    {/* Consultant Dropdown */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Select Consultant
-                      </label>
-                      <Select
-                        options={filteredConsultants.map((c) => ({
-                          value: c.id,
-                          label: c.fld_name,
-                        }))}
-                        value={
-                          filteredConsultants.find(
-                            (c) => c.id === selectedConsultant
-                          )
-                            ? {
-                                value: selectedConsultant,
-                                label: filteredConsultants.find(
-                                  (c) => c.id === selectedConsultant
-                                ).fld_name,
-                              }
-                            : null
-                        }
-                        onChange={(opt) => setSelectedConsultant(opt.value)}
-                        placeholder="Select Consultant"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Call Recording Status
-                      </label>
-                      <select
-                        className="w-full border border-gray-300 rounded px-3 py-2 text-sm text-gray-700"
-                        value={filters.call_rcrd_status}
-                        onChange={(e) =>
-                          setFilters({
-                            ...filters,
-                            call_rcrd_status: e.target.value,
-                          })
-                        }
-                      >
-                        <option value="">Select Call Recording Status</option>
-                        <option value="Call Recording Updated">
-                          Call Recording Updated
-                        </option>
-                        <option value="Call Recording Pending">
-                          Call Recording Pending
-                        </option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Booking Status
-                      </label>
-                      <Select
-                        isMulti
-                        options={[
-                          "Pending",
-                          "Call Scheduled",
-                          "Call Rescheduled",
-                          "Consultant Assigned",
-                          "Accept",
-                          "Reject",
-                          "Completed",
-                          "Rescheduled",
-                          "Converted",
-                          "Cancelled",
-                          "Client did not join",
-                          "Postponed",
-                        ].map((status) => ({
-                          value: status,
-                          label: status,
-                        }))}
-                        value={filters.booking_status.map((status) => ({
-                          value: status,
-                          label: status,
-                        }))}
-                        onChange={(selected) =>
-                          setFilters({
-                            ...filters,
-                            booking_status: selected.map(
-                              (option) => option.value
-                            ),
-                          })
-                        }
-                        placeholder="Select booking statuses"
-                        className="text-sm"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Keyword Search
-                      </label>
-                      <input
-                        type="text"
-                        className="w-full border border-gray-300 rounded px-3 py-2 text-sm text-gray-700"
-                        placeholder="Search Name or Email"
-                        value={filters.keyword_search}
-                        onChange={(e) =>
-                          setFilters({
-                            ...filters,
-                            keyword_search: e.target.value,
-                          })
-                        }
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Filter Type
-                      </label>
-                      <select
-                        className="w-full border border-gray-300 rounded px-3 py-2 text-sm text-gray-700"
-                        value={filters.filter_type}
-                        onChange={(e) =>
-                          setFilters({
-                            ...filters,
-                            filter_type: e.target.value,
-                          })
-                        }
-                      >
-                        <option value="Booking">Booking Date</option>
-                        <option value="Created">Created Date</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Date Range
-                      </label>
-                      <DatePicker
-                        className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
-                        selectsRange
-                        startDate={filters.date_range[0]}
-                        endDate={filters.date_range[1]}
-                        onChange={(update) =>
-                          setFilters({ ...filters, date_range: update })
-                        }
-                        isClearable
-                        placeholderText="Select date range"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="mt-4 text-right">
-                    <button
-                      className="bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700 transition-colors text-[11px]"
-                      onClick={handleApplyFilters}
-                    >
-                      Apply Filters
-                    </button>
-                  </div>
-                  
-                </motion.div>
+                  </motion.div>
                 </div>
               )}
             </AnimatePresence>
