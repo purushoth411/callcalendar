@@ -22,8 +22,12 @@ const EditBooking = () => {
   const [callLink, setCallLink] = useState("");
   const [submitMessage, setSubmitMessage] = useState("");
   const [loadingSlots, setLoadingSlots] = useState(false);
+<<<<<<< HEAD
    const { bookingId } = useParams();
    const [isSubmitting,setIsSubmitting]=useState(false);
+=======
+  const { bookingId } = useParams();
+>>>>>>> c81a44e96c898841d25d409432402bd61fed72ce
 
   const fetchBookingDetailsWithRc = async () => {
     try {
@@ -41,14 +45,18 @@ const EditBooking = () => {
         setCallLink(data.bookingDetails?.fld_call_joining_link ?? "");
         setSelectedTimezone(data.bookingDetails?.fld_timezone)
         const bookingDate = data.bookingDetails.fld_booking_date;
-       const dayName = bookingDate
-        ? new Date(bookingDate).toLocaleDateString("en-US", { weekday: "short" }).toLowerCase()
-        : "";
+        const dayName = bookingDate
+          ? new Date(bookingDate).toLocaleDateString("en-US", { weekday: "short" }).toLowerCase()
+          : "";
 
         handleDateSelect(bookingDate, dayName, false)
 
+<<<<<<< HEAD
         
        
+=======
+
+>>>>>>> c81a44e96c898841d25d409432402bd61fed72ce
         setError("");
       } else {
         setError(data.message || "Failed to fetch booking details");
@@ -65,17 +73,17 @@ const EditBooking = () => {
     fetchBookingDetailsWithRc();
   }, []);
 
-  useEffect(()=>{
-    if(!selectedDate){
-        return
+  useEffect(() => {
+    if (!selectedDate) {
+      return
     }
     console.log("selectedDate", selectedDate)
-    handleDateSelect(selectedDate , 'tue')
-  },[selectedDate])
+    handleDateSelect(selectedDate, 'tue')
+  }, [selectedDate])
 
-  useEffect(()=>{
+  useEffect(() => {
     console.log("selectedSlot", selectedSlot)
-  },[selectedSlot])
+  }, [selectedSlot])
 
     useEffect(()=>{
     console.log("selectedTimezone", selectedTimezone)
@@ -85,6 +93,7 @@ const EditBooking = () => {
     setSelectedTimezone(e.target.value);
   };
 
+<<<<<<< HEAD
  const handleDateSelect = async (dateStr, dayKey, emptySlot = true) => {
   setLoadingSlots(true);
   setSelectedDate(dateStr);
@@ -93,6 +102,15 @@ const EditBooking = () => {
   }
 
   if (!consultantSettings) return;
+=======
+  const handleDateSelect = async (dateStr, dayKey, emptySlot = true) => {
+    setLoadingSlots(true);
+    setSelectedDate(dateStr);
+    if (emptySlot) {
+
+      setSelectedSlot("");
+    }
+>>>>>>> c81a44e96c898841d25d409432402bd61fed72ce
 
   const dayFieldMap = {
     sun: "fld_sun_time_data",
@@ -299,15 +317,15 @@ const EditBooking = () => {
       toast.error("Please select a date");
       return;
     }
-      if ( !selectedSlot ) {
+    if (!selectedSlot) {
       toast.error("Please select a slot");
       return;
     }
-      if (!callLink) {
+    if (!callLink) {
       toast.error("Please enter link");
       return;
     }
-  
+
 
     try {
       setIsSubmitting(true);
@@ -352,18 +370,18 @@ const EditBooking = () => {
   };
 
   return (
-    <div className="p-6">
-      <div className="card shadow">
+    <div className="p-6 bg-white">
+      <div className="card ">
         <div className="card-body">
           <div className="flex justify-between items-center mb-4">
             <h4 className="text-xl font-bold">Re-Schedule Call</h4>
-             <strong>
-    {bookingDetails?.fld_name} -{" "}
-    {formatDateTimeStr(
-      bookingDetails?.fld_booking_date,
-      bookingDetails?.fld_booking_slot
-    )}
-  </strong>
+            <strong>
+              {bookingDetails?.fld_name} -{" "}
+              {formatDateTimeStr(
+                bookingDetails?.fld_booking_date,
+                bookingDetails?.fld_booking_slot
+              )}
+            </strong>
           </div>
 
 
@@ -388,10 +406,10 @@ const EditBooking = () => {
                   <CalendarLoader />
                 ) : (
                   <>
-                    <h4 className="text-lg font-semibold mb-3">
+                    <h4 className="text-[13px] font-medium mb-3 text-gray-700">
                       Select a Date
                     </h4>
-                    <div className="border rounded shadow-sm p-2 bg-white">
+                    <div className="">
                       <Calendar
                         height={700}
                         onDateClick={handleDateSelect}
@@ -410,7 +428,7 @@ const EditBooking = () => {
                     Select Time Zone
                   </label>
                   <select
-                    className="w-full border rounded px-3 py-2"
+                    className="w-full border border-gray-200 rounded px-3 py-2"
                     name="timeZone"
                     value={selectedTimezone}
                     onChange={handleTimezoneChange}
@@ -433,7 +451,7 @@ const EditBooking = () => {
 
                   {loadingSlots ? (
                     // Skeleton loader
-                    <div className="grid grid-cols-2 gap-2 max-h-80 overflow-y-auto">
+                    <div className="grid grid-cols-2 gap-2 max-h-80 overflow-y-auto p-3">
                       {Array(16)
                         .fill("")
                         .map((_, i) => (
@@ -445,17 +463,16 @@ const EditBooking = () => {
                     </div>
                   ) : availableSlots.length > 0 ? (
                     // Slots display
-                    <div className="grid grid-cols-2 gap-2 max-h-80 overflow-y-auto">
+                    <div className="grid grid-cols-2 gap-2 max-h-80 overflow-y-auto p-3">
                       {availableSlots.map((slot, i) => (
                         <div
                           key={i}
                           onClick={() => setSelectedSlot(slot)}
-                          className={`cursor-pointer border rounded-md text-center py-2 px-3 text-sm transition
-          ${
-            selectedSlot == slot
-              ? "bg-blue-600 text-white border-blue-600"
-              : "bg-gray-50 hover:bg-blue-100"
-          }`}
+                          className={`cursor-pointer border border-gray-200 rounded-md text-center py-2 px-3 text-sm transition
+          ${selectedSlot == slot
+                              ? "bg-[#fa713b] text-white border-[#fa713b]"
+                              : "bg-gray-50 hover:bg-orange-100"
+                            }`}
                         >
                           {slot}
                         </div>
@@ -484,6 +501,7 @@ const EditBooking = () => {
                       />
                     </div>
 
+<<<<<<< HEAD
                     <button
                       type="button"
                       onClick={handleSubmit}
@@ -492,6 +510,16 @@ const EditBooking = () => {
                     >
                       {isSubmitting ? "Updating...":"Update"}
                     </button>
+=======
+                    <div className="flex justify-end"> 
+                      <button
+                        type="button"
+                        onClick={handleSubmit}
+                        className="bg-[#fa713b] text-white px-2 py-1 rounded hover:bg-[#f55a1d] transition flex"
+                      >
+                        Update<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" className="ms-1" class="lucide lucide-chevrons-right-icon lucide-chevrons-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 17 5-5-5-5"></path><path d="m13 17 5-5-5-5"></path></svg>
+                      </button></div>
+>>>>>>> c81a44e96c898841d25d409432402bd61fed72ce
 
                     {submitMessage && (
                       <p className="text-sm text-green-600 mt-2">

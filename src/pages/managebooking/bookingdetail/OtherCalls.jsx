@@ -97,16 +97,16 @@ const OtherCalls = ({ bookingId, clientId, fetchBookingById }) => {
             <table className="w-full text-[13px]">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-4 py-4 text-left font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">
                     Call Type
                   </th>
-                  <th className="px-4 py-4 text-left font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">
                     Consultant
                   </th>
-                  <th className="px-4 py-4 text-left font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">
                     Booking Date
                   </th>
-                  <th className="px-4 py-4 text-left font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">
                     Status
                   </th>
                 </tr>
@@ -122,7 +122,7 @@ const OtherCalls = ({ bookingId, clientId, fetchBookingById }) => {
                         : ''
                     }`}
                   >
-                    <td className="px-4 py-2 whitespace-nowrap">
+                    <td className="px-4 py-1 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className=" p-2 rounded-lg mr-3">
                           <Phone className="w-4 h-4 text-gray-600" />
@@ -134,7 +134,7 @@ const OtherCalls = ({ bookingId, clientId, fetchBookingById }) => {
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-2 whitespace-nowrap">
+                    <td className="px-4 py-1 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="bg-white-100 p-2 rounded-full mr-3">
                           <User className="w-4 h-4 text-gray-900" />
@@ -144,7 +144,7 @@ const OtherCalls = ({ bookingId, clientId, fetchBookingById }) => {
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-2 whitespace-nowrap">
+                    <td className="px-4 py-1 whitespace-nowrap">
                       <div className="flex items-center">
                         <Calendar className="w-4 h-4 text-gray-400 mr-2" />
                         <div>
@@ -153,7 +153,7 @@ const OtherCalls = ({ bookingId, clientId, fetchBookingById }) => {
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-2 whitespace-nowrap">
+                    <td className="px-4 py-1 whitespace-nowrap">
                       {getStatusBadge(item.fld_call_request_sts)}
                     </td>
                   </tr>
