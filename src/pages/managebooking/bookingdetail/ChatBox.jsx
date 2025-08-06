@@ -42,13 +42,13 @@ const ChatBox = ({ bookingId, user, messageData, onSend,isMsgSending }) => {
     user?.fld_admin_type === "EXECUTIVE";
 
   return (
-    <div className="bg-white  rounded-lg shadow-md p-4">
+    <div className="bg-white  border border-gray-200  rounded-md p-4 w-[35%] mt-6">
       <div className="flex items-center gap-2 mb-3 pb-2">
-        <MessageCircle className="text-blue-600" />
+        <MessageCircle className="text-gray-700" />
         <h5 className="font-semibold text-gray-700 text-lg">Chat</h5>
       </div>
 
-      <div className="max-h-64 overflow-y-auto space-y-4 p-2 bg-gray-50 rounded-md" id="messagebox">
+      <div className="max-h-64 overflow-y-auto space-y-4 p-1 px-2 bg-white border border-gray-200 rounded-sm" id="messagebox">
         {messageData.length === 0 ? (
           <p className="text-gray-500 text-sm">No messages yet.</p>
         ) : (
@@ -89,7 +89,7 @@ const ChatBox = ({ bookingId, user, messageData, onSend,isMsgSending }) => {
       </div>
 
       {isAllowedUser && (
-        <div className="mt-4  pt-3">
+        <div className="mt-2  pt-3">
           {messageData.length < maxMessages ? (
             <div className="flex gap-2 items-end">
               <textarea
@@ -97,14 +97,14 @@ const ChatBox = ({ bookingId, user, messageData, onSend,isMsgSending }) => {
                 value={newMsg}
                 onChange={(e) => setNewMsg(e.target.value)}
                 placeholder="Type your message..."
-                className="flex-1 border border-gray-300 rounded p-2 text-sm resize-none"
+                className="flex-1 border border-gray-300 rounded p-1 px-2 text-[13px] resize-none "
               />
               <button
                 onClick={handleSend}
                 disabled={isMsgSending}
-                className={`${isMsgSending? "bg-blue-400" : "bg-blue-600"} text-white px-4 py-2 rounded`}
+                className={`${isMsgSending? "bg-[#ff6800]" : "bg-[#ff6800]"} text-white px-3 py-1  rounded flex`}
               >
-                {isMsgSending ?"Sending...":"Send"}
+                {isMsgSending ?"Sending...":"Send"}<svg xmlns="http://www.w3.org/2000/svg" className="ml-2" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-send-icon lucide-send"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/></svg>
               </button>
             </div>
           ) : (

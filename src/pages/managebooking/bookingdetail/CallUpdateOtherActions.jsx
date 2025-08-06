@@ -388,10 +388,10 @@ const CallUpdateOtherActions = ({
                     <button
                       type="button"
                       onClick={handleFollowerSubmit}
-                      className="inline-flex items-center px-2 py-1 bg-blue-600 text-white text-[13px] text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+                      className="inline-flex items-center px-2 py-1 bg-blue-600 text-white text-[13px]  font-medium rounded-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
                     >
-                      <ArrowRight className="w-4 h-4 mr-1" />
-                      Add
+                  
+                      Add    <ArrowRight className="w-4 h-4 ml-1" />
                     </button>
                   </div>
                 </>

@@ -56,7 +56,7 @@ export default function Header() {
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="flex items-center px-2 py-1 rounded-md bg-gray-100 text-black transition hover:bg-gray-200"
+                className="flex items-center px-2 cursor-pointer py-1 rounded-md bg-white text-black transition hover:bg-gray-100"
               >
                 <CircleUserRound className="mr-1" size={13} />
                 <span className="capitalize text-[12px]">{user.fld_name}</span>
@@ -68,11 +68,11 @@ export default function Header() {
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    className="absolute right-0 mt-2 w-40 bg-white border rounded-md shadow-lg z-10"
+                    className="absolute right-0 mt-2  bg-white border border-gray-100  rounded-md shadow-lg z-10 cursor-pointer hover:bg-red-100"
                   >
                     <button
                       onClick={logout}
-                      className="w-full text-left px-4 py-2 text-sm hover:bg-red-100 text-red-600 flex items-center"
+                      className="w-full text-left px-4 py-1 text-sm  text-red-600 flex items-center cursor-pointer"
                     >
                       <LogOut className="mr-2" size={13} /> Logout
                     </button>

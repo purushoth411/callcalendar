@@ -64,9 +64,9 @@ const OverallHistory = ({ bookingData }) => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-4 mt-6">
+    <div className="bg-white rounded-lg border border-gray-200   p-4 mt-6">
       <div className="flex items-center gap-3 mb-4">
-        <Clock className="w-5 h-5 text-blue-600" />
+        <Clock className="w-5 h-5 text-gray-800" />
         <h5 className="text-[18px] font-semibold text-gray-800">Overall History</h5>
       </div>
 
@@ -127,20 +127,20 @@ const OverallHistory = ({ bookingData }) => {
 
                   {/* Expanded details */}
                   {historyList.length > 0 && isExpanded && (
-                    <div className="mt-4 border-t pt-4">
+                    <div className="mt-2 border-t pt-2">
                       <div className="space-y-4">
                         {historyList.map((row, i) => (
-                          <div key={i} className="bg-white rounded-lg p-4 border border-gray-100">
+                          <div key={i} className="bg-white rounded-lg p-2 border border-gray-100 text-[13px] mb-2">
                             <div className="flex items-center justify-between mb-3">
-                              <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(row.status)} text-white`}>
+                              <span className={`px-3 py-1 rounded-full font-medium ${getStatusColor(row.status)} text-white`}>
                                 {row.status}
                               </span>
-                              <span className="text-sm text-gray-500">
+                              <span className=" text-gray-500">
                                 {new Date(row.fld_call_completed_date).toLocaleDateString()}
                               </span>
                             </div>
 
-                            <div className="space-y-2 text-sm text-gray-700">
+                            <div className="space-y-2 text-gray-700">
                               {row.status === "Completed" ? (
                                 <>
                                   {row.fld_specific_commnets_for_the_call && (
@@ -180,9 +180,9 @@ const OverallHistory = ({ bookingData }) => {
                             </div>
 
                             {row.status === "Completed" && row.fld_question1 && (
-                              <div className="mt-4 p-3 bg-green-50 rounded-lg border border-green-200">
+                              <div className="mt-4 p-3 bg-green-50 rounded-md border border-green-200 text-[13px]">
                                 <h6 className="font-semibold text-green-800 mb-2">Call Quality Assessment</h6>
-                                <div className="space-y-1 text-sm">
+                                <div className="space-y-1 ">
                                   <p><strong>Was the CRM able to bridge the call?</strong> {row.fld_question1}</p>
                                   <p><strong>Was the voice clear?</strong> {row.fld_question2}</p>
                                   <p><strong>Was the client informed?</strong> {row.fld_question3}</p>

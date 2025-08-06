@@ -500,6 +500,7 @@ table.the_request.display tbody tr td:last-child span {
 .the_filter{
      border: 1px solid #ddd;
     margin: 12px 13px;
+    font-size: 13px;
     margin-bottom: 5px;
 }
 
@@ -554,6 +555,40 @@ padding-left: 23px;
   background-color: #fff;
   border-radius: 20px;
 }
+table.n-table-set th.dt-type-numeric, table.dataTable th.dt-type-date, table.dataTable td.dt-type-numeric, table.dataTable td.dt-type-date{
+  text-align: left;
+}
+
+.the_addcall{
+  padding: 2px 4px;
+  line-height: 16px;
+}
+
+.the_addcall1{
+   padding: 2px 4px 4px;
+  line-height: 16px;
+}
+
+.the_act
+{
+      padding: 2px 6px;
+      font-size: 11px;
+}
+
+.the_break{
+
+  width: 100%;
+    white-space: break-spaces;
+    word-break: break-all;
+}
+.the_status{
+  box-shadow: none;
+  padding: 2px 1px;
+  font-size: 12px;
+  
+}
+
+
 
 
 /* ============================================== monish end */

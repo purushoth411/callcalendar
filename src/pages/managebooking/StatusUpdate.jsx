@@ -261,7 +261,7 @@ const StatusUpdate = ({
       {/* CRM Status Dropdown */}
       {canCrmStatusDropdown && (
         <select
-          className={`ml-1 border rounded statusByCrm${row.id} text-xs px-1 py-[1px]`}
+          className={`ml-1 border border-gray-200 rounded-sm bg-gray-100 text-[12px] the_status statusByCrm${row.id}  px-1 `}
           style={{ width: "auto" }}
           onChange={(e) => onCrmStatusChange(row.id, e.target.value)}
           defaultValue=""

@@ -76,9 +76,9 @@ const OtherCalls = ({ bookingId, clientId, fetchBookingById }) => {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-4 mt-6">
+    <div className="bg-white rounded-lg border border-gray-200 p-4 mt-6">
       <div className="flex items-center gap-3 mb-6">
-        <Phone className="w-5 h-5 text-green-600" />
+        <Phone className="w-5 h-5 text-gray-800" />
         <h5 className="text-[18px] font-semibold text-gray-800">Previous Calls</h5>
         <span className="bg-gray-100 text-gray-600 px-2 py-1 rounded-full text-sm">
           {allbookingData.length} calls
@@ -124,8 +124,8 @@ const OtherCalls = ({ bookingId, clientId, fetchBookingById }) => {
                   >
                     <td className="px-4 py-2 whitespace-nowrap">
                       <div className="flex items-center">
-                        <div className="bg-blue-100 p-2 rounded-lg mr-3">
-                          <Phone className="w-4 h-4 text-blue-600" />
+                        <div className=" p-2 rounded-lg mr-3">
+                          <Phone className="w-4 h-4 text-gray-600" />
                         </div>
                         <div>
                           <div className="font-medium text-gray-900">
@@ -136,8 +136,8 @@ const OtherCalls = ({ bookingId, clientId, fetchBookingById }) => {
                     </td>
                     <td className="px-4 py-2 whitespace-nowrap">
                       <div className="flex items-center">
-                        <div className="bg-green-100 p-2 rounded-full mr-3">
-                          <User className="w-4 h-4 text-green-600" />
+                        <div className="bg-white-100 p-2 rounded-full mr-3">
+                          <User className="w-4 h-4 text-gray-900" />
                         </div>
                         <div className="text-gray-900">
                           {item.admin_name || 'Unassigned'}

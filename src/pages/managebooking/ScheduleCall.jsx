@@ -298,7 +298,7 @@ const ScheduleCall = () => {
 
   return (
     <div className="p-6">
-      <div className="card shadow">
+      <div className="card">
         <div className="card-body">
           <div className="flex justify-between items-center mb-4">
             <h4 className="text-xl font-bold">Schedule Call</h4>

@@ -171,7 +171,7 @@ function CallRequestsFromRc() {
         const label =
           status === "Accept" || status === "Reject" ? `${status}ed` : status;
 
-        return `<span class="status px-2 py-0.5 rounded f-11 ${cls} ${deleted}" style="text-align:center">
+        return `<span class="status the_addcall1 rounded f-11 ${cls} ${deleted}" style="text-align:center">
         ${label}
       </span>`;
       },
@@ -185,7 +185,7 @@ function CallRequestsFromRc() {
               const encodedId = btoa(row.id); // base64 encode (replace with your `base64url_encode` equivalent if needed)
               return `
             <button 
-          class="add-call-btn bg-yellow-500 px-2 py-1 text-sm rounded hover:underline cursor-pointer"
+          class="add-call-btn the_addcall bg-yellow-400  text-[11px] rounded hover:underline cursor-pointer"
           data-id="${row.id}"
         >
           Add Call

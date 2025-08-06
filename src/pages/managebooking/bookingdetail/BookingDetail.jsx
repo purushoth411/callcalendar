@@ -929,7 +929,7 @@ const BookingDetail = () => {
     }
   };
 
-  const onAddFollower = async(payload) => {
+  const onAddFollower = async (payload) => {
     if (!user) {
       toast.error("User not logged in");
       return;
@@ -947,9 +947,9 @@ const BookingDetail = () => {
       return;
     }
 
-    
 
-    
+
+
     try {
       setIsProcessing(true);
       setLoaderMessage("Adding Follower...");
@@ -982,67 +982,67 @@ const BookingDetail = () => {
       setLoaderMessage("Processing...");
     }
   };
- const onUpdateExternalBooking = async (payload) => {
-  if (!user) {
-    toast.error("User not logged in");
-    return;
-  }
-
-  payload.user = user; // Add user to the payload
-
-  if (!payload.bookingid) {
-    toast.error("Invalid Booking ID");
-    return;
-  }
-
-  if (!payload.call_joining_link) {
-    toast.error("Please enter Call Joining Link");
-    return;
-  }
-
-  if (!payload.external_booking_date) {
-    toast.error("Please select Booking Date");
-    return;
-  }
-
-  if (!payload.external_booking_time) {
-    toast.error("Please select Booking Time");
-    return;
-  }
-
-  // ✅ Confirm only after validation
-  const isConfirmed = window.confirm("Are you sure you want to update booking information?");
-  if (!isConfirmed) return;
-
-  try {
-    setIsProcessing(true);
-    setLoaderMessage("Updating External Call...");
-
-    const response = await fetch("http://localhost:5000/api/helpers/updateExternalBookingInfo", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
-
-    const result = await response.json();
-    console.log("Response:", result);
-
-    if (result.status) {
-      toast.success("Booking Info Updated Successfully!");
-      fetchBookingById(payload.bookingid); // refresh data
-    } else {
-      toast.error(result.msg || "Something went wrong");
+  const onUpdateExternalBooking = async (payload) => {
+    if (!user) {
+      toast.error("User not logged in");
+      return;
     }
-  } catch (err) {
-    console.error("Error while updating booking:", err);
-    toast.error("Network error");
-  } finally {
-    setIsProcessing(false);
-    setLoaderMessage("Processing...");
-  }
-};
+
+    payload.user = user; // Add user to the payload
+
+    if (!payload.bookingid) {
+      toast.error("Invalid Booking ID");
+      return;
+    }
+
+    if (!payload.call_joining_link) {
+      toast.error("Please enter Call Joining Link");
+      return;
+    }
+
+    if (!payload.external_booking_date) {
+      toast.error("Please select Booking Date");
+      return;
+    }
+
+    if (!payload.external_booking_time) {
+      toast.error("Please select Booking Time");
+      return;
+    }
+
+    // ✅ Confirm only after validation
+    const isConfirmed = window.confirm("Are you sure you want to update booking information?");
+    if (!isConfirmed) return;
+
+    try {
+      setIsProcessing(true);
+      setLoaderMessage("Updating External Call...");
+
+      const response = await fetch("http://localhost:5000/api/helpers/updateExternalBookingInfo", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await response.json();
+      console.log("Response:", result);
+
+      if (result.status) {
+        toast.success("Booking Info Updated Successfully!");
+        fetchBookingById(payload.bookingid); // refresh data
+      } else {
+        toast.error(result.msg || "Something went wrong");
+      }
+    } catch (err) {
+      console.error("Error while updating booking:", err);
+      toast.error("Network error");
+    } finally {
+      setIsProcessing(false);
+      setLoaderMessage("Processing...");
+    }
+  };
 
   const scrollToChat = () => {
     const chatBox = document.querySelector(".chatbox");
@@ -1108,7 +1108,7 @@ const BookingDetail = () => {
     bookingData.fld_call_request_sts !== "Completed";
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
+    <div className="min-h-screen bg-gray-100 p-4">
       <div className="max-w-7xl mx-auto">
         <div className="bg-white rounded-lg shadow-sm">
           <div className="p-6">
@@ -1135,7 +1135,7 @@ const BookingDetail = () => {
                   <>
                     <button
                       onClick={() => setShowConvertModal(true)}
-                      className="bg-green-500 hover:bg-green-600 text-white px-2 rounded-md"
+                      className="bg-green-500 hover:bg-green-600 text-white px-4 rounded-sm the_act"
                     >
                       Set as Converted
                     </button>
@@ -1252,12 +1252,12 @@ const BookingDetail = () => {
 
             {/* Status Update Section */}
             {canUpdateStatus && (
-              <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+              <div className="mb-6 p-4 bg-white border border-gray-200 rounded-lg">
                 <div className="flex items-center justify-end space-x-4">
                   <select
                     value={statusByCrm}
                     onChange={(e) => setStatusByCrm(e.target.value)}
-                    className="border border-gray-300 rounded px-3 py-2 min-w-48"
+                    className="border border-gray-300 rounded px-3 py-1 min-w-48"
                   >
                     <option value="">Update Call Status</option>
                     <option value="Completed">✔️ Completed</option>
@@ -1266,14 +1266,13 @@ const BookingDetail = () => {
                   </select>
                   <button
                     onClick={handleStatusUpdate}
-                    className={`${
-                      isSubmitting
+                    className={`${isSubmitting
                         ? "bg-blue-300 hover:bg-blue-400"
-                        : "bg-blue-500 hover:bg-blue-600"
-                    } text-white px-6 py-2 rounded-md transition-colors`}
+                        : "bg-[#ff6800] hover:bg-orange-600"
+                      } text-white px-4 py-1 rounded-md transition-colors flex`}
                     disabled={isSubmitting}
                   >
-                    {isSubmitting ? "Submitting.." : "Submit"}
+                    {isSubmitting ? "Submitting.." : "Submit"}<svg xmlns="http://www.w3.org/2000/svg" className="pt-1 ml-1" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevrons-right-icon lucide-chevrons-right"><path d="m6 17 5-5-5-5"></path><path d="m13 17 5-5-5-5"></path></svg>
                   </button>
                 </div>
               </div>
@@ -1291,28 +1290,20 @@ const BookingDetail = () => {
               externalCallInfo={externalCallInfo}
             />
 
-            {/* Reassign to Consultant Form */}
-            {canShowReasignConsultant && (
-              <div className="flex flex-wrap gap-4">
-                <div className="w-full md:w-1/2">
-                  <label className="block mb-2 font-medium">
-                    Reassign to another Consultant
-                  </label>
-                  <Select
-                    name="consultant_id"
-                    className="react-select-container"
-                    classNamePrefix="react-select"
-                    options={consultantList
-                      .filter(
-                        (consultant) =>
-                          consultant.id !== bookingData.fld_consultantid
-                      )
-                      .map((consultant) => ({
-                        value: consultant.id,
-                        label: consultant.fld_name,
-                      }))}
-                    value={
-                      consultantList
+         
+
+              {/* Reassign to Consultant Form */}
+              {canShowReasignConsultant && (
+                <div className=" flex-wrap gap-4 w-[50%] ">
+                  <div className="w-full ">
+                    <label className="block mb-2 font-medium">
+                      Reassign to another Consultant
+                    </label>
+                    <Select
+                      name="consultant_id"
+                      className="react-select-container"
+                      classNamePrefix="react-select"
+                      options={consultantList
                         .filter(
                           (consultant) =>
                             consultant.id !== bookingData.fld_consultantid
@@ -1320,94 +1311,108 @@ const BookingDetail = () => {
                         .map((consultant) => ({
                           value: consultant.id,
                           label: consultant.fld_name,
-                        }))
-                        .find(
-                          (option) => option.value === primaryConsultantId
-                        ) || null
-                    }
-                    onChange={(selectedOption) =>
-                      setPrimaryConsultantId(
-                        selectedOption ? selectedOption.value : ""
-                      )
-                    }
-                    placeholder="Select Primary Consultant"
-                    isClearable
-                  />
-                </div>
-
-                <div className="w-full md:w-1/3 self-end">
-                  <button
-                    type="button"
-                    onClick={handleReassignToConsultant}
-                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                  >
-                    <i
-                      className="fa fa-arrow-right mr-2"
-                      aria-hidden="true"
-                    ></i>{" "}
-                    Update Consultant
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* Cancel Booking Form */}
-            {canCancelCall && (
-              <>
-                <h5 className="font-semibold mb-3">Call Cancelled</h5>
-                <div className="flex flex-wrap gap-4">
-                  <div className="w-full md:w-1/2">
-                    <label className="block mb-2">
-                      Comments <span className="text-red-500">*</span>
-                    </label>
-                    <textarea
-                      className="w-full border rounded px-4 py-2"
-                      value={cancelComment}
-                      onChange={(e) => setCancelComment(e.target.value)}
-                      placeholder="Add Comments"
+                        }))}
+                      value={
+                        consultantList
+                          .filter(
+                            (consultant) =>
+                              consultant.id !== bookingData.fld_consultantid
+                          )
+                          .map((consultant) => ({
+                            value: consultant.id,
+                            label: consultant.fld_name,
+                          }))
+                          .find(
+                            (option) => option.value === primaryConsultantId
+                          ) || null
+                      }
+                      onChange={(selectedOption) =>
+                        setPrimaryConsultantId(
+                          selectedOption ? selectedOption.value : ""
+                        )
+                      }
+                      placeholder="Select Primary Consultant"
+                      isClearable
                     />
                   </div>
 
-                  <div className="w-full md:w-1/3 self-end">
+                  <div className="w-full  self-end mt-3 justify-end flex">
                     <button
                       type="button"
-                      onClick={handleCancelBooking}
-                      className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+                      onClick={handleReassignToConsultant}
+                      className="bg-[#ff6800]  text-white px-2 py-1 rounded hover:bg-orange-600"
                     >
-                      <i
-                        className="fa fa-arrow-right mr-2"
+                     {" "}
+                      Update Consultant <i
+                        className="fa fa-arrow-right ml-1"
                         aria-hidden="true"
-                      ></i>{" "}
-                      Update
+                      ></i>
                     </button>
                   </div>
                 </div>
-              </>
-            )}
-            <div className="flex gap-3">
-            <CallUpdateActions
-              bookingData={bookingData}
-              user={user}
-              consultantList={consultantList}
-              onUpdateStatus={onUpdateStatus}
-              onAssignExternal={onAssignExternal}
-              onReassignCall={onReassignCall}
-            />
+              )}
 
-            <CallUpdateOtherActions
-              bookingData={bookingData}
-              user={user}
-              consultantList={consultantList}
-              externalCallInfo={externalCallInfo}
-              onUpdateExternal={onUpdateExternal}
-              onSubmitCompletedComment={onSubmitCompletedComment}
-              onAddFollower={onAddFollower}
-              onUpdateExternalBooking={onUpdateExternalBooking}
-              followerConsultants={followerConsultants}
-              hasFollowers={hasFollowers}
-              getFollowerConsultant={getFollowerConsultant}
-              loadingFollowers={loadingFollowers}
-            />
+              {/* Cancel Booking Form */}
+              {canCancelCall && (
+                <>
+                  
+                  <div className=" flex-wrap gap-4 w-[50%]">
+                    <h5 className="font-semibold mb-3">Call Cancelled</h5>
+                    <div className="w-full ">
+                      <label className="block mb-2">
+                        Comments <span className="text-red-500">*</span>
+                      </label>
+                      <textarea
+                        className="w-full border border-gray-300 rounded px-4 py-2"
+                        value={cancelComment}
+                        onChange={(e) => setCancelComment(e.target.value)}
+                        placeholder="Add Comments"
+                      />
+                    </div>
+
+                    <div className="w-full  self-end mt-1 justify-end flex">
+                      <button
+                        type="button"
+                        onClick={handleCancelBooking}
+                        className="bg-[#ff6800] text-white px-2 py-1 rounded hover:bg-orange-600"
+                      >
+                       {" "}
+                        Update <i
+                          className="fa fa-arrow-right ml-1"
+                          aria-hidden="true"
+                        ></i>
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
+              
+            
+
+            <div className="flex gap-3 mt-4">
+              <CallUpdateActions
+                bookingData={bookingData}
+                user={user}
+                consultantList={consultantList}
+                onUpdateStatus={onUpdateStatus}
+                onAssignExternal={onAssignExternal}
+                onReassignCall={onReassignCall}
+              />
+
+              <CallUpdateOtherActions
+                bookingData={bookingData}
+                user={user}
+                consultantList={consultantList}
+                externalCallInfo={externalCallInfo}
+                onUpdateExternal={onUpdateExternal}
+                onSubmitCompletedComment={onSubmitCompletedComment}
+                onAddFollower={onAddFollower}
+                onUpdateExternalBooking={onUpdateExternalBooking}
+                followerConsultants={followerConsultants}
+                hasFollowers={hasFollowers}
+                getFollowerConsultant={getFollowerConsultant}
+                loadingFollowers={loadingFollowers}
+              />
             </div>
             <div className="flex flex-col md:flex-row md:flex-nowrap md:gap-4">
               {/* Overall History - 1/3 width */}

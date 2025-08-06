@@ -39,10 +39,10 @@ function Login() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="bg-white shadow-lg rounded-2xl w-full max-w-md p-6">
-        <div className="text-center mb-6">
+        <div className="text-center ">
           <img src={logo} alt="Logo" className="mx-auto w-72" />
         </div>
-        <h2 className="text-xl font-bold text-center prime-text mb-4">
+        <h2 className="text-[19px] font-semibold text-center prime-text mb-5">
           Sign into your account
         </h2>
 
@@ -59,7 +59,7 @@ function Login() {
         )}
 
         <form onSubmit={handleSubmit}>
-          <div className="mb-4">
+          <div className="mb-5">
             <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
               Username
             </label>
@@ -79,7 +79,7 @@ function Login() {
             </div>
           </div>
 
-          <div className="mb-4">
+          <div className="mb-5">
             <label htmlFor="userpass" className="block text-sm font-medium text-gray-700 mb-1">
               Password
             </label>
@@ -102,20 +102,22 @@ function Login() {
             </div>
           </div>
 
-          <div className="mb-4">
+          <div className="mb-4 mt-6 flex justify-between">
+            
+             <a href="/reset_password" className="text-[13px] font-semibold text-gray-600  hover:text-orange-600 hover:underline ">
+              Forgot password?
+            </a>
             <button
               type="submit"
-              className="w-full btn-prime font-semibold py-2 px-4 rounded-md "
+              className=" btn-prime font-semibold py-1 px-2 rounded-md flex text-[13px]"
             >
-              Login
+              Login<svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" className='ml-0 pt-1' viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevrons-right-icon lucide-chevrons-right"><path d="m6 17 5-5-5-5"/><path d="m13 17 5-5-5-5"/></svg>
             </button>
           </div>
 
-          <div className="text-center">
-            <a href="/reset_password" className="text-sm text-gray-600 hover:underline">
-              Forgot password?
-            </a>
-          </div>
+          {/* <div className="text-center">
+           
+          </div> */}
         </form>
       </div>
     </div>

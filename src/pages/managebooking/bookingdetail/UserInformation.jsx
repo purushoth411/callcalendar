@@ -137,7 +137,7 @@ const UserInformation = ({ data, user, bgColor,externalCallInfo}) => {
             <label className="block text-sm font-medium text-gray-700 mb-1">
               <i className="fa fa-link mr-1" aria-hidden="true"></i> Asana Link / Quote Id
             </label>
-            <p className="text-gray-900">{data.fld_asana_link}</p>
+            <p className="text-gray-900 the_break">{data.fld_asana_link}</p>
           </div>
         )}
 
@@ -185,7 +185,9 @@ const UserInformation = ({ data, user, bgColor,externalCallInfo}) => {
     {/* Booking Information */}
 {/* Booking Information */}
 {data.fld_booking_date && data.fld_booking_slot && (
-  <div className="p-6 rounded-lg mb-6 shadow mt-8 bg-[#f1efff] border border-[#c1b9ff]" >
+  <div className={`p-6 rounded-lg mb-6 shadow mt-8 bg-[#f1efff] border border-[#c1b9ff]`} 
+
+  >
     <h5 className="text-xl font-semibold mb-4 text-gray-800">Booking Information</h5>
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 the_left">
 
