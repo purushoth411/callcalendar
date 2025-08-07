@@ -4,7 +4,7 @@ import ReactDOMServer from "react-dom/server";
 import DT from "datatables.net-dt";
 import $ from "jquery";
 import { useAuth } from "../../utils/idb.jsx";
-import { PlusIcon } from "lucide-react";
+import { PlusIcon, RefreshCcw } from "lucide-react";
 import {
   formatBookingDateTime,
   formatDate,
@@ -18,6 +18,8 @@ import "react-datepicker/dist/react-datepicker.css";
 import Select from "react-select";
 import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
+import moment from "moment/moment.js";
+import EditSubjectArea from "./EditSubjectArea.jsx";
 
 export default function Bookings() {
   const { user } = useAuth();
@@ -27,7 +29,7 @@ export default function Bookings() {
   const [bookings, setBookings] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [expandedRows, setExpandedRows] = useState(new Set());
-  const [historyData, setHistoryData] = useState({}); // Store history for each booking
+  const [historyData, setHistoryData] = useState({});
   const [loadingHistory, setLoadingHistory] = useState(new Set());
   const [showAddForm, setShowAddForm] = useState(false);
   const [showForm, setShowForm] = useState(false);
@@ -39,6 +41,8 @@ export default function Bookings() {
   const [selectedConsultant, setSelectedConsultant] = useState(null);
   const [consultantType, setConsultantType] = useState("ACTIVE");
   const { dashboard_status } = useParams();
+  const [showEditSubjectForm, setShowEditSubjectForm] = useState(false);
+  const [selectedRow, setSelectedRow] = useState([]);
 
   const { bookingid } = useParams();
 
@@ -49,14 +53,14 @@ export default function Bookings() {
   }, [bookingid]);
 
   const navigate = useNavigate();
-
+  const today = moment().startOf("day");
   const [filters, setFilters] = useState({
     sale_type: "",
     call_rcrd_status: "",
     booking_status: [],
     keyword_search: "",
     filter_type: "Booking",
-    date_range: [null, null],
+    date_range: [today.toDate(), today.toDate()],
   });
 
   const fetchConsultantsAndCrms = async () => {
@@ -126,11 +130,12 @@ export default function Bookings() {
               : null,
           recordingStatus: filters.call_rcrd_status,
           fromDate: filters.date_range[0]
-            ? filters.date_range[0].toISOString().split("T")[0]
+            ? moment(filters.date_range[0]).format("YYYY-MM-DD")
             : null,
           toDate: filters.date_range[1]
-            ? filters.date_range[1].toISOString().split("T")[0]
+            ? moment(filters.date_range[1]).format("YYYY-MM-DD")
             : null,
+
           consultantId: selectedConsultant || null,
           crmId: selectedCRM || null,
           search: filters.keyword_search,
@@ -207,6 +212,9 @@ export default function Bookings() {
       }
     };
   }, []);
+  const handleReload = () => {
+    fetchAllBookings();
+  };
 
   // Add effect to handle DataTable reinitialization when data changes
   useEffect(() => {
@@ -517,9 +525,28 @@ export default function Bookings() {
           const bookingId = $(this).data("id");
           navigate(`/admin/booking_detail/${bookingId}`);
         });
+
+      container
+        .find(".edit-sub-area")
+        .off("click")
+        .on("click", function () {
+          const rowData = JSON.parse($(this).attr("data-row"));
+          setSelectedRow(rowData);
+          setShowEditSubjectForm(true);
+        });
     },
   };
 
+  const handleClearFilters = () => {
+    setFilters({
+      sale_type: "",
+      call_rcrd_status: "",
+      booking_status: [],
+      keyword_search: "",
+      filter_type: "Booking",
+      date_range: [today.toDate(), today.toDate()],
+    });
+  };
   return (
     <div className="">
       <div className="">
@@ -553,6 +580,12 @@ export default function Bookings() {
                 </div>
 
                 <div className="flex items-center space-x-2">
+                  <button
+                    className="bg-gray-500 text-white px-4 py-2 rounded text-sm hover:bg-gray-600 transition-colors"
+                    onClick={handleReload}
+                  >
+                    <RefreshCcw size={15} />
+                  </button>
                   <button
                     onClick={() => {
                       setShowFilters(!showFilters);
@@ -789,6 +822,12 @@ export default function Bookings() {
 
                     <div className="mt-4 text-right">
                       <button
+                        className="bg-gray-500 text-white px-4 py-2 rounded text-sm hover:bg-gray-600 transition-colors"
+                        onClick={handleClearFilters}
+                      >
+                        <RefreshCcw size={15} />
+                      </button>
+                      <button
                         className="bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700 transition-colors text-[11px]"
                         onClick={handleApplyFilters}
                       >
@@ -836,6 +875,17 @@ export default function Bookings() {
               fetchAllBookings={fetchAllBookings}
               setShowForm={setShowForm}
               bookingId={bookingid}
+            />
+          </div>
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {showEditSubjectForm && (
+          <div className="mb-6">
+            <EditSubjectArea
+              setShowEditSubjectForm={setShowEditSubjectForm}
+              selectedRow={selectedRow}
+              fetchAllBookings={fetchAllBookings}
             />
           </div>
         )}

@@ -16,6 +16,7 @@ import ExternalCalls from "../pages/additional/ExternalCalls";
 import EditBooking from "../pages/managebooking/EditBooking";
 import DomainPref from "../pages/DomainPref";
 import Summary from "../pages/summary/Summary";
+import ViewAllTable from "../pages/summary/ViewAllTable";
 
 
 
@@ -43,6 +44,7 @@ export default function AppRouter() {
             <Route path="/admin/edit_booking/:bookingId" element={<EditBooking />} />
             <Route path="/domain_pref" element={<DomainPref />} />
             <Route path="/summary" element={<Summary />} />
+           <Route path="/summary/viewall" element={<ViewAllTable />} />
 
             
           </Route>

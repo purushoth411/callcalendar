@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Activity,
   Clock,
@@ -12,41 +12,106 @@ import {
   Mic,
 } from "lucide-react";
 
-// --- Maps for colors and icons ---
 const badgeMeta = {
-  "Call Scheduled":    { bg: "bg-slate-100", text: "text-slate-800", icon: <Activity size={13} /> },
-  "Call Rescheduled":  { bg: "bg-slate-100", text: "text-slate-800", icon: <Activity size={13} /> },
-  "Consultant Assigned": { bg: "bg-blue-100", text: "text-blue-800", icon: <UserCheck size={13} /> },
-  "Pending":           { bg: "bg-amber-100", text: "text-amber-800", icon: <Clock size={13} /> },
-  "Accept":            { bg: "bg-blue-100", text: "text-blue-800", icon: <CheckCircle size={13} /> },
-  "Accepted":          { bg: "bg-blue-100", text: "text-blue-800", icon: <CheckCircle size={13} /> },
-  "Reject":            { bg: "bg-rose-100", text: "text-rose-800", icon: <UserX size={13} /> },
-  "Rejected":          { bg: "bg-rose-100", text: "text-rose-800", icon: <UserX size={13} /> },
-  "Completed":         { bg: "bg-green-100", text: "text-green-800", icon: <CheckCircle size={13} /> },
-  "Converted":         { bg: "bg-green-100", text: "text-green-800", icon: <ArrowUpRightFromCircle size={13} /> },
-  "Rescheduled":       { bg: "bg-gray-100", text: "text-gray-800", icon: <Clock size={13} /> },
-  "Reassign Request":  { bg: "bg-gray-100", text: "text-gray-800", icon: <Clock size={13} /> },
-  "Client did not join": { bg: "bg-red-100", text: "text-red-800", icon: <UserX size={13} /> },
-  "Cancelled":         { bg: "bg-red-100", text: "text-red-800", icon: <UserX size={13} /> },
+  "Call Scheduled": {
+    bg: "bg-slate-100",
+    text: "text-slate-800",
+    icon: <Activity size={13} />,
+  },
+  "Call Rescheduled": {
+    bg: "bg-slate-100",
+    text: "text-slate-800",
+    icon: <Activity size={13} />,
+  },
+  "Consultant Assigned": {
+    bg: "bg-blue-100",
+    text: "text-blue-800",
+    icon: <UserCheck size={13} />,
+  },
+  Pending: {
+    bg: "bg-amber-100",
+    text: "text-amber-800",
+    icon: <Clock size={13} />,
+  },
+  Accept: {
+    bg: "bg-blue-100",
+    text: "text-blue-800",
+    icon: <CheckCircle size={13} />,
+  },
+  Accepted: {
+    bg: "bg-blue-100",
+    text: "text-blue-800",
+    icon: <CheckCircle size={13} />,
+  },
+  Reject: {
+    bg: "bg-rose-100",
+    text: "text-rose-800",
+    icon: <UserX size={13} />,
+  },
+  Rejected: {
+    bg: "bg-rose-100",
+    text: "text-rose-800",
+    icon: <UserX size={13} />,
+  },
+  Completed: {
+    bg: "bg-green-100",
+    text: "text-green-800",
+    icon: <CheckCircle size={13} />,
+  },
+  Converted: {
+    bg: "bg-green-100",
+    text: "text-green-800",
+    icon: <ArrowUpRightFromCircle size={13} />,
+  },
+  Rescheduled: {
+    bg: "bg-gray-100",
+    text: "text-gray-800",
+    icon: <Clock size={13} />,
+  },
+  "Reassign Request": {
+    bg: "bg-gray-100",
+    text: "text-gray-800",
+    icon: <Clock size={13} />,
+  },
+  "Client did not join": {
+    bg: "bg-red-100",
+    text: "text-red-800",
+    icon: <UserX size={13} />,
+  },
+  Cancelled: {
+    bg: "bg-red-100",
+    text: "text-red-800",
+    icon: <UserX size={13} />,
+  },
   // Fallback
-  "_":                 { bg: "bg-gray-100", text: "text-gray-900", icon: <Activity size={13} /> },
+  _: { bg: "bg-gray-100", text: "text-gray-900", icon: <Activity size={13} /> },
 };
 
 const crmMeta = {
-  "Completed": { bg: "bg-yellow-100", text: "text-yellow-800", icon: <UserCheck size={13} /> },
-  "Not Join":  { bg: "bg-rose-100", text: "text-rose-800", icon: <UserX size={13} /> },
+  Completed: {
+    bg: "bg-yellow-100",
+    text: "text-yellow-800",
+    icon: <UserCheck size={13} />,
+  },
+  "Not Join": {
+    bg: "bg-rose-100",
+    text: "text-rose-800",
+    icon: <UserX size={13} />,
+  },
 };
 
-// Strikeout
 const strikeout = (isDeleted) => (isDeleted ? "line-through opacity-60" : "");
 
-// Date formatting (simple local date)
 function convertDate(dateStr) {
   if (!dateStr) return "";
   const d = new Date(dateStr);
-  return d.toLocaleDateString("en-IN", { year: "numeric", month: "short", day: "numeric" });
+  return d.toLocaleDateString("en-IN", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
 }
-const cutoffRecordingTime = 1749168000 * 1000; // UNIX for June 6, 2025
+const cutoffRecordingTime = 1749168000 * 1000;
 
 const StatusUpdate = ({
   row,
@@ -88,7 +153,9 @@ const StatusUpdate = ({
 
   const canShowOTP =
     admin_type === "EXECUTIVE" &&
-    ["Accept", "Call Scheduled", "Call Rescheduled"].includes(row.fld_call_request_sts) &&
+    ["Accept", "Call Scheduled", "Call Rescheduled"].includes(
+      row.fld_call_request_sts
+    ) &&
     row.fld_call_confirmation_status !== "Call Confirmed by Client" &&
     row.fld_otp;
 
@@ -131,7 +198,11 @@ const StatusUpdate = ({
         <span className="inline-flex items-center gap-1 py-[1px] px-[6px] ml-1 bg-orange-100 text-orange-800 rounded mr-1">
           <CheckCircle size={12} /> Mail Delivered
         </span>
-        on {convertDate(new Date())} at {new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}
+        on {convertDate(new Date())} at{" "}
+        {new Date().toLocaleTimeString("en-US", {
+          hour: "2-digit",
+          minute: "2-digit",
+        })}
       </span>
     );
   }
@@ -140,7 +211,9 @@ const StatusUpdate = ({
     <td className="n-cal-sts">
       {/* Main badge */}
       <span
-        className={`inline-flex items-center gap-1 py-[1px] px-[6px] ml-1 rounded text-xs font-medium ${meta.bg} ${meta.text} ${strikeout(isDeleted)}`}
+        className={`inline-flex items-center gap-1 py-[1px] px-[6px] ml-1 rounded text-xs font-medium ${
+          meta.bg
+        } ${meta.text} ${strikeout(isDeleted)}`}
       >
         {meta.icon}
         {mainStatus}
@@ -149,7 +222,9 @@ const StatusUpdate = ({
       {/* Edit Booking */}
       {canEditBooking && (
         <a
-          className={`inline-flex items-center gap-1 py-[1px] px-[6px] ml-1 rounded text-xs ${meta.bg} ${meta.text} ${strikeout(isDeleted)} n-bdge`}
+          className={`inline-flex items-center gap-1 py-[1px] px-[6px] ml-1 rounded text-xs ${
+            meta.bg
+          } ${meta.text} ${strikeout(isDeleted)} n-bdge`}
           href={`${baseUrl}admin/edit_booking/${row.id}`}
           title="Edit Booking Timing"
         >
@@ -185,7 +260,9 @@ const StatusUpdate = ({
       {/* Convert pencil for presales */}
       {canConvertPresales && (
         <a
-          className={`inline-flex items-center gap-1 py-[1px] px-[6px] ml-1 rounded text-xs ${meta.bg} ${meta.text} ${strikeout(isDeleted)} n-sts-slt`}
+          className={`inline-flex items-center gap-1 py-[1px] px-[6px] ml-1 rounded text-xs ${
+            meta.bg
+          } ${meta.text} ${strikeout(isDeleted)} n-sts-slt`}
           href={`${baseUrl}admin/booking_detail/${row.id}/convert`}
           title="Set as Converted"
         >
@@ -197,7 +274,9 @@ const StatusUpdate = ({
       {isCancelled && (
         <>
           <a
-            className={`inline-flex items-center gap-1 py-[1px] px-[6px] ml-1 rounded text-xs ${meta.bg} ${meta.text} ${strikeout(isDeleted)} n-sts-slt`}
+            className={`inline-flex items-center gap-1 py-[1px] px-[6px] ml-1 rounded text-xs ${
+              meta.bg
+            } ${meta.text} ${strikeout(isDeleted)} n-sts-slt`}
             href={`${baseUrl}admin/booking_detail/${row.id}`}
             title="Set as Converted"
           >
@@ -205,8 +284,11 @@ const StatusUpdate = ({
           </a>
           {isPresales && (
             <a
-              className={`inline-flex items-center gap-1 py-[1px] px-[6px] ml-1 rounded text-xs ${meta.bg} ${meta.text} ${strikeout(isDeleted)} n-sts-slt`}
-              href={`${baseUrl}admin/edit_subject_area/${row.id}`}
+              className={`inline-flex edit-sub-area  items-center gap-1 py-[1px] px-[6px] ml-1 rounded text-xs ${
+                meta.bg
+              } ${meta.text} ${strikeout(isDeleted)} n-sts-slt cursor-pointer`}
+              data-id={row.id}
+              data-row={JSON.stringify(row)}
               title="Edit Subject Area"
             >
               <Pencil size={12} />
@@ -225,7 +307,8 @@ const StatusUpdate = ({
             </span>
           )}
           {/* Client confirmation */}
-          {row.fld_call_confirmation_status === "Call Confirmation Pending at Client End" && (
+          {row.fld_call_confirmation_status ===
+            "Call Confirmation Pending at Client End" && (
             <span className="inline-flex items-center gap-1 py-[1px] px-[6px] ml-1 rounded text-xs bg-blue-100 text-blue-800">
               <Clock size={12} /> {row.fld_call_confirmation_status}
             </span>
@@ -242,7 +325,9 @@ const StatusUpdate = ({
 
       {/* CRM status info */}
       {crmMetaToUse && (
-        <span className={`inline-flex items-center gap-1 py-[1px] px-[6px] ml-1 rounded text-xs ${crmMetaToUse.bg} ${crmMetaToUse.text}`}>
+        <span
+          className={`inline-flex items-center gap-1 py-[1px] px-[6px] ml-1 rounded text-xs ${crmMetaToUse.bg} ${crmMetaToUse.text}`}
+        >
           {crmMetaToUse.icon}
           CRM Marked As {crmCompleted ? "Completed" : "Client Did Not Join"}
         </span>
