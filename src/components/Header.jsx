@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import logo from "../assets/images/callcalendar-logo.png";
+import Notification from "./Notification.jsx";
 
 export default function Header() {
   const { user, logout } = useAuth();
@@ -81,9 +82,12 @@ export default function Header() {
               </AnimatePresence>
             </div>
 
-            <button className="relative px-2 py-2 bg-gray-100 rounded-full hover:bg-gray-200">
-              <Bell size={13} />
-            </button>
+            
+
+
+
+
+            <Notification />
           </div>
         </div>
       </header>

@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import { useAuth } from "../../utils/idb";
 import { useNavigate } from "react-router-dom";
 import ConsultantTimings from "./ConsultantTimings";
+import BlockSlot from "./BlockSlot";
 
 function Dashboard() {
   const { user } = useAuth();
@@ -98,6 +99,9 @@ function Dashboard() {
             </div>
           
         </div>
+      )}
+      {(user?.fld_admin_type === "SUBADMIN" || user?.fld_admin_type === "CONSULTANT") && (
+        <BlockSlot user={user} />
       )}
     </div>
   );

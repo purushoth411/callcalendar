@@ -54,9 +54,63 @@ const Summary = () => {
 
   const { user } = useAuth();
 
-  const filteredConsultants = consultants.filter(
-    (c) => c.type === filters.consultant_type
-  );
+   const [consultants, setConsultants] = useState([]);
+    const [filteredConsultants, setFilteredConsultants] = useState([]);
+    const [crms, setCrms] = useState([]);
+    const [consultantType, setConsultantType] = useState("ACTIVE");
+  
+    const fetchConsultantsAndCrms = async () => {
+      try {
+        // Fetch consultants first
+        const consultantRes = await fetch(
+          "http://localhost:5000/api/helpers/getUsersByRole",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ role: "CONSULTANT", status: "Active" }),
+          }
+        );
+        const consultantData = await consultantRes.json();
+  
+        // Then fetch CRMs
+        const crmRes = await fetch(
+          "http://localhost:5000/api/helpers/getUsersByRole",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ role: "EXECUTIVE", status: "Active" }),
+          }
+        );
+        const crmData = await crmRes.json();
+  
+        // Set state
+        setConsultants(consultantData.users || []);
+        setFilteredConsultants(consultantData.users || []);
+        setCrms(crmData.users || []);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+  
+    const handleConsultantTypeChange = async (type) => {
+      setConsultantType(type);
+  
+      try {
+        const res = await fetch(
+          "http://localhost:5000/api/helpers/getUsersByRole",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ role: "CONSULTANT", status: type }),
+          }
+        );
+  
+        const data = await res.json();
+        setFilteredConsultants(data.users || []);
+      } catch (err) {
+        console.error("Error filtering consultants:", err);
+      }
+    };
 
   const formatDate = (date) =>
     date
@@ -176,7 +230,9 @@ handleApplyFilters();
         
          <button
           className="ml-2 bg-blue-500 text-white px-3 py-1 rounded text-sm"
-          onClick={() => setShowFilters((v) => !v)}
+          onClick={() => {setShowFilters(!showFilters);
+            if(showFilters) fetchConsultantsAndCrms();}
+          }
         >
           {showFilters ? "Hide Filters" : "Show Filters"}
         </button>
@@ -240,13 +296,14 @@ handleApplyFilters();
                 <select
                   className="w-full border px-3 py-2 rounded text-sm"
                   value={filters.consultant_type}
-                  onChange={(e) =>
+                   onChange={(e) => {
+                    handleConsultantTypeChange(e.target.value);
                     setFilters((f) => ({
                       ...f,
                       consultant_type: e.target.value,
                       consultant_id: null,
-                    }))
-                  }
+                    }));
+                  }}
                 >
                   <option value="ACTIVE">Active</option>
                   <option value="INACTIVE">Inactive</option>
