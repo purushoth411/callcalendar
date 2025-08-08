@@ -143,24 +143,26 @@ const EditSubjectArea = ({
   }));
 
   return (
-    <motion.div className="fixed inset-0 bg-[#000000c2] z-50">
+    <motion.div className="fixed inset-0 bg-black bg-opacity-75 z-50">
       <motion.div
         initial={{ x: "100%" }}
         animate={{ x: 0 }}
         exit={{ x: "100%" }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className="fixed top-0 right-0 w-[25%] h-full bg-white shadow z-50 overflow-y-auto p-6"
+        className="fixed top-0 right-0 w-full sm:w-[90%] md:w-[35%] lg:w-[25%] h-full bg-white shadow-lg z-50 overflow-y-auto p-6"
       >
+        {/* Header */}
         <div className="flex justify-between items-center mb-4">
           <h4 className="text-lg font-semibold">Edit Subject Area</h4>
           <button
             onClick={() => setShowEditSubjectForm(false)}
-            className="text-gray-500 hover:text-red-500 text-lg"
+            className="text-gray-500 hover:text-red-500 text-xl font-bold"
           >
             ✕
           </button>
         </div>
 
+        {/* Hidden Fields */}
         <input type="hidden" name="bookingid" value={formData.bookingid} />
         <input type="hidden" name="saletype" value={formData.saletype} />
         <input
@@ -171,7 +173,7 @@ const EditSubjectArea = ({
 
         {/* Subject Area */}
         <div className="mb-4">
-          <label className="block mb-1">Subject Area</label>
+          <label className="block mb-1 font-medium text-sm">Subject Area</label>
           <select
             name="subject_area"
             value={formData.subject_area}
@@ -179,7 +181,7 @@ const EditSubjectArea = ({
               handleChange(e);
               handleSubjectAreaChange({ value: e.target.value });
             }}
-            className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
+            className="w-full border px-3 py-2 rounded-md border-gray-300 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
             required
           >
             <option value="">Select Subject Area</option>
@@ -193,7 +195,9 @@ const EditSubjectArea = ({
 
         {/* Consultant */}
         <div className="mb-4">
-          <label className="block mb-1">Primary Consultant</label>
+          <label className="block mb-1 font-medium text-sm">
+            Primary Consultant
+          </label>
           <Select
             name="consultant_id"
             options={consultantOptions}
@@ -215,13 +219,13 @@ const EditSubjectArea = ({
           />
         </div>
 
-        {/* Submit */}
+        {/* Submit Button */}
         <div className="text-right">
           <button
             onClick={handleSubmit}
             disabled={updatingSubjectArea}
             type="button"
-            className="btn btn-primary"
+            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {updatingSubjectArea ? "Updating..." : "Update"}
           </button>

@@ -10,6 +10,8 @@ import EditUser from "./EditUser.jsx";
 import { formatDate } from "../../helpers/CommonHelper.jsx";
 import SkeletonLoader from "../../components/SkeletonLoader.jsx";
 import { PlusIcon } from "lucide-react";
+import { getSocket } from "../../utils/Socket.jsx";
+
 
 export default function Users() {
   const { user, logout } = useAuth();
@@ -22,7 +24,7 @@ export default function Users() {
   const [showForm, setShowForm] = useState(false);
   const [formType, setFormType] = useState("");
   const [teams, setTeams] = useState([]);
-  const [isSubmitting,setIsSubmitting]=useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const tableRef = useRef(null);
   const [formData, setFormData] = useState({
     team_id: formType === "EXECUTIVE" ? "" : [],
@@ -36,12 +38,36 @@ export default function Users() {
     subadmin_type: "",
     permissions: [],
   });
+   const socket = getSocket();
+
+
+useEffect(() => {
+  const handleAttendanceUpdated = (data) => {
+    console.log("Socket Called");
+    setAllUsers((prevUsers) =>
+      prevUsers.map((user) =>
+        user.id === data.userId
+          ? { ...user, attendance: data.attendance }
+          : user
+      )
+    );
+  };
+
+  socket.on("updatedAttendance", handleAttendanceUpdated);
+
+  return () => {
+    socket.off("updatedAttendance", handleAttendanceUpdated);
+  };
+}, []);
+
 
   useEffect(() => {
     fetchAllUsers();
     getAllTeams();
     getUserCount();
   }, []);
+
+
 
   useEffect(() => {
     // Filter users based on selected type
@@ -162,12 +188,14 @@ export default function Users() {
         setShowForm(false);
         fetchAllUsers(); // reload users
       } else {
-        toast.error(result.message || "User alreday Exits or Something went wrong");
+        toast.error(
+          result.message || "User alreday Exits or Something went wrong"
+        );
       }
     } catch (err) {
       console.error("Error:", err);
       toast.error("Server error");
-    }finally{
+    } finally {
       setIsSubmitting(false);
     }
   };
@@ -218,7 +246,7 @@ export default function Users() {
     }
   };
 
-   const updateUserAttendance = async (userId, attendance) => {
+  const updateUserAttendance = async (userId, attendance) => {
     try {
       const res = await fetch(
         `http://localhost:5000/api/users/updateAttendance/${userId}`,
@@ -284,8 +312,7 @@ export default function Users() {
       title: "Added On",
       data: "fld_addedon",
       orderable: true,
-      render: (data) =>
-        `<div class="text-gray-500 ">${formatDate(data)}</div>`,
+      render: (data) => `<div class="text-gray-500 ">${formatDate(data)}</div>`,
     },
 
     {
@@ -302,23 +329,23 @@ export default function Users() {
     `;
       },
     },
-     {
-    title: "Attendance",
-    data: "attendance",
-    orderable: false,
-    visible: true, 
-    render: function (data, type, row) {
-      if (row.fld_admin_type !== "CONSULTANT") return "-";
+    {
+      title: "Attendance",
+      data: "attendance",
+      orderable: false,
+      visible: true,
+      render: function (data, type, row) {
+        if (row.fld_admin_type !== "CONSULTANT") return "-";
 
-      const checked = data === "PRESENT" ? "checked" : "";
-      return `
+        const checked = data === "PRESENT" ? "checked" : "";
+        return `
         <label class="custom-switch">
           <input type="checkbox" class="custom-checkbox attendance-toggle" data-id="${row.id}" ${checked}>
           <div class="custom-slider"></div>
         </label>
       `;
+      },
     },
-  },
 
     {
       title: "Actions",
@@ -398,13 +425,13 @@ export default function Users() {
           const newStatus = this.checked ? "ACTIVE" : "INACTIVE";
           updateUserStatus(userId, newStatus);
         });
-        $(row)
-    .find(".attendance-toggle")
-    .on("change", function () {
-      const userId = $(this).data("id");
-      const attendance = this.checked ? "PRESENT" : "ABSENT";
-      updateUserAttendance(userId, attendance);
-    });
+      $(row)
+        .find(".attendance-toggle")
+        .on("change", function () {
+          const userId = $(this).data("id");
+          const attendance = this.checked ? "PRESENT" : "ABSENT";
+          updateUserAttendance(userId, attendance);
+        });
     },
     drawCallback: function () {
       const container = $(this.api().table().container());
@@ -425,185 +452,188 @@ export default function Users() {
     <div className="">
       <div className="">
         <div className="">
-        {/* Header */}
-        <div className="mb-4 flex items-center gap-3 justify-between">
-          <h4 className="text-[18px] font-semibold text-gray-900">User Management</h4>
-          {/* Navigation Tabs */}
-          <div className="">
-            <div className="bg-white rounded border border-gray-200 p-1">
-              <nav className="flex space-x-1">
-                {userTabs.map((tab) => (
-                  <button
-                    key={tab.key}
-                    onClick={() => handleTabClick(tab.key)}
-                    className={`flex-1 px-2 py-1 rounded transition-all duration-200 cursor-pointer ${
-                      selectedUserType === tab.key
-                        ? "prime-bg text-white shadow-sm"
-                        : "text-gray-600 hover:text-gray-900 hover:bg-orange-100 bg-gray-200"
-                    }`}
-                  >
-                    <div className="flex items-center justify-center space-x-2 whitespace-nowrap">
-                      <span className="text-[12px]">{tab.label}</span>
-                      <span
-                        className={`inline-flex items-center leading-none px-2 py-1 rounded text-[11px] ${
-                          selectedUserType === tab.key
-                            ? "secondary-bg text-white"
-                            : "bg-gray-100 text-gray-800"
-                        }`}
-                      >
-                        {tab.count}
-                      </span>
-                    </div>
-                  </button>
-                ))}
-              </nav>
+          {/* Header */}
+          <div className="mb-4 flex items-center gap-3 justify-between">
+            <h4 className="text-[18px] font-semibold text-gray-900">
+              User Management
+            </h4>
+            {/* Navigation Tabs */}
+            <div className="">
+              <div className="bg-white rounded border border-gray-200 p-1">
+                <nav className="flex space-x-1">
+                  {userTabs.map((tab) => (
+                    <button
+                      key={tab.key}
+                      onClick={() => handleTabClick(tab.key)}
+                      className={`flex-1 px-2 py-1 rounded transition-all duration-200 cursor-pointer ${
+                        selectedUserType === tab.key
+                          ? "prime-bg text-white shadow-sm"
+                          : "text-gray-600 hover:text-gray-900 hover:bg-orange-100 bg-gray-200"
+                      }`}
+                    >
+                      <div className="flex items-center justify-center space-x-2 whitespace-nowrap">
+                        <span className="text-[12px]">{tab.label}</span>
+                        <span
+                          className={`inline-flex items-center leading-none px-2 py-1 rounded text-[11px] ${
+                            selectedUserType === tab.key
+                              ? "secondary-bg text-white"
+                              : "bg-gray-100 text-gray-800"
+                          }`}
+                        >
+                          {tab.count}
+                        </span>
+                      </div>
+                    </button>
+                  ))}
+                </nav>
+              </div>
             </div>
           </div>
-        </div>
 
-        
-
-        {/* Content Area */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-          {/* Header */}
-          <div className="px-3 py-2 bg-[#d7efff7d]">
-            <div className="flex justify-between items-center">
-              <h2 className="text-[16px] font-semibold text-gray-900">
-                {userTabs.find((tab) => tab.key === selectedUserType)?.label}{" "}
-                Users
-              </h2>
-              {/* <div className="flex items-center space-x-2">
+          {/* Content Area */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+            {/* Header */}
+            <div className="px-3 py-2 bg-[#d7efff7d]">
+              <div className="flex justify-between items-center">
+                <h2 className="text-[16px] font-semibold text-gray-900">
+                  {userTabs.find((tab) => tab.key === selectedUserType)?.label}{" "}
+                  Users
+                </h2>
+                {/* <div className="flex items-center space-x-2">
                 <span className="text-sm text-gray-500">Total:</span>
                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                   {isLoading ? "..." : filteredUsers.length}
                 </span>
               </div> */}
-              <div className="flex justify-end gap-2">
-                {selectedUserType === "EXECUTIVE" && (
-                  <button
-                    onClick={() => {
-                      setFormType("EXECUTIVE");
-                      setShowForm(true);
-                    }}
-                    className="bg-green-600 leading-none text-white px-2 py-1.5 rounded hover:bg-green-700 text-[11px] flex items-center gap-1"
-                  >
-                    <PlusIcon size={11} className="leading-none" /> Add CRM
-                  </button>
-                )}
-                {selectedUserType === "SUBADMIN" && (
-                  <button
-                    onClick={() => {
-                      setFormType("SUBADMIN");
-                      setShowForm(true);
-                    }}
-                    className="bg-green-600 leading-none text-white px-2 py-1.5 rounded hover:bg-green-700 text-[11px] flex items-center gap-1"
-                  >
-                    <PlusIcon size={11} className="leading-none" /> Add Subadmin
-                  </button>
-                )}
-                {selectedUserType === "CONSULTANT" && (
-                  <button
-                    onClick={() => {
-                      setFormType("CONSULTANT");
-                      setShowForm(true);
-                    }}
-                    className="bg-green-600 leading-none text-white px-2 py-1.5 rounded hover:bg-green-700 text-[11px] flex items-center gap-1"
-                  >
-                    <PlusIcon size={11} className="leading-none" /> Add Consultant
-                  </button>
-                )}
-                {selectedUserType === "OPERATIONSADMIN" && (
-                  <button
-                    onClick={() => {
-                      setFormType("OPSADMIN");
-                      setShowForm(true);
-                    }}
-                    className="bg-green-600 leading-none text-white px-2 py-1.5 rounded hover:bg-green-700 text-[11px] flex items-center gap-1"
-                  >
-                    <PlusIcon size={11} className="leading-none" /> Add OPS Admin
-                  </button>
-                )}
+                <div className="flex justify-end gap-2">
+                  {selectedUserType === "EXECUTIVE" && (
+                    <button
+                      onClick={() => {
+                        setFormType("EXECUTIVE");
+                        setShowForm(true);
+                      }}
+                      className="bg-green-600 leading-none text-white px-2 py-1.5 rounded hover:bg-green-700 text-[11px] flex items-center gap-1"
+                    >
+                      <PlusIcon size={11} className="leading-none" /> Add CRM
+                    </button>
+                  )}
+                  {selectedUserType === "SUBADMIN" && (
+                    <button
+                      onClick={() => {
+                        setFormType("SUBADMIN");
+                        setShowForm(true);
+                      }}
+                      className="bg-green-600 leading-none text-white px-2 py-1.5 rounded hover:bg-green-700 text-[11px] flex items-center gap-1"
+                    >
+                      <PlusIcon size={11} className="leading-none" /> Add
+                      Subadmin
+                    </button>
+                  )}
+                  {selectedUserType === "CONSULTANT" && (
+                    <button
+                      onClick={() => {
+                        setFormType("CONSULTANT");
+                        setShowForm(true);
+                      }}
+                      className="bg-green-600 leading-none text-white px-2 py-1.5 rounded hover:bg-green-700 text-[11px] flex items-center gap-1"
+                    >
+                      <PlusIcon size={11} className="leading-none" /> Add
+                      Consultant
+                    </button>
+                  )}
+                  {selectedUserType === "OPERATIONSADMIN" && (
+                    <button
+                      onClick={() => {
+                        setFormType("OPSADMIN");
+                        setShowForm(true);
+                      }}
+                      className="bg-green-600 leading-none text-white px-2 py-1.5 rounded hover:bg-green-700 text-[11px] flex items-center gap-1"
+                    >
+                      <PlusIcon size={11} className="leading-none" /> Add OPS
+                      Admin
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Table Content */}
-          {/* Table Content */}
-          <div className="p-4">
-            {isLoading ? (
-              <SkeletonLoader
-                rows={6}
-                columns={[
-                  "Name",
-                  "Username",
-                  "Email",
-                  "Type",
-                  "Added On",
-                  "Status",
-                  "Actions",
-                ]}
+            {/* Table Content */}
+            {/* Table Content */}
+            <div className="p-4">
+              {isLoading ? (
+                <SkeletonLoader
+                  rows={6}
+                  columns={[
+                    "Name",
+                    "Username",
+                    "Email",
+                    "Type",
+                    "Added On",
+                    "Status",
+                    "Actions",
+                  ]}
+                />
+              ) : (
+                <div className="overflow-hidden">
+                  {selectedUserType === "EXECUTIVE" && (
+                    <DataTable
+                      data={executiveUsers}
+                      columns={columns}
+                      className="display table table-auto w-full text-[13px] border border-gray-300 n-table-set"
+                      options={tableOptions}
+                    />
+                  )}
+                  {selectedUserType === "SUBADMIN" && (
+                    <DataTable
+                      data={subadminUsers}
+                      columns={columns}
+                      className="display table table-auto w-full text-[13px] border border-gray-300 n-table-set"
+                      options={tableOptions}
+                    />
+                  )}
+                  {selectedUserType === "CONSULTANT" && (
+                    <DataTable
+                      data={consultantUsers}
+                      columns={columns}
+                      className="display table table-auto w-full text-[13px] border border-gray-300 n-table-set"
+                      options={tableOptions}
+                    />
+                  )}
+                  {selectedUserType === "OPERATIONSADMIN" && (
+                    <DataTable
+                      data={opsAdminUsers}
+                      columns={columns}
+                      className="display table table-auto w-full text-[13px] border border-gray-300 n-table-set"
+                      options={tableOptions}
+                    />
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+          <AnimatePresence>
+            {showForm && (
+              <AddUser
+                setShowForm={setShowForm}
+                formData={formData}
+                setFormData={setFormData}
+                teams={teams}
+                formType={formType}
+                handleSave={handleSave}
+                isSubmitting={isSubmitting}
               />
-            ) : (
-              <div className="overflow-hidden">
-                {selectedUserType === "EXECUTIVE" && (
-                  <DataTable
-                    data={executiveUsers}
-                    columns={columns}
-                    className="display table table-auto w-full text-[13px] border border-gray-300 n-table-set"
-                    options={tableOptions}
-                  />
-                )}
-                {selectedUserType === "SUBADMIN" && (
-                  <DataTable
-                    data={subadminUsers}
-                    columns={columns}
-                    className="display table table-auto w-full text-[13px] border border-gray-300 n-table-set"
-                    options={tableOptions}
-                  />
-                )}
-                {selectedUserType === "CONSULTANT" && (
-                  <DataTable
-                    data={consultantUsers}
-                    columns={columns}
-                    className="display table table-auto w-full text-[13px] border border-gray-300 n-table-set"
-                    options={tableOptions}
-                  />
-                )}
-                {selectedUserType === "OPERATIONSADMIN" && (
-                  <DataTable
-                    data={opsAdminUsers}
-                    columns={columns}
-                    className="display table table-auto w-full text-[13px] border border-gray-300 n-table-set"
-                    options={tableOptions}
-                  />
-                )}
-              </div>
             )}
-          </div>
-        </div>
-        <AnimatePresence>
-          {showForm && (
-            <AddUser
-              setShowForm={setShowForm}
-              formData={formData}
-              setFormData={setFormData}
-              teams={teams}
-              formType={formType}
-              handleSave={handleSave}
-              isSubmitting={isSubmitting}
-            />
-          )}
 
-          {showEditForm && (
-            <EditUser
-              setShowForm={setShowEditForm}
-              teams={teams}
-              formType={formType}
-              editData={editData}
-              fetchAllUsers={fetchAllUsers}
-            />
-          )}
-        </AnimatePresence>
+            {showEditForm && (
+              <EditUser
+                setShowForm={setShowEditForm}
+                teams={teams}
+                formType={formType}
+                editData={editData}
+                fetchAllUsers={fetchAllUsers}
+              />
+            )}
+          </AnimatePresence>
         </div>
       </div>
 

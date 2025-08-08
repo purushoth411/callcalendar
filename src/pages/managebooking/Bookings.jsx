@@ -20,6 +20,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import moment from "moment/moment.js";
 import EditSubjectArea from "./EditSubjectArea.jsx";
+import SocketHandler from "../../hooks/SocketHandler.jsx";
 
 export default function Bookings() {
   const { user } = useAuth();
@@ -570,6 +571,7 @@ export default function Bookings() {
   };
   return (
     <div className="">
+      <SocketHandler setBookings={setBookings} page="bookings" />
       <div className="">
         <div className="">
           <div className="mb-4 flex items-center gap-3 justify-between">
