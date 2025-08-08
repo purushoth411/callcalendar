@@ -38,6 +38,12 @@ export default function Header() {
     navigate("/login");
     return null;
   }
+  console.log(user)
+
+  const isSubadmin = user.fld_admin_type =="SUBADMIN";
+  const isAdmin = user.fld_admin_type == "SUPERADMIN";
+  const isExecutive = user.fld_admin_type == "EXECUTIVE";
+  const isConsultant = user.fld_admin_type == "CONSULTANT";
 
   return (
     <>
@@ -82,11 +88,6 @@ export default function Header() {
               </AnimatePresence>
             </div>
 
-            
-
-
-
-
             <Notification />
           </div>
         </div>
@@ -95,106 +96,113 @@ export default function Header() {
       {/* Navbar below header */}
       <nav className="bg-gradient-to-r from-[#224d68] to-[#3c7ca5] text-white">
         <div className="max-w-[85rem] mx-auto px-3 py-3">
-        <div className="flex space-x-6 text-[12px]">
-          <NavLink
-            to="/"
-            className={({ isActive }) =>
-              isActive
-                ? "flex items-center text-white underline font-semibold"
-                : "flex items-center text-white hover:text-gray-300"
-            }
-          >
-            <LayoutDashboard className="mr-1" size={14} />
-            Dashboard
-          </NavLink>
-
-          <NavLink
-            to="/summary"
-            className={({ isActive }) =>
-              isActive
-                ? "flex items-center text-white underline font-semibold"
-                : "flex items-center text-white hover:text-gray-300"
-            }
-          >
-            <BarChart2 className="mr-1" size={14} />
-            Summary
-          </NavLink>
-
-          <NavLink
-            to="/users"
-            className={({ isActive }) =>
-              isActive
-                ? "flex items-center text-white underline font-semibold"
-                : "flex items-center text-white hover:text-gray-300"
-            }
-          >
-            <Users2 className="mr-1" size={14} />
-            Users
-          </NavLink>
-          <NavLink
-            to="/teams"
-            className={({ isActive }) =>
-              isActive
-                ? "flex items-center text-white underline font-semibold"
-                : "flex items-center text-white hover:text-gray-300"
-            }
-          >
-            <Users2 className="mr-1" size={14} />
-            Teams
-          </NavLink>
-          <NavLink
-            to="/bookings"
-            className={({ isActive }) =>
-              isActive
-                ? "flex items-center text-white underline font-semibold"
-                : "flex items-center text-white hover:text-gray-300"
-            }
-          >
-            <CalendarCheckIcon className="mr-1" size={14} />
-            Bookings
-          </NavLink>
-          {(user?.fld_admin_type == "SUPERADMIN" ||
-            user?.fld_admin_type == "EXECUTIVE" || 
-            user?.fld_admin_type == "SUBADMIN" || 
-            user?.fld_admin_type == "CONSULTANT") && (
+          <div className="flex space-x-6 text-[12px]">
             <NavLink
-              to="/external_calls"
+              to="/"
               className={({ isActive }) =>
                 isActive
                   ? "flex items-center text-white underline font-semibold"
                   : "flex items-center text-white hover:text-gray-300"
               }
             >
-              <Phone className="mr-1" size={14} />
-              External Calls
+              <LayoutDashboard className="mr-1" size={14} />
+              Dashboard
             </NavLink>
-          )}
-          {(user?.fld_admin_type == "SUPERADMIN" ||
-            user?.fld_admin_type == "EXECUTIVE") && (
+            {(isAdmin || isSubadmin) && (
+              <NavLink
+                to="/summary"
+                className={({ isActive }) =>
+                  isActive
+                    ? "flex items-center text-white underline font-semibold"
+                    : "flex items-center text-white hover:text-gray-300"
+                }
+              >
+                <BarChart2 className="mr-1" size={14} />
+                Summary
+              </NavLink>
+            )}
+            {(isAdmin || isSubadmin) && (
+              <NavLink
+                to="/users"
+                className={({ isActive }) =>
+                  isActive
+                    ? "flex items-center text-white underline font-semibold"
+                    : "flex items-center text-white hover:text-gray-300"
+                }
+              >
+                <Users2 className="mr-1" size={14} />
+                Users
+              </NavLink>
+            )}
+             {(isAdmin || isSubadmin) && (
+              <NavLink
+                to="/teams"
+                className={({ isActive }) =>
+                  isActive
+                    ? "flex items-center text-white underline font-semibold"
+                    : "flex items-center text-white hover:text-gray-300"
+                }
+              >
+                <Users2 className="mr-1" size={14} />
+                Teams
+              </NavLink>
+            )}
             <NavLink
-              to="/call_request_from_rc"
+              to="/bookings"
               className={({ isActive }) =>
                 isActive
                   ? "flex items-center text-white underline font-semibold"
                   : "flex items-center text-white hover:text-gray-300"
               }
             >
-              <Phone className="mr-1" size={14} />
-              Call Request From RC
+              <CalendarCheckIcon className="mr-1" size={14} />
+              Bookings
             </NavLink>
-          )}
-          <NavLink
-      to="/domain_pref"
-      className={({ isActive }) =>
-        isActive
-          ? "flex items-center text-white underline font-semibold"
-          : "flex items-center text-white hover:text-gray-300"
-      }
-    >
-      <Globe2 className="mr-1" size={16} />
-      Domain Pref
-    </NavLink>
-        </div>
+
+            {(user?.fld_admin_type == "SUPERADMIN" ||
+              user?.fld_admin_type == "EXECUTIVE" ||
+              user?.fld_admin_type == "SUBADMIN" ||
+              user?.fld_admin_type == "CONSULTANT") && (
+              <NavLink
+                to="/external_calls"
+                className={({ isActive }) =>
+                  isActive
+                    ? "flex items-center text-white underline font-semibold"
+                    : "flex items-center text-white hover:text-gray-300"
+                }
+              >
+                <Phone className="mr-1" size={14} />
+                External Calls
+              </NavLink>
+            )}
+            {(user?.fld_admin_type == "SUPERADMIN" ||
+              user?.fld_admin_type == "EXECUTIVE") && (
+              <NavLink
+                to="/call_request_from_rc"
+                className={({ isActive }) =>
+                  isActive
+                    ? "flex items-center text-white underline font-semibold"
+                    : "flex items-center text-white hover:text-gray-300"
+                }
+              >
+                <Phone className="mr-1" size={14} />
+                Call Request From RC
+              </NavLink>
+            )}
+             {(isAdmin || isSubadmin) && (
+              <NavLink
+                to="/domain_pref"
+                className={({ isActive }) =>
+                  isActive
+                    ? "flex items-center text-white underline font-semibold"
+                    : "flex items-center text-white hover:text-gray-300"
+                }
+              >
+                <Globe2 className="mr-1" size={16} />
+                Domain Pref
+              </NavLink>
+            )}
+          </div>
         </div>
       </nav>
     </>

@@ -53,14 +53,22 @@ export default function Bookings() {
   }, [bookingid]);
 
   const navigate = useNavigate();
-  const today = moment().startOf("day");
+
+  const today = moment().format("YYYY-MM-DD");
+  const lastWeek = moment().subtract(7, "days").format("YYYY-MM-DD");
+
+  const isSuperadmin = user?.fld_admin_type === "SUPERADMIN";
+
+  const fromDate = isSuperadmin ? today : lastWeek;
+  const toDate = isSuperadmin ? today : today;
+
   const [filters, setFilters] = useState({
     sale_type: "",
     call_rcrd_status: "",
     booking_status: [],
     keyword_search: "",
     filter_type: "Booking",
-    date_range: [today.toDate(), today.toDate()],
+    date_range: [fromDate, toDate],
   });
 
   const fetchConsultantsAndCrms = async () => {
@@ -229,6 +237,19 @@ export default function Bookings() {
   const fetchAllBookings = async () => {
     try {
       setIsLoading(true);
+      const today = moment().format("YYYY-MM-DD");
+      const lastWeek = moment().subtract(7, "days").format("YYYY-MM-DD");
+
+      const isSuperadmin = user?.fld_admin_type === "SUPERADMIN";
+
+      const fromDate = isSuperadmin ? today : lastWeek;
+      const toDate = isSuperadmin ? today : today;
+
+      const filtersToSend = {
+        ...filters,
+        fromDate,
+        toDate,
+      };
 
       const response = await fetch(
         "http://localhost:5000/api/bookings/fetchBooking",
@@ -239,7 +260,7 @@ export default function Bookings() {
             userId: user?.id,
             userType: user?.fld_admin_type,
             assigned_team: user?.fld_team || "",
-            filters: {},
+            filters: filtersToSend,
             dashboard_status,
           }),
         }
@@ -552,16 +573,25 @@ export default function Bookings() {
       <div className="">
         <div className="">
           <div className="mb-4 flex items-center gap-3 justify-between">
-            <h2 className="text-[18px] font-semibold text-gray-900">
-              Booking Management
-            </h2>
-
-            <button
-              onClick={handleAddNewClick}
-              className="bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700 transition-colors text-[11px] flex items-center gap-1"
-            >
-              <PlusIcon size={11} className="leading-none" /> Add New
-            </button>
+            <div className="flex justify-start items-center">
+              <h2 className="text-[18px] font-semibold text-gray-900">
+                Booking Management
+              </h2>
+              <button
+                className="border border-gray-500 text-gray-500 hover:text-white px-2 py-1 rounded hover:bg-gray-500 text-sm ml-3  "
+                onClick={handleReload}
+              >
+                <RefreshCcw size={15} />
+              </button>
+            </div>
+            {user.fld_admin_type == "EXECUTIVE" && (
+              <button
+                onClick={handleAddNewClick}
+                className="bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700 transition-colors text-[11px] flex items-center gap-1"
+              >
+                <PlusIcon size={11} className="leading-none" /> Add New
+              </button>
+            )}
           </div>
 
           <div className="bg-white rounded-lg shadow-sm border border-gray-200">
@@ -580,12 +610,6 @@ export default function Bookings() {
                 </div>
 
                 <div className="flex items-center space-x-2">
-                  <button
-                    className="bg-gray-500 text-white px-4 py-2 rounded text-sm hover:bg-gray-600 transition-colors"
-                    onClick={handleReload}
-                  >
-                    <RefreshCcw size={15} />
-                  </button>
                   <button
                     onClick={() => {
                       setShowFilters(!showFilters);

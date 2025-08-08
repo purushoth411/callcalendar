@@ -89,9 +89,10 @@ const TableSection = ({
   title,
   data,
   selectedStatus,
-  setSelectedStatus,
+  callStatus,
+ CallconfirmationStatus,
   onClose,
-  setConfirmationStatus,
+ 
 }) => {
   const navigate = useNavigate();
   const [expandedRow, setExpandedRow] = useState(null);
@@ -184,11 +185,13 @@ const TableSection = ({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
-          {selectedStatus === null && (
+         
             <button
               onClick={() => {
-                const requestStatus = data[0].fld_call_request_sts;
-                const confirmationStatus = data[0].fld_call_confirmation_status;
+                console.log("callStatus"+callStatus);
+                console.log("confirmationStatus"+CallconfirmationStatus);
+                const requestStatus = callStatus;
+                const confirmationStatus = CallconfirmationStatus;
 
                 navigate(
                   `/summary/viewall?request_status=${encodeURIComponent(
@@ -202,15 +205,8 @@ const TableSection = ({
             >
               View All
             </button>
-          )}
-          {selectedStatus !== null && (
-            <button
-              onClick={onClose}
-              className="bg-red-500 text-white px-4 py-2 rounded text-sm hover:bg-blue-600 transition"
-            >
-              <XCircle />
-            </button>
-          )}
+         
+          
         </div>
       </div>
 

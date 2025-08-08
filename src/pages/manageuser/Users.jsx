@@ -22,6 +22,7 @@ export default function Users() {
   const [showForm, setShowForm] = useState(false);
   const [formType, setFormType] = useState("");
   const [teams, setTeams] = useState([]);
+  const [isSubmitting,setIsSubmitting]=useState(false);
   const tableRef = useRef(null);
   const [formData, setFormData] = useState({
     team_id: formType === "EXECUTIVE" ? "" : [],
@@ -148,6 +149,7 @@ export default function Users() {
     };
 
     try {
+      setIsSubmitting(true);
       const response = await fetch("http://localhost:5000/api/users/addUser", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -156,15 +158,17 @@ export default function Users() {
 
       const result = await response.json();
       if (result.status) {
-        alert("User added successfully");
+        toast.success("User added successfully");
         setShowForm(false);
         fetchAllUsers(); // reload users
       } else {
-        alert(result.message || "Something went wrong");
+        toast.error(result.message || "User alreday Exits or Something went wrong");
       }
     } catch (err) {
       console.error("Error:", err);
-      alert("Server error");
+      toast.error("Server error");
+    }finally{
+      setIsSubmitting(false);
     }
   };
 
@@ -211,6 +215,31 @@ export default function Users() {
     } catch (err) {
       console.error(err);
       toast.error("Error updating status");
+    }
+  };
+
+   const updateUserAttendance = async (userId, attendance) => {
+    try {
+      const res = await fetch(
+        `http://localhost:5000/api/users/updateAttendance/${userId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ attendance }),
+        }
+      );
+
+      const data = await res.json();
+      if (data.status) {
+        toast.success("Attendance updated");
+      } else {
+        toast.error(data.message || "Attendance update failed");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Error updating Attendance");
     }
   };
 
@@ -267,12 +296,29 @@ export default function Users() {
         const checked = data === "Active" ? "checked" : "";
         return `
       <label class="custom-switch">
-        <input type="checkbox" class="custom-checkbox" data-id="${row.id}" ${checked}>
+        <input type="checkbox" class=" custom-checkbox custom-checkbox2" data-id="${row.id}" ${checked}>
         <div class="custom-slider"></div>
       </label>
     `;
       },
     },
+     {
+    title: "Attendance",
+    data: "attendance",
+    orderable: false,
+    visible: true, 
+    render: function (data, type, row) {
+      if (row.fld_admin_type !== "CONSULTANT") return "-";
+
+      const checked = data === "PRESENT" ? "checked" : "";
+      return `
+        <label class="custom-switch">
+          <input type="checkbox" class="custom-checkbox attendance-toggle" data-id="${row.id}" ${checked}>
+          <div class="custom-slider"></div>
+        </label>
+      `;
+    },
+  },
 
     {
       title: "Actions",
@@ -346,12 +392,19 @@ export default function Users() {
         .find(".edit-btn")
         .on("click", () => handleEditButtonClick(data));
       $(row)
-        .find(".custom-checkbox")
+        .find(".custom-checkbox2")
         .on("change", function () {
           const userId = $(this).data("id");
           const newStatus = this.checked ? "ACTIVE" : "INACTIVE";
           updateUserStatus(userId, newStatus);
         });
+        $(row)
+    .find(".attendance-toggle")
+    .on("change", function () {
+      const userId = $(this).data("id");
+      const attendance = this.checked ? "PRESENT" : "ABSENT";
+      updateUserAttendance(userId, attendance);
+    });
     },
     drawCallback: function () {
       const container = $(this.api().table().container());
@@ -537,6 +590,7 @@ export default function Users() {
               teams={teams}
               formType={formType}
               handleSave={handleSave}
+              isSubmitting={isSubmitting}
             />
           )}
 

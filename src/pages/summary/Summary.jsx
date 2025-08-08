@@ -50,67 +50,67 @@ const Summary = () => {
 
   const [selectedStatus, setSelectedStatus] = useState(null);
   const [confirmationStatus, setConfirmationStatus] = useState(null);
-  const [allData,setAllData]=useState([]);
+  const [allData, setAllData] = useState([]);
 
   const { user } = useAuth();
 
-   const [consultants, setConsultants] = useState([]);
-    const [filteredConsultants, setFilteredConsultants] = useState([]);
-    const [crms, setCrms] = useState([]);
-    const [consultantType, setConsultantType] = useState("ACTIVE");
-  
-    const fetchConsultantsAndCrms = async () => {
-      try {
-        // Fetch consultants first
-        const consultantRes = await fetch(
-          "http://localhost:5000/api/helpers/getUsersByRole",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ role: "CONSULTANT", status: "Active" }),
-          }
-        );
-        const consultantData = await consultantRes.json();
-  
-        // Then fetch CRMs
-        const crmRes = await fetch(
-          "http://localhost:5000/api/helpers/getUsersByRole",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ role: "EXECUTIVE", status: "Active" }),
-          }
-        );
-        const crmData = await crmRes.json();
-  
-        // Set state
-        setConsultants(consultantData.users || []);
-        setFilteredConsultants(consultantData.users || []);
-        setCrms(crmData.users || []);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-  
-    const handleConsultantTypeChange = async (type) => {
-      setConsultantType(type);
-  
-      try {
-        const res = await fetch(
-          "http://localhost:5000/api/helpers/getUsersByRole",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ role: "CONSULTANT", status: type }),
-          }
-        );
-  
-        const data = await res.json();
-        setFilteredConsultants(data.users || []);
-      } catch (err) {
-        console.error("Error filtering consultants:", err);
-      }
-    };
+  const [consultants, setConsultants] = useState([]);
+  const [filteredConsultants, setFilteredConsultants] = useState([]);
+  const [crms, setCrms] = useState([]);
+  const [consultantType, setConsultantType] = useState("ACTIVE");
+
+  const fetchConsultantsAndCrms = async () => {
+    try {
+      // Fetch consultants first
+      const consultantRes = await fetch(
+        "http://localhost:5000/api/helpers/getUsersByRole",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ role: "CONSULTANT", status: "Active" }),
+        }
+      );
+      const consultantData = await consultantRes.json();
+
+      // Then fetch CRMs
+      const crmRes = await fetch(
+        "http://localhost:5000/api/helpers/getUsersByRole",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ role: "EXECUTIVE", status: "Active" }),
+        }
+      );
+      const crmData = await crmRes.json();
+
+      // Set state
+      setConsultants(consultantData.users || []);
+      setFilteredConsultants(consultantData.users || []);
+      setCrms(crmData.users || []);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  const handleConsultantTypeChange = async (type) => {
+    setConsultantType(type);
+
+    try {
+      const res = await fetch(
+        "http://localhost:5000/api/helpers/getUsersByRole",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ role: "CONSULTANT", status: type }),
+        }
+      );
+
+      const data = await res.json();
+      setFilteredConsultants(data.users || []);
+    } catch (err) {
+      console.error("Error filtering consultants:", err);
+    }
+  };
 
   const formatDate = (date) =>
     date
@@ -123,7 +123,7 @@ const Summary = () => {
     setData,
     callRequestStatus,
     callConfirmationStatus,
-    limit=true
+    limit = true
   ) => {
     const payload = {
       userId: user.id,
@@ -145,8 +145,7 @@ const Summary = () => {
         sale_type: filters.sale_type || null,
         filter_type: filters.filter_type || "Booking",
       },
-    type: limit ? "all" : "",
-
+      type: limit ? "all" : "",
     };
 
     setLoading(true);
@@ -186,7 +185,7 @@ const Summary = () => {
     fetchData(setConsultantRejectedData, "Reject", "");
     fetchData(setCallCompletedData, "Completed", "");
     fetchData(setRescheduledCall, "Rescheduled", "");
-    fetchData(setReassignCallData, "ComReassign Requestpleted", "");
+    fetchData(setReassignCallData, "Reassign Request", "");
     fetchData(setExternalCallData, "External", "");
     fetchData(setCallCancelledData, "Cancelled", "");
     fetchData(setClientNotJoinedData, "Client did not join", "");
@@ -196,11 +195,11 @@ const Summary = () => {
   useEffect(() => {
     handleApplyFilters();
   }, []);
-    const handleReload=()=>{
-handleApplyFilters();
-  }
+  const handleReload = () => {
+    handleApplyFilters();
+  };
 
- const handleClearFilters = () => {
+  const handleClearFilters = () => {
     setFilters({
       sale_type: "",
       call_rcrd_status: "",
@@ -219,24 +218,27 @@ handleApplyFilters();
   return (
     <div className="container mx-auto px-4">
       <div className="mb-6 flex justify-between items-center">
-        <h4 className="text-2xl font-bold text-gray-800">Call Summary</h4>
-       <div>
-         <button
-                className="bg-gray-500 text-white px-4 py-2 rounded text-sm hover:bg-gray-600 transition-colors"
-                onClick={handleReload}
-              >
-              <RefreshCcw size={15} />
-              </button>
-        
-         <button
-          className="ml-2 bg-blue-500 text-white px-3 py-1 rounded text-sm"
-          onClick={() => {setShowFilters(!showFilters);
-            if(showFilters) fetchConsultantsAndCrms();}
-          }
-        >
-          {showFilters ? "Hide Filters" : "Show Filters"}
-        </button>
-       </div>
+        <div className="flex justify-start items-center ">
+          <h4 className="text-2xl font-bold text-gray-800">Call Summary</h4>
+          <button
+            className="border border-gray-500 text-gray-500 hover:text-white px-2 py-1 rounded hover:bg-gray-500 text-sm ml-3  "
+            onClick={handleReload}
+          >
+            <RefreshCcw size={15} />
+          </button>
+        </div>
+
+        <div>
+          <button
+            className="ml-2 bg-blue-500 text-white px-3 py-1 rounded text-sm"
+            onClick={() => {
+              setShowFilters(!showFilters);
+              if (showFilters) fetchConsultantsAndCrms();
+            }}
+          >
+            {showFilters ? "Hide Filters" : "Show Filters"}
+          </button>
+        </div>
       </div>
 
       <AnimatePresence>
@@ -296,7 +298,7 @@ handleApplyFilters();
                 <select
                   className="w-full border px-3 py-2 rounded text-sm"
                   value={filters.consultant_type}
-                   onChange={(e) => {
+                  onChange={(e) => {
                     handleConsultantTypeChange(e.target.value);
                     setFilters((f) => ({
                       ...f,
@@ -384,12 +386,12 @@ handleApplyFilters();
               </div>
             </div>
 
-             <div className="mt-4 flex gap-2 justify-end">
+            <div className="mt-4 flex gap-2 justify-end">
               <button
                 className="bg-gray-500 text-white px-4 py-2 rounded text-sm hover:bg-gray-600 transition-colors"
                 onClick={handleClearFilters}
               >
-              <RefreshCcw />
+                <RefreshCcw />
               </button>
               <button
                 className="bg-green-600 text-white px-4 py-2 rounded text-sm hover:bg-green-700 transition-colors"
@@ -435,10 +437,12 @@ handleApplyFilters();
             <TableSection
               title="Call Scheduled"
               data={callScheduledData}
-             selectedStatus={selectedStatus}
+              selectedStatus={selectedStatus}
               setSelectedStatus={setSelectedStatus}
-            setConfirmationStatus={setConfirmationStatus}
-               
+              setConfirmationStatus={setConfirmationStatus}
+              callStatus="Call Scheduled"
+              CallconfirmationStatus=""
+              
             />
           )}
           {loading ? (
@@ -457,14 +461,15 @@ handleApplyFilters();
             <TableSection
               title="Accepted And Client Did Not Confirmed"
               data={acceptedPendingData}
-             selectedStatus={selectedStatus}
+              selectedStatus={selectedStatus}
               setSelectedStatus={setSelectedStatus}
-            setConfirmationStatus={setConfirmationStatus}
-               onClose={() => {
+              setConfirmationStatus={setConfirmationStatus}
+              callStatus="Accept"
+              CallconfirmationStatus="Call Confirmation Pending at Client End"
+              onClose={() => {
                 setSelectedStatus(null);
                 setConfirmationStatus(null);
               }}
-               
             />
           )}
           {loading ? (
@@ -483,10 +488,12 @@ handleApplyFilters();
             <TableSection
               title="Accepted And Client Confirmed"
               data={acceptedConfirmedData}
-             selectedStatus={selectedStatus}
+              selectedStatus={selectedStatus}
               setSelectedStatus={setSelectedStatus}
-            setConfirmationStatus={setConfirmationStatus}
-               onClose={() => {
+              setConfirmationStatus={setConfirmationStatus}
+              callStatus="Accept"
+              CallconfirmationStatus="Call Confirmed by Client"
+              onClose={() => {
                 setSelectedStatus(null);
                 setConfirmationStatus(null);
               }}
@@ -508,10 +515,12 @@ handleApplyFilters();
             <TableSection
               title="Call Added and Not Scheduled"
               data={addedNotScheduledData}
-             selectedStatus={selectedStatus}
+              selectedStatus={selectedStatus}
               setSelectedStatus={setSelectedStatus}
-            setConfirmationStatus={setConfirmationStatus}
-               onClose={() => {
+              setConfirmationStatus={setConfirmationStatus}
+              callStatus="Consultant Assigned"
+              CallconfirmationStatus=""
+              onClose={() => {
                 setSelectedStatus(null);
                 setConfirmationStatus(null);
               }}
@@ -533,10 +542,12 @@ handleApplyFilters();
             <TableSection
               title="Consultant Rejected"
               data={consultantRejectedData}
-             selectedStatus={selectedStatus}
+              selectedStatus={selectedStatus}
               setSelectedStatus={setSelectedStatus}
-            setConfirmationStatus={setConfirmationStatus}
-               onClose={() => {
+              setConfirmationStatus={setConfirmationStatus}
+              callStatus="Reject"
+              CallconfirmationStatus=""
+              onClose={() => {
                 setSelectedStatus(null);
                 setConfirmationStatus(null);
               }}
@@ -558,10 +569,12 @@ handleApplyFilters();
             <TableSection
               title="Completed"
               data={callCompletedData}
-             selectedStatus={selectedStatus}
+              selectedStatus={selectedStatus}
               setSelectedStatus={setSelectedStatus}
-            setConfirmationStatus={setConfirmationStatus}
-               onClose={() => {
+              setConfirmationStatus={setConfirmationStatus}
+              callStatus="Completed"
+              CallconfirmationStatus=""
+              onClose={() => {
                 setSelectedStatus(null);
                 setConfirmationStatus(null);
               }}
@@ -583,10 +596,12 @@ handleApplyFilters();
             <TableSection
               title="Rescheduled Call"
               data={rescheduledCall}
-             selectedStatus={selectedStatus}
+              selectedStatus={selectedStatus}
               setSelectedStatus={setSelectedStatus}
-            setConfirmationStatus={setConfirmationStatus}
-               onClose={() => {
+              setConfirmationStatus={setConfirmationStatus}
+              callStatus="Rescheduled"
+              CallconfirmationStatus=""
+              onClose={() => {
                 setSelectedStatus(null);
                 setConfirmationStatus(null);
               }}
@@ -608,10 +623,12 @@ handleApplyFilters();
             <TableSection
               title="Reassign Call"
               data={reassignCallData}
-             selectedStatus={selectedStatus}
+              selectedStatus={selectedStatus}
               setSelectedStatus={setSelectedStatus}
-            setConfirmationStatus={setConfirmationStatus}
-               onClose={() => {
+              setConfirmationStatus={setConfirmationStatus}
+              callStatus="Reassign Request"
+              CallconfirmationStatus=""
+              onClose={() => {
                 setSelectedStatus(null);
                 setConfirmationStatus(null);
               }}
@@ -633,10 +650,12 @@ handleApplyFilters();
             <TableSection
               title="External Call"
               data={externalCallData}
-             selectedStatus={selectedStatus}
+              selectedStatus={selectedStatus}
               setSelectedStatus={setSelectedStatus}
-            setConfirmationStatus={setConfirmationStatus}
-               onClose={() => {
+              setConfirmationStatus={setConfirmationStatus}
+              callStatus="External"
+              CallconfirmationStatus=""
+              onClose={() => {
                 setSelectedStatus(null);
                 setConfirmationStatus(null);
               }}
@@ -658,10 +677,12 @@ handleApplyFilters();
             <TableSection
               title="Call Cancelled"
               data={callCancelledData}
-             selectedStatus={selectedStatus}
+              selectedStatus={selectedStatus}
               setSelectedStatus={setSelectedStatus}
-            setConfirmationStatus={setConfirmationStatus}
-               onClose={() => {
+              setConfirmationStatus={setConfirmationStatus}
+              callStatus="Cancelled"
+              CallconfirmationStatus=""
+              onClose={() => {
                 setSelectedStatus(null);
                 setConfirmationStatus(null);
               }}
@@ -683,10 +704,12 @@ handleApplyFilters();
             <TableSection
               title="Client did not join"
               data={clientNotJoinedData}
-             selectedStatus={selectedStatus}
+              selectedStatus={selectedStatus}
               setSelectedStatus={setSelectedStatus}
-            setConfirmationStatus={setConfirmationStatus}
-               onClose={() => {
+              setConfirmationStatus={setConfirmationStatus}
+              callStatus="Client did not join"
+              CallconfirmationStatus=""
+              onClose={() => {
                 setSelectedStatus(null);
                 setConfirmationStatus(null);
               }}

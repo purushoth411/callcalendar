@@ -2,10 +2,12 @@ import React, { useState, useEffect, useRef } from "react";
 import { Bell } from "lucide-react"; // your bell icon
 import { toast } from "react-hot-toast";
 import { useAuth } from "../utils/idb";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Notification = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [notifications, setNotifications] = useState([]);
+  const [notificationCount, setNotificationCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const dropdownRef = useRef(null);
   const { user } = useAuth();
@@ -27,6 +29,7 @@ const Notification = () => {
       const result = await response.json();
       if (result.status) {
         setNotifications(result.data || []);
+        setNotificationCount(result.data.length);
       } else {
         toast.error(result.message || "Failed to fetch notifications");
       }
@@ -37,6 +40,12 @@ const Notification = () => {
       setLoading(false);
     }
   };
+
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    fetchNotifications();
+  }, [pathname]);
 
   // Toggle dropdown and fetch on open
   const toggleDropdown = () => {
@@ -63,6 +72,23 @@ const Notification = () => {
     };
   }, [showDropdown]);
 
+  const navigate = useNavigate();
+
+const handleNotificationClick = async (notif) => {
+  try {
+    await fetch("http://localhost:5000/api/helpers/markAsRead", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ id: notif.id }),
+    });
+    navigate(`/admin/booking_detail/${notif.fld_bookingid}`);
+  } catch (error) {
+    console.error("Failed to mark as read:", error);
+  }
+};
+
   return (
     <div className="relative inline-block text-left" ref={dropdownRef}>
       <button
@@ -72,25 +98,40 @@ const Notification = () => {
         aria-expanded={showDropdown}
         aria-label="Show notifications"
       >
-        <Bell size={20} />
-        {/* Optional: Add badge if you want to show unread count */}
-        {/* <span className="absolute top-0 right-0 inline-flex items-center justify-center px-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">3</span> */}
+        <Bell size={16} />
+        {notificationCount > 0 && (
+          <span
+            className="absolute top-0 right-0 inline-flex items-center justify-center 
+        px-1 text-xs font-bold leading-none text-white bg-red-600 rounded-full
+        transform translate-x-1/2 -translate-y-1/2"
+          >
+            {notificationCount}
+          </span>
+        )}
       </button>
 
       {showDropdown && (
         <div className="origin-top-right absolute right-0 mt-2 w-72 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
           <div className="p-2 max-h-60 overflow-y-auto">
             {loading ? (
-              <p className="text-sm text-gray-500 text-center py-4">
-                Loading...
-              </p>
+              <>
+                {[...Array(5)].map((_, index) => (
+                  <div
+                    key={index}
+                    className="animate-pulse flex flex-col gap-2 border-b last:border-b-0 border-gray-200 px-3 py-2"
+                  >
+                    <div className="h-4 bg-gray-300 rounded w-3/4"></div>
+                    <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                  </div>
+                ))}
+              </>
             ) : notifications.length === 0 ? (
               <p className="text-sm text-gray-500 text-center py-4">
                 No notifications
               </p>
             ) : (
               notifications.map((notif, idx) => (
-                <div
+                <div  onClick={()=>handleNotificationClick(notif)}
                   key={idx}
                   className="border-b last:border-b-0 border-gray-200 px-3 py-2 hover:bg-gray-100 cursor-pointer rounded"
                 >

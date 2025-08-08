@@ -13,6 +13,7 @@ const EditUser = ({
   editData,
   fetchAllUsers,
 }) => {
+  const [isUpdating,setisUpdating]=useState(false);
   const [formData, setFormData] = useState({
     user_id: editData.id || null,
     team_id: formType === "EXECUTIVE" ? "" : [],
@@ -113,6 +114,7 @@ const EditUser = ({
     };
 
     try {
+      setisUpdating(true);
       const res = await fetch(
         `http://localhost:5000/api/users/update/${user_id}`,
         {
@@ -135,6 +137,8 @@ const EditUser = ({
     } catch (error) {
       console.error(error);
       toast("Something went wrong");
+    }finally{
+      setisUpdating(false);
     }
   };
 
@@ -354,8 +358,9 @@ const EditUser = ({
           <button
             className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-[11px] flex items-center gap-1 cursor-pointer"
             onClick={handleSave}
+            disabled={isUpdating}
           >
-            Save
+            {isUpdating ? "Updating...":"Update"}
           </button>
         </div>
       </div>

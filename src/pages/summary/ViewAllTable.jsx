@@ -23,6 +23,7 @@ import {
   ChevronLeft,
   ChevronRight,
   RefreshCcw,
+  ArrowLeft,
 } from "lucide-react";
 
 const badgeMeta = {
@@ -296,6 +297,12 @@ const ViewAllTable = () => {
   const [filteredConsultants, setFilteredConsultants] = useState([]);
   const [crms, setCrms] = useState([]);
   const [consultantType, setConsultantType] = useState("ACTIVE");
+
+  const navigate = useNavigate();
+
+  const handleNavigate = (id) => {
+    navigate(`/admin/booking_detail/${id}`);
+  };
 
   const fetchConsultantsAndCrms = async () => {
     try {
@@ -605,14 +612,25 @@ const ViewAllTable = () => {
   return (
     <div className="container mx-auto px-4 py-6">
       <div className="mb-6 flex justify-between items-center">
-        <h4 className="text-2xl font-bold text-gray-800">Call Summary</h4>
+         <div className="flex justify-start items-center ">
+                <h4 className="text-2xl font-bold text-gray-800">Call Summary <span className="text-sm text-gray-400">{selectedStatus}</span></h4>
+                 <button
+                                                className="border border-gray-500 text-gray-500 hover:text-white px-2 py-1 rounded hover:bg-gray-500 text-sm ml-3  "
+                                                 onClick={handleReload}
+                                              >
+                                                <RefreshCcw size={15} />
+                                              </button>
+                                              </div>
         <div>
+       <div className="flex justify-end gap-2">
           <button
-            className="bg-gray-500 text-white px-4 py-2 rounded text-sm hover:bg-gray-600 transition-colors"
-            onClick={handleReload}
-          >
-            <RefreshCcw size={15} />
-          </button>
+                  onClick={() => navigate(-1)}
+                  className="bg-none hover:bg-gray-600  text-black text-[11px] the_tcn rounded-sm flex items-center space-x-2 transition-colors hover:text-white
+"
+                >
+                  <ArrowLeft className="mr-1" size={12} />
+                  <span>Back</span>
+                </button>
           <button
             className="ml-2 bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600 transition-colors"
             onClick={() => {
@@ -622,6 +640,7 @@ const ViewAllTable = () => {
           >
             {showFilters ? "Hide Filters" : "Show Filters"}
           </button>
+       </div>
         </div>
       </div>
 
@@ -897,12 +916,12 @@ const ViewAllTable = () => {
                             <td
                               className={`px-4 py-3 border-b ${deletedClass}`}
                             >
-                              <a
-                                href={`#/booking_detail/${row.id}`}
-                                className="hover:underline text-blue-600 font-medium"
-                              >
-                                {row.user_name} - {row.fld_client_id}
-                              </a>
+                              <span
+                  onClick={() => handleNavigate(row.id)}
+                  className="hover:underline text-blue-600 font-medium cursor-pointer"
+                >
+                  {row.user_name} - {row.fld_client_id}
+                </span>
                             </td>
                             <td
                               className={`px-4 py-3 border-b ${deletedClass}`}

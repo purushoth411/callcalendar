@@ -11,6 +11,7 @@ const AddUser = ({
   formType,
   teams,
   handleSave,
+  isSubmitting,
 }) => {
   useEffect(() => {
     setFormData({
@@ -275,8 +276,9 @@ const AddUser = ({
           <button
             className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-[11px] flex items-center gap-1 cursor-pointer"
             onClick={handleSave}
+            disabled={isSubmitting}
           >
-            Save
+            {isSubmitting ?"Adding...":"Add"}
           </button>
         </div>
       </div>

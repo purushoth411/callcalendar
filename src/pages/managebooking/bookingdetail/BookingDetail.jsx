@@ -237,17 +237,17 @@ const BookingDetail = () => {
   const getStatusColor = (status) => {
     switch (status) {
       case "Accept":
-        return "#c2f5da";
+        return "#c2f5da"; // greenish
       case "Reject":
-        return "#f5d0cd";
+        return "#f5d0cd"; // reddish
       case "Client did not join":
-        return "#cdd2f5";
+        return "#cdd2f5"; // bluish
       case "Rescheduled":
-        return "#f5f5cd";
+        return "#f5f5cd"; // yellowish
       case "Completed":
-        return "#d2cdf5";
+        return "#d2cdf5"; // purple-ish
       default:
-        return "#f8f8f8";
+        return "#f8f8f8"; // default light gray
     }
   };
 
@@ -386,7 +386,7 @@ const BookingDetail = () => {
           body: JSON.stringify({
             bookingid: bookingId,
             statusByCrm: statusByCrm,
-            user:user
+            user: user,
           }),
         }
       );
@@ -948,9 +948,6 @@ const BookingDetail = () => {
       return;
     }
 
-
-
-
     try {
       setIsProcessing(true);
       setLoaderMessage("Adding Follower...");
@@ -1012,20 +1009,25 @@ const BookingDetail = () => {
     }
 
     // ✅ Confirm only after validation
-    const isConfirmed = window.confirm("Are you sure you want to update booking information?");
+    const isConfirmed = window.confirm(
+      "Are you sure you want to update booking information?"
+    );
     if (!isConfirmed) return;
 
     try {
       setIsProcessing(true);
       setLoaderMessage("Updating External Call...");
 
-      const response = await fetch("http://localhost:5000/api/helpers/updateExternalBookingInfo", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
+      const response = await fetch(
+        "http://localhost:5000/api/helpers/updateExternalBookingInfo",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
 
       const result = await response.json();
       console.log("Response:", result);
@@ -1267,13 +1269,30 @@ const BookingDetail = () => {
                   </select>
                   <button
                     onClick={handleStatusUpdate}
-                    className={`${isSubmitting
+                    className={`${
+                      isSubmitting
                         ? "bg-blue-300 hover:bg-blue-400"
                         : "bg-[#ff6800] hover:bg-orange-600"
-                      } text-white px-4 py-1 rounded-md transition-colors flex`}
+                    } text-white px-4 py-1 rounded-md transition-colors flex`}
                     disabled={isSubmitting}
                   >
-                    {isSubmitting ? "Submitting.." : "Submit"}<svg xmlns="http://www.w3.org/2000/svg" className="pt-1 ml-1" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevrons-right-icon lucide-chevrons-right"><path d="m6 17 5-5-5-5"></path><path d="m13 17 5-5-5-5"></path></svg>
+                    {isSubmitting ? "Submitting.." : "Submit"}
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="pt-1 ml-1"
+                      width="17"
+                      height="17"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="lucide lucide-chevrons-right-icon lucide-chevrons-right"
+                    >
+                      <path d="m6 17 5-5-5-5"></path>
+                      <path d="m13 17 5-5-5-5"></path>
+                    </svg>
                   </button>
                 </div>
               </div>
@@ -1291,20 +1310,28 @@ const BookingDetail = () => {
               externalCallInfo={externalCallInfo}
             />
 
-         
-
-              {/* Reassign to Consultant Form */}
-              {canShowReasignConsultant && (
-                <div className=" flex-wrap gap-4 w-[50%] ">
-                  <div className="w-full ">
-                    <label className="block mb-2 font-medium">
-                      Reassign to another Consultant
-                    </label>
-                    <Select
-                      name="consultant_id"
-                      className="react-select-container"
-                      classNamePrefix="react-select"
-                      options={consultantList
+            {/* Reassign to Consultant Form */}
+            {canShowReasignConsultant && (
+              <div className=" flex-wrap gap-4 w-[50%] ">
+                <div className="w-full ">
+                  <label className="block mb-2 font-medium">
+                    Reassign to another Consultant
+                  </label>
+                  <Select
+                    name="consultant_id"
+                    className="react-select-container"
+                    classNamePrefix="react-select"
+                    options={consultantList
+                      .filter(
+                        (consultant) =>
+                          consultant.id !== bookingData.fld_consultantid
+                      )
+                      .map((consultant) => ({
+                        value: consultant.id,
+                        label: consultant.fld_name,
+                      }))}
+                    value={
+                      consultantList
                         .filter(
                           (consultant) =>
                             consultant.id !== bookingData.fld_consultantid
@@ -1312,83 +1339,72 @@ const BookingDetail = () => {
                         .map((consultant) => ({
                           value: consultant.id,
                           label: consultant.fld_name,
-                        }))}
-                      value={
-                        consultantList
-                          .filter(
-                            (consultant) =>
-                              consultant.id !== bookingData.fld_consultantid
-                          )
-                          .map((consultant) => ({
-                            value: consultant.id,
-                            label: consultant.fld_name,
-                          }))
-                          .find(
-                            (option) => option.value === primaryConsultantId
-                          ) || null
-                      }
-                      onChange={(selectedOption) =>
-                        setPrimaryConsultantId(
-                          selectedOption ? selectedOption.value : ""
-                        )
-                      }
-                      placeholder="Select Primary Consultant"
-                      isClearable
+                        }))
+                        .find(
+                          (option) => option.value === primaryConsultantId
+                        ) || null
+                    }
+                    onChange={(selectedOption) =>
+                      setPrimaryConsultantId(
+                        selectedOption ? selectedOption.value : ""
+                      )
+                    }
+                    placeholder="Select Primary Consultant"
+                    isClearable
+                  />
+                </div>
+
+                <div className="w-full  self-end mt-3 justify-end flex">
+                  <button
+                    type="button"
+                    onClick={handleReassignToConsultant}
+                    className="bg-[#ff6800]  text-white px-2 py-1 rounded hover:bg-orange-600"
+                  >
+                    {" "}
+                    Update Consultant{" "}
+                    <i
+                      className="fa fa-arrow-right ml-1"
+                      aria-hidden="true"
+                    ></i>
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Cancel Booking Form */}
+            {canCancelCall && (
+              <>
+                <div className=" flex-wrap gap-4 w-[50%]">
+                  <h5 className="font-semibold mb-3">Call Cancelled</h5>
+                  <div className="w-full ">
+                    <label className="block mb-2">
+                      Comments <span className="text-red-500">*</span>
+                    </label>
+                    <textarea
+                      className="w-full border border-gray-300 rounded px-4 py-2"
+                      value={cancelComment}
+                      onChange={(e) => setCancelComment(e.target.value)}
+                      placeholder="Add Comments"
                     />
                   </div>
 
-                  <div className="w-full  self-end mt-3 justify-end flex">
+                  <div className="w-full  self-end mt-1 justify-end flex">
                     <button
                       type="button"
-                      onClick={handleReassignToConsultant}
-                      className="bg-[#ff6800]  text-white px-2 py-1 rounded hover:bg-orange-600"
+                      onClick={handleCancelBooking}
+                      className="bg-[#ff6800] text-white px-2 py-1 rounded hover:bg-orange-600"
                     >
-                     {" "}
-                      Update Consultant <i
+                      {" "}
+                      Update{" "}
+                      <i
                         className="fa fa-arrow-right ml-1"
                         aria-hidden="true"
                       ></i>
                     </button>
                   </div>
                 </div>
-              )}
-
-              {/* Cancel Booking Form */}
-              {canCancelCall && (
-                <>
-                  
-                  <div className=" flex-wrap gap-4 w-[50%]">
-                    <h5 className="font-semibold mb-3">Call Cancelled</h5>
-                    <div className="w-full ">
-                      <label className="block mb-2">
-                        Comments <span className="text-red-500">*</span>
-                      </label>
-                      <textarea
-                        className="w-full border border-gray-300 rounded px-4 py-2"
-                        value={cancelComment}
-                        onChange={(e) => setCancelComment(e.target.value)}
-                        placeholder="Add Comments"
-                      />
-                    </div>
-
-                    <div className="w-full  self-end mt-1 justify-end flex">
-                      <button
-                        type="button"
-                        onClick={handleCancelBooking}
-                        className="bg-[#ff6800] text-white px-2 py-1 rounded hover:bg-orange-600"
-                      >
-                       {" "}
-                        Update <i
-                          className="fa fa-arrow-right ml-1"
-                          aria-hidden="true"
-                        ></i>
-                      </button>
-                    </div>
-                  </div>
-                </>
-              )}
-              
-            
+              </>
+            )}
 
             <div className="flex gap-3 mt-4">
               <CallUpdateActions
@@ -1424,7 +1440,7 @@ const BookingDetail = () => {
                 sendMessage(message);
               }}
               isMsgSending={isMsgSending}
-            /> 
+            />
             <div className="flex flex-col md:flex-row md:flex-nowrap md:gap-4">
               {/* Overall History - 1/3 width */}
               <div className="w-full md:basis-[35%]">
@@ -1440,8 +1456,6 @@ const BookingDetail = () => {
                 />
               </div>
             </div>
-
-            
           </div>
         </div>
       </div>
