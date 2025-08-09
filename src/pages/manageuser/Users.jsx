@@ -11,6 +11,7 @@ import { formatDate } from "../../helpers/CommonHelper.jsx";
 import SkeletonLoader from "../../components/SkeletonLoader.jsx";
 import { PlusIcon } from "lucide-react";
 import { getSocket } from "../../utils/Socket.jsx";
+import SocketHandler from "../../hooks/SocketHandler.jsx";
 
 
 export default function Users() {
@@ -40,25 +41,27 @@ export default function Users() {
   });
    const socket = getSocket();
 
-
+///socket ////////
 useEffect(() => {
-  const handleAttendanceUpdated = (data) => {
-    console.log("Socket Called");
-    setAllUsers((prevUsers) =>
-      prevUsers.map((user) =>
-        user.id === data.userId
-          ? { ...user, attendance: data.attendance }
-          : user
-      )
-    );
-  };
+  socket.on("userAdded", (newUser) => {
+   setAllUsers((prev) => {
+  const list = Array.isArray(prev) ? prev : [];
+  if (list.some(user => user.id == newUser.id)) {
+    return list;
+  }
+  return [...list, newUser];
+});
 
-  socket.on("updatedAttendance", handleAttendanceUpdated);
+  });
 
   return () => {
-    socket.off("updatedAttendance", handleAttendanceUpdated);
+    socket.off("userAdded");
   };
 }, []);
+
+
+////////socket////////
+
 
 
   useEffect(() => {
@@ -450,6 +453,7 @@ useEffect(() => {
 
   return (
     <div className="">
+      <SocketHandler setAllUsers={setAllUsers} />
       <div className="">
         <div className="">
           {/* Header */}

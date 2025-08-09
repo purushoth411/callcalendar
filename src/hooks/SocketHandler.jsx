@@ -1,58 +1,30 @@
-// components/SocketHandler.jsx
+// SocketHandler.jsx
 import { useEffect } from "react";
 import { getSocket } from "../utils/Socket";
 import { useAuth } from "../utils/idb";
 import {
-  handleBookingCreated,
-  handleTaskUpdated,
-  handleTaskDeleted,
-  handleReminderAdded,
-  tagsUpdated,
-  taskStatusUpdated,
-  taskDeleted,
-  taskMileStoneUpdated,
-  taskUpdated
+  createAttendanceListener,
+  createUserStatusListener
 } from "./SocketListeners";
 
-export default function SocketHandler({ setBookings, page }) {
-  const { user } = useAuth();
+export default function SocketHandler({ setAllUsers, otherSetters = [] }) {
+  const { user,priceDiscoutUsernames  } = useAuth();
   const socket = getSocket();
 
   useEffect(() => {
     if (!user?.id) return;
 
-    const onCreated = handleBookingCreated(user, setBookings, page);
-    const onUpdated = handleTaskUpdated(setBookings);
-    const onDeleted = handleTaskDeleted(setBookings);
-    const onReminder = handleReminderAdded(user, setBookings);
-    const onTagUpdated = tagsUpdated(user, setBookings);
-    const onTaskStatusUpdated = taskStatusUpdated(user, setBookings);
-    const onTaskDeleted = taskDeleted(user, setBookings);
-    const onTaskMileStoneUpdated = taskMileStoneUpdated(user, setBookings);
-    const onTaskUpdated = taskUpdated(user, setBookings);
+    const attendanceHandler = createAttendanceListener(setAllUsers, otherSetters,priceDiscoutUsernames );
+    const statusHandler = createUserStatusListener(setAllUsers, otherSetters,priceDiscoutUsernames );
 
-    socket.on("task_created", onCreated);
-    socket.on("task_updated", onUpdated);
-    socket.on("task_deleted", onDeleted);
-    socket.on("newReminder", onReminder);
-    socket.on("tagsUpdated", onTagUpdated);
-    socket.on("taskStatusUpdated", onTaskStatusUpdated);
-    socket.on("taskDeleted", onTaskDeleted);
-    socket.on("benchmarkupdated", onTaskMileStoneUpdated);
-    socket.on("task_updated", onTaskUpdated);
+    socket.on("updatedAttendance", attendanceHandler);
+    socket.on("updatedUserStatus", statusHandler);
 
     return () => {
-      socket.off("task_created", onCreated);
-      socket.off("task_updated", onUpdated);
-      socket.off("task_deleted", onDeleted);
-      socket.off("newReminder", onReminder);
-      socket.off("tagsUpdated", onTagUpdated);
-      socket.off("taskStatusUpdated", onTaskStatusUpdated);
-      socket.off("taskDeleted", onTaskDeleted);
-      socket.off("benchmarkupdated", onTaskMileStoneUpdated);
-      socket.off("task_updated", onTaskUpdated);
+      socket.off("updatedAttendance", attendanceHandler);
+      socket.off("updatedUserStatus", statusHandler);
     };
-  }, [user?.id]);
+  }, [user?.id, setAllUsers, otherSetters]);
 
   return null;
 }

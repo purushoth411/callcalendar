@@ -4,6 +4,7 @@ import Select from "react-select";
 import { fetchAllSubjectAreas } from "../../helpers/CommonApi";
 import { useAuth } from "../../utils/idb";
 import toast from "react-hot-toast";
+import SocketHandler from "../../hooks/SocketHandler";
 
 const EditSubjectArea = ({
   selectedRow,
@@ -152,6 +153,7 @@ const EditSubjectArea = ({
         className="fixed top-0 right-0 w-full sm:w-[90%] md:w-[35%] lg:w-[25%] h-full bg-white shadow-lg z-50 overflow-y-auto p-6"
       >
         {/* Header */}
+        <SocketHandler otherSetters={[{ setFn: setConsultants, isBookingList: false,subjectArea:formData.subject_area }]} />
         <div className="flex justify-between items-center mb-4">
           <h4 className="text-lg font-semibold">Edit Subject Area</h4>
           <button

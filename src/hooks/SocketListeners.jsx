@@ -1,85 +1,146 @@
-// utils/socketListeners.js
-
-export const handleBookingCreated = (user, setBookings, page) => (task) => {
-
-  const isSuperAdmin = user?.fld_admin_type === "SUPERADMIN";
-  const isAssignedToUser = parseInt(task.fld_assign_to) === parseInt(user?.id);
-  const isCreatedByUser = parseInt(task.fld_added_by) === parseInt(user?.id);
-  const isFollower = task?.fld_follower
-    ?.split(",")
-    .map((id) => id.trim())
-    .includes(String(user?.id));
-
-  // Conditions based on page
-  if (
-    ((page === "dashboard" || page === "teamtasks") && isSuperAdmin) ||
-    (page === "createdbyme" && isCreatedByUser) ||
-    (page === "following" && isFollower) ||
-    isAssignedToUser
-  ) {
-    setTasks((prev) => [task, ...prev]);
+// Shared criteria checker
+// Shared criteria checker
+const meetsAllCriteria = (
+  data,
+  {
+    isBookingList,
+    subjectArea = "",
+    callRelatedTo = "",
+    consultantType = "",
+    priceDiscoutUsernames = []
   }
+) => {
+  console.log("ConsultantType:", consultantType);
+
+  let statusMatch = true;
+
+  if (consultantType) {
+    // If consultantType is given, match exactly (case-insensitive)
+    statusMatch =
+      consultantType.toUpperCase() === data.status?.toUpperCase();
+  } else {
+    // Default rule if consultantType not given: must be ACTIVE
+    statusMatch = data.status?.toUpperCase() === "ACTIVE";
+  }
+
+  const meetsAttendance =
+    !isBookingList || data.attendance?.toUpperCase() === "PRESENT";
+
+  let meetsExtraCriteria = true;
+
+  // Subject area filtering
+  if (callRelatedTo === "subject_area_related") {
+    meetsExtraCriteria = Array.isArray(data.subject_area)
+      ? data.subject_area.includes(subjectArea)
+      : data.subject_area === subjectArea;
+  }
+
+  // Price & discount filtering
+  else if (callRelatedTo === "price_and_discount_related") {
+    meetsExtraCriteria = priceDiscoutUsernames.includes(data.fld_username);
+  }
+
+  return statusMatch && meetsAttendance && meetsExtraCriteria;
 };
 
-export const handleTaskUpdated = (setTasks) => (updatedTask) => {
-  setTasks((prev) =>
-    prev.map((task) => (task.id === updatedTask.id ? updatedTask : task))
+
+// Helper to update a list based on criteria
+const updateList = (prev, data, criteriaMet) => {
+  if (!criteriaMet) {
+    console.log("Not Adding (Filtered Out)");
+    return prev.filter((c) => c.id != data.id);
+  }
+
+  const exists = prev.some((c) => c.id == data.id);
+  if (!exists) {
+    console.log("Adding");
+    return [
+      ...prev,
+      {
+        id: data.id,
+        fld_email: data.fld_email,
+        fld_name: data.fld_name,
+        fld_permission: data.fld_permission,
+        fld_username: data.fld_username,
+        attendance: data.attendance,
+        status: data.status,
+        subject_area: data.subject_area,
+      },
+    ];
+  }
+
+  return prev.map((c) =>
+    c.id == data.id
+      ? {
+          ...c,
+          attendance: data.attendance,
+          status: data.status,
+          subject_area: data.subject_area,
+        }
+      : c
   );
 };
 
-export const handleTaskDeleted = (setTasks) => (deletedId) => {
-  setTasks((prev) => prev.filter((task) => task.id !== deletedId));
+// Attendance Listener
+export const createAttendanceListener = (
+  setAllUsers,
+  otherSetters,
+  priceDiscoutUsernames
+) => {
+  return (data) => {
+    console.log("Socket Called (Attendance)", data);
+
+    // Update AllUsers attendance
+    if (setAllUsers) {
+      setAllUsers((prev) =>
+        prev.map((user) =>
+          user.id == data.id ? { ...user, attendance: data.attendance } : user
+        )
+      );
+    }
+
+    // Process other setters
+    otherSetters.forEach((params) => {
+      if (!params.setFn) return;
+      params.setFn((prev) =>
+        updateList(
+          prev,
+          data,
+          meetsAllCriteria(data, { ...params, priceDiscoutUsernames })
+        )
+      );
+    });
+  };
 };
 
+// Status Listener
+export const createUserStatusListener = (
+  setAllUsers,
+  otherSetters,
+  priceDiscoutUsernames
+) => {
+  return (data) => {
+    console.log("Socket Called (Status)", data);
 
-export const handleReminderAdded = (user, setTasks) => ({ user_id, task_id }) => {
-  // Only update if the reminder belongs to the current user
-  if (parseInt(user.id) != parseInt(user_id)) return;
+    // Update AllUsers status
+    if (setAllUsers) {
+      setAllUsers((prev) =>
+        prev.map((user) =>
+          user.id == data.id ? { ...user, status: data.status } : user
+        )
+      );
+    }
 
-  setTasks((prev) =>
-    prev.map((task) =>
-      task.task_id == task_id ? { ...task, hasReminder: 1 } : task
-    )
-  );
-};
-export const tagsUpdated = (user, setTasks) => ({  task_id , tag_names, tag_ids}) => {
-  
-  setTasks((prev) =>
-    prev.map((task) =>
-      task.task_id == task_id ? { ...task, tag_names: tag_names, task_tag: tag_ids } : task
-    )
-  );
-};
-export const taskStatusUpdated = (user, setTasks) => ({ fld_task_id, fld_task_status}) => {
-  
-  setTasks((prev) =>
-    prev.map((task) =>
-      task.task_id == fld_task_id ? { ...task, fld_task_status: fld_task_status } : task
-    )
-  );
-};
-
-export const taskDeleted = (user, setTasks) => ({ task_id }) => {
-  setTasks((prev) =>
-    prev.filter((task) => task.task_id !== task_id)
-  );
-};
-
-export const taskMileStoneUpdated = (user, setTasks) => ({ task_id, completed_benchmarks}) => {
-  
-  setTasks((prev) =>
-    prev.map((task) =>
-      task.task_id == task_id ? { ...task, fld_completed_benchmarks: completed_benchmarks } : task
-    )
-  );
-};
-export const taskUpdated = (user, setTasks) => (updatedTask) => {
-
-  setTasks((prevTasks) =>
-    prevTasks.map((task) =>
-      task.task_id === updatedTask.id
-        ? { ...task, ...updatedTask }
-        : task
-    )
-  );
+    // Process other setters
+    otherSetters.forEach((params) => {
+      if (!params.setFn) return;
+      params.setFn((prev) =>
+        updateList(
+          prev,
+          data,
+          meetsAllCriteria(data, { ...params, priceDiscoutUsernames })
+        )
+      );
+    });
+  };
 };

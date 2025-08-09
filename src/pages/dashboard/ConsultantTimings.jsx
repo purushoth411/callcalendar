@@ -3,6 +3,7 @@ import Select from "react-select";
 import toast from "react-hot-toast";
 import { Plus, X } from "lucide-react";
 import { TimeZones } from "../../helpers/TimeZones";
+import SocketHandler from "../../hooks/SocketHandler";
 
 function ConsultantTimings() {
   const [allConsultants, setAllConsultants] = useState([]);
@@ -363,6 +364,7 @@ function ConsultantTimings() {
 
   return (
     <div className="">
+      <SocketHandler otherSetters={[{ setFn: setAllConsultants, isBookingList: false }]} />
       <div className="mb-6">
         <label className="block mb-2 text-sm font-medium text-gray-700">
           Select Consultant

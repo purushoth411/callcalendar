@@ -11,14 +11,7 @@ import moment from "moment";
 import { RefreshCcw } from "lucide-react";
 // import ViewAllTable from "./ViewAllTable";
 
-const crms = [
-  { id: 1, fld_name: "CRM1" },
-  { id: 2, fld_name: "CRM2" },
-];
-const consultants = [
-  { id: 1, fld_name: "Consultant 1", type: "ACTIVE" },
-  { id: 2, fld_name: "Consultant 2", type: "INACTIVE" },
-];
+
 const today = moment().startOf("day");
 const Summary = () => {
   const [filters, setFilters] = useState({
@@ -217,6 +210,7 @@ const Summary = () => {
 
   return (
     <div className="container mx-auto px-4">
+      <SocketHandler otherSetters={[{ setFn: setConsultants, isBookingList: false,consultantType:consultantType },{ setFn: setFilteredConsultants, isBookingList: false,consultantType:consultantType },{ setFn: setCrms, isBookingList: false }]} />
       <div className="mb-6 flex justify-between items-center">
         <div className="flex justify-start items-center ">
           <h4 className="text-2xl font-bold text-gray-800">Call Summary</h4>

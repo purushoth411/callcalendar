@@ -27,6 +27,7 @@ import CallUpdateActions from "./CallUpdateActions";
 import OverallHistory from "./OverallHistory";
 import OtherCalls from "./OtherCalls";
 import CallUpdateOtherActions from "./CallUpdateOtherActions";
+import SocketHandler from "../../../hooks/SocketHandler";
 
 const BookingDetail = () => {
   const navigate = useNavigate();
@@ -1112,6 +1113,7 @@ const BookingDetail = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 p-4">
+       <SocketHandler otherSetters={[{ setFn: setConsultantList, isBookingList: false },{ setFn: setFollowerConsultants, isBookingList: false }]} />
       <div className="max-w-7xl mx-auto">
         <div className="bg-white rounded-lg shadow-sm">
           <div className="p-6">

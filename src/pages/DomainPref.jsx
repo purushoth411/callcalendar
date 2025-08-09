@@ -7,6 +7,8 @@ import $ from "jquery";
 import { X } from "lucide-react";
 import Select from "react-select";
 import SkeletonLoader from "../components/SkeletonLoader";
+import SocketHandler from "../hooks/SocketHandler";
+import { getSocket } from "../utils/Socket";
 
 DataTable.use(DT);
 
@@ -17,6 +19,7 @@ export default function DomainPref() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
   const [editId, setEditId] = useState(null);
+  const [submitting,setSubmitting]=useState(false);
 
   const [formData, setFormData] = useState({
     domain: "",
@@ -27,6 +30,31 @@ export default function DomainPref() {
     pref_5: "",
     pref_6: "",
   });
+
+
+/// socket ////////
+const socket = getSocket();
+
+useEffect(() => {
+  console.log("Socket Called");
+  const handleDomainAdded = (newDomain) => {
+    setDomains((prev) => {
+      const list = Array.isArray(prev) ? prev : [];
+      if (list.some((domain) => domain.id == newDomain.id)) {
+        return list;
+      }
+      return [...list, newDomain];
+    });
+  };
+
+  socket.on("domainAdded", handleDomainAdded);
+
+  return () => {
+    socket.off("domainAdded", handleDomainAdded); // Correct cleanup
+  };
+}, []);
+/// socket ////////
+
 
   useEffect(() => {
     getAllDomains();
@@ -89,6 +117,7 @@ export default function DomainPref() {
     }
 
     try {
+      setSubmitting(true);
       const method = "POST";
       const url = "http://localhost:5000/api/domains/addDomain";
 
@@ -119,6 +148,8 @@ export default function DomainPref() {
     } catch (err) {
       console.error("Save error:", err);
       toast.error("Failed to save");
+    }finally{
+      setSubmitting(false);
     }
   };
 
@@ -130,6 +161,7 @@ export default function DomainPref() {
     }
 
     try {
+      setSubmitting(true);
       const method = "PUT";
       const url = `http://localhost:5000/api/domains/updateDomain/${editId}`;
 
@@ -160,6 +192,8 @@ export default function DomainPref() {
     } catch (err) {
       console.error("Save error:", err);
       toast.error("Failed to save");
+    }finally{
+      setSubmitting(false);
     }
   };
 
@@ -360,6 +394,7 @@ export default function DomainPref() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <SocketHandler otherSetters={[{ setFn: setAllConsultants, isBookingList: false }]} />
       <div className="">
         <div className="p-3 bg-gray-100 rounded  text-[13px]">
           <div className="flex justify-between items-center mb-6">
@@ -528,9 +563,10 @@ export default function DomainPref() {
                 <div className="flex justify-end gap-3 mt-8 pt-6 border-t">
                   <button
                     onClick={handleSave}
+                    disabled={submitting}
                     className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
                   >
-                    Save
+                    {submitting? "Saving...":"Save"}
                   </button>
                 </div>
               </div>
@@ -659,9 +695,10 @@ export default function DomainPref() {
                 <div className="flex justify-end gap-3 mt-8 pt-6 border-t">
                   <button
                     onClick={handleUpdate}
+                    disabled={submitting}
                     className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
                   >
-                    Update
+                    {submitting?"Updating...":"Update"}
                   </button>
                 </div>
               </div>

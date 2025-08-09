@@ -25,6 +25,7 @@ import {
   RefreshCcw,
   ArrowLeft,
 } from "lucide-react";
+import SocketHandler from "../../hooks/SocketHandler";
 
 const badgeMeta = {
   "Call Scheduled": {
@@ -611,6 +612,7 @@ const ViewAllTable = () => {
 
   return (
     <div className="container mx-auto px-4 py-6">
+    <SocketHandler otherSetters={[{ setFn: setConsultants, isBookingList: false,consultantType:consultantType },{ setFn: setFilteredConsultants, isBookingList: false,consultantType:consultantType },{ setFn: setCrms, isBookingList: false }]} />
       <div className="mb-6 flex justify-between items-center">
          <div className="flex justify-start items-center ">
                 <h4 className="text-2xl font-bold text-gray-800">Call Summary <span className="text-sm text-gray-400">{selectedStatus}</span></h4>

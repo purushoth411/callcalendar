@@ -11,6 +11,7 @@ import {
 import { useAuth } from "../../utils/idb";
 import { callRegardingOptions, toastWarning } from "../../helpers/CommonHelper";
 import { useNavigate } from "react-router-dom";
+import SocketHandler from "../../hooks/SocketHandler";
 
 export default function AddBooking({
   user,
@@ -144,7 +145,9 @@ export default function AddBooking({
       fetchCallRequestData();
     }
   }, [decodedBookingId]);
-
+useEffect(()=>{
+  console.log(consultants);
+},[]);
   useEffect(() => {
     const fetchWriterEmails = async () => {
       if (rcCallData?.project_id && rcCallData?.milestone_id) {
@@ -808,6 +811,8 @@ export default function AddBooking({
         className="fixed top-0 right-0 w-[25%] h-full bg-white shadow z-50 overflow-y-auto"
       >
         {/* Header */}
+      <SocketHandler otherSetters={[{ setFn: setConsultants, isBookingList: true,subjectArea:formData.subject_area,callRelatedTo:formData.call_related_to} ]}/>
+
         <div className="flex justify-between items-center px-4 py-3 border-b bg-[#224d68] text-white">
           <h2 className="text-[15px] font-semibold">Add Booking</h2>
           <button
