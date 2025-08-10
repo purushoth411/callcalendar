@@ -1,20 +1,27 @@
-import { useState } from "react";
+import { useEffect } from "react";
 import "./App.css";
 import "./index.css";
 import AppRouter from "./routes/AppRouter";
 import { Toaster } from "react-hot-toast";
-import { AuthProvider } from "./utils/idb.jsx";
+import { useAuth } from "./utils/idb.jsx";
 import { Tooltip } from "react-tooltip";
+import { initSocket } from "./utils/Socket.jsx";
 
 function App() {
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (user?.id) {
+      initSocket(user.id);
+    }
+  }, [user?.id]);
+
   return (
     <>
-      <AuthProvider>
-        <AppRouter />
-      </AuthProvider>
+      <AppRouter />
       <Tooltip id="my-tooltip" />
       <Toaster
-        position="top-center" // updated position
+        position="top-center"
         reverseOrder={false}
         toastOptions={{
           className: "border",

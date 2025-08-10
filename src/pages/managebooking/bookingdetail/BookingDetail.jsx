@@ -28,6 +28,7 @@ import OverallHistory from "./OverallHistory";
 import OtherCalls from "./OtherCalls";
 import CallUpdateOtherActions from "./CallUpdateOtherActions";
 import SocketHandler from "../../../hooks/SocketHandler";
+import { getSocket } from "../../../utils/Socket";
 
 const BookingDetail = () => {
   const navigate = useNavigate();
@@ -57,6 +58,28 @@ const BookingDetail = () => {
   const [followerConsultants, setFollowerConsultants] = useState([]);
   const [hasFollowers, setHasFollowers] = useState(false);
   const [loadingFollowers, setLoadingFollowers] = useState(false);
+
+
+  // ///socket
+  //   useEffect(() => {
+  //   const socket = getSocket();
+
+  //   const handleIncomingNotification = (notif) => {
+      
+  //     toast.success("📩 New message received");
+
+  //     // Add to notifications
+  //     setMessageData((prev) => [notif, ...prev]);
+      
+  //   };
+
+  //   socket.on("notification", handleIncomingNotification);
+
+  //   return () => {
+  //     socket.off("notification", handleIncomingNotification);
+  //   };
+  // }, []);
+
 
   useEffect(() => {
     fetchBookingById(bookingId);

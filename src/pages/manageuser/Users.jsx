@@ -13,7 +13,6 @@ import { PlusIcon } from "lucide-react";
 import { getSocket } from "../../utils/Socket.jsx";
 import SocketHandler from "../../hooks/SocketHandler.jsx";
 
-
 export default function Users() {
   const { user, logout } = useAuth();
   const [allUsers, setAllUsers] = useState([]);
@@ -39,38 +38,48 @@ export default function Users() {
     subadmin_type: "",
     permissions: [],
   });
-   const socket = getSocket();
+  const socket = getSocket();
 
-///socket ////////
-useEffect(() => {
-  socket.on("userAdded", (newUser) => {
-   setAllUsers((prev) => {
-  const list = Array.isArray(prev) ? prev : [];
-  if (list.some(user => user.id == newUser.id)) {
-    return list;
-  }
-  return [...list, newUser];
-});
+  ///socket ////////
 
-  });
+  useEffect(() => {
+    const handleUserAdded = (newUser) => {
+      console.log("Socket Called - User Added");
+      setAllUsers((prev) => {
+        const list = Array.isArray(prev) ? prev : [];
+        if (list.some((user) => user.id == newUser.id)) {
+          return list;
+        }
+        return [...list, newUser];
+      });
+    };
 
-  return () => {
-    socket.off("userAdded");
-  };
-}, []);
+    const handleUserUpdated = (updatedUser) => {
+      console.log("Socket Called - User Updated");
+      setAllUsers((prev) => {
+        const list = Array.isArray(prev) ? prev : [];
+        return list.map((user) =>
+          user.id == updatedUser.id ? updatedUser : user
+        );
+      });
+    };
 
+    socket.on("userAdded", handleUserAdded);
+    socket.on("userUpdated", handleUserUpdated);
 
-////////socket////////
+    return () => {
+      socket.off("userAdded", handleUserAdded);
+      socket.off("userUpdated", handleUserUpdated);
+    };
+  }, [user.id]);
 
-
+  ////////socket////////
 
   useEffect(() => {
     fetchAllUsers();
     getAllTeams();
     getUserCount();
   }, []);
-
-
 
   useEffect(() => {
     // Filter users based on selected type

@@ -1,9 +1,11 @@
-// socket.jsx (Singleton for Socket Connection)
+// socket.jsx
 import { io } from "socket.io-client";
 
 let socket;
+let currentUserId = null;
 
-export const getSocket = () => {
+// Initialize or return existing socket
+export const initSocket = (userId) => {
   if (!socket) {
     socket = io("http://localhost:5000", {
       reconnection: true,
@@ -14,35 +16,42 @@ export const getSocket = () => {
       autoConnect: true,
     });
 
-    // Connected
     socket.on("connect", () => {
       console.log("✅ Socket connected:", socket.id);
+      if (userId) {
+        socket.emit("registerUser", userId);
+      }
     });
 
-    // Disconnected
     socket.on("disconnect", (reason) => {
       console.warn("❌ Socket disconnected:", reason);
-     
     });
 
-    // Reconnect attempt
-    socket.on("reconnect_attempt", (attempt) => {
-      console.log(`🔁 Reconnect attempt #${attempt}`);
-    });
-
-    // Reconnect error
     socket.on("connect_error", (err) => {
       console.error("🚫 Socket connection error:", err.message);
     });
+  } else if (userId && userId !== currentUserId) {
+    // If userId changed, update registration
+    socket.emit("registerUser", userId);
   }
 
+  currentUserId = userId;
   return socket;
 };
 
-// Optional: Reset socket if needed
+// Always returns socket instance — if not initialized, initialize without userId
+export const getSocket = () => {
+  if (!socket) {
+    // initialize socket without userId - you can later emit registerUser separately
+    socket = io("http://localhost:5000");
+  }
+  return socket;
+};
+
 export const disconnectSocket = () => {
   if (socket) {
     socket.disconnect();
     socket = null;
+    currentUserId = null;
   }
 };

@@ -9,10 +9,10 @@ import {
 
 export default function SocketHandler({ setAllUsers, otherSetters = [] }) {
   const { user,priceDiscoutUsernames  } = useAuth();
-  const socket = getSocket();
-
+ 
   useEffect(() => {
     if (!user?.id) return;
+     const socket = getSocket();
 
     const attendanceHandler = createAttendanceListener(setAllUsers, otherSetters,priceDiscoutUsernames );
     const statusHandler = createUserStatusListener(setAllUsers, otherSetters,priceDiscoutUsernames );

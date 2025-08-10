@@ -7,6 +7,8 @@ import $ from "jquery";
 import { PlusIcon, X, XIcon } from "lucide-react";
 import Select from "react-select";
 import SkeletonLoader from "../components/SkeletonLoader";
+import { getSocket } from "../utils/Socket";
+import { useAuth } from "../utils/idb";
 
 DataTable.use(DT);
 
@@ -21,6 +23,68 @@ export default function Teams() {
   const [formData, setFormData] = useState({
     team: "",
   });
+
+  const {user}=useAuth();
+
+
+  /// socket ////////
+  const socket = getSocket();
+  
+  useEffect(() => {
+    const handleTeamAdded = (newTeam) => {
+      console.log("Socket Called - Team Added");
+      setTeams((prev) => {
+        const list = Array.isArray(prev) ? prev : [];
+        if (list.some((team) => team.id == newTeam.id)) {
+          return list;
+        }
+        return [...list, newTeam];
+      });
+    };
+  
+    const handleTeamUpdated = (updatedTeam) => {
+      console.log("Socket Called - Team Updated");
+      setTeams((prev) => {
+        const list = Array.isArray(prev) ? prev : [];
+        return list.map((team) =>
+          team.id == updatedTeam.id ? updatedTeam : team
+        );
+      });
+    };
+  
+    socket.on("teamAdded", handleTeamAdded);
+    socket.on("teamUpdated", handleTeamUpdated);
+  
+    return () => {
+      socket.off("teamAdded", handleTeamAdded);
+      socket.off("teamUpdated", handleTeamUpdated);
+    };
+  }, [user.id]);
+  useEffect(() => {
+    const handleTeamDeleted = ({ id }) => {
+      console.log("Socket Called - Team Deleted");
+      setTeams((prev) => prev.filter((team) => team.id != id));
+    };
+  
+    const handleTeamStatusUpdated = (updatedTeam) => {
+      console.log("Socket Called - Team Status Updated");
+      setTeams((prev) =>
+        prev.map((team) =>
+          team.id == updatedTeam.id ? updatedTeam : team
+        )
+      );
+    };
+  
+    socket.on("teamDeleted", handleTeamDeleted);
+    socket.on("teamStatusUpdated", handleTeamStatusUpdated);
+  
+    return () => {
+      socket.off("teamDeleted", handleTeamDeleted);
+      socket.off("teamStatusUpdated", handleTeamStatusUpdated);
+    };
+  }, [user.id]);
+  
+  /// socket ////////
 
   useEffect(() => {
     getAllTeams();

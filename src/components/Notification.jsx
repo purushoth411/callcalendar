@@ -3,6 +3,7 @@ import { Bell } from "lucide-react"; // your bell icon
 import { toast } from "react-hot-toast";
 import { useAuth } from "../utils/idb";
 import { useLocation, useNavigate } from "react-router-dom";
+import { getSocket } from "../utils/Socket";
 
 const Notification = () => {
   const [showDropdown, setShowDropdown] = useState(false);
@@ -11,6 +12,32 @@ const Notification = () => {
   const [loading, setLoading] = useState(false);
   const dropdownRef = useRef(null);
   const { user } = useAuth();
+
+  // Listen to socket notifications
+useEffect(() => {
+  if (!user?.id) return;
+
+  const socket = getSocket();
+  if (!socket) {
+    console.error("Socket not initialized");
+    return;
+  }
+
+  const handleIncomingNotification = (notif) => {
+    console.log("Notification socket called");
+    toast.success("📩 New message received");
+
+    setNotifications((prev) => [notif, ...prev]);
+    setNotificationCount((prev) => prev + 1);
+  };
+
+  socket.on("notification", handleIncomingNotification);
+
+  return () => {
+    socket.off("notification", handleIncomingNotification);
+  };
+}, [user.id]);
+
 
   // Fetch notifications from API
   const fetchNotifications = async () => {

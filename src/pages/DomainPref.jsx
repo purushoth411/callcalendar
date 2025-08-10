@@ -9,6 +9,7 @@ import Select from "react-select";
 import SkeletonLoader from "../components/SkeletonLoader";
 import SocketHandler from "../hooks/SocketHandler";
 import { getSocket } from "../utils/Socket";
+import { useAuth } from "../utils/idb";
 
 DataTable.use(DT);
 
@@ -20,6 +21,7 @@ export default function DomainPref() {
   const [showEditForm, setShowEditForm] = useState(false);
   const [editId, setEditId] = useState(null);
   const [submitting,setSubmitting]=useState(false);
+  const {user}=useAuth();
 
   const [formData, setFormData] = useState({
     domain: "",
@@ -36,8 +38,8 @@ export default function DomainPref() {
 const socket = getSocket();
 
 useEffect(() => {
-  console.log("Socket Called");
   const handleDomainAdded = (newDomain) => {
+    console.log("Socket Called - Domain Added");
     setDomains((prev) => {
       const list = Array.isArray(prev) ? prev : [];
       if (list.some((domain) => domain.id == newDomain.id)) {
@@ -47,12 +49,48 @@ useEffect(() => {
     });
   };
 
+  const handleDomainUpdated = (updatedDomain) => {
+    console.log("Socket Called - Domain Updated");
+    setDomains((prev) => {
+      const list = Array.isArray(prev) ? prev : [];
+      return list.map((domain) =>
+        domain.id == updatedDomain.id ? updatedDomain : domain
+      );
+    });
+  };
+
   socket.on("domainAdded", handleDomainAdded);
+  socket.on("domainUpdated", handleDomainUpdated);
 
   return () => {
-    socket.off("domainAdded", handleDomainAdded); // Correct cleanup
+    socket.off("domainAdded", handleDomainAdded);
+    socket.off("domainUpdated", handleDomainUpdated);
   };
 }, []);
+useEffect(() => {
+  const handleDomainDeleted = ({ id }) => {
+    console.log("Socket Called - Domain Deleted");
+    setDomains((prev) => prev.filter((domain) => domain.id != id));
+  };
+
+  const handleDomainStatusUpdated = (updatedDomain) => {
+    console.log("Socket Called - Domain Status Updated");
+    setDomains((prev) =>
+      prev.map((domain) =>
+        domain.id == updatedDomain.id ? updatedDomain : domain
+      )
+    );
+  };
+
+  socket.on("domainDeleted", handleDomainDeleted);
+  socket.on("domainStatusUpdated", handleDomainStatusUpdated);
+
+  return () => {
+    socket.off("domainDeleted", handleDomainDeleted);
+    socket.off("domainStatusUpdated", handleDomainStatusUpdated);
+  };
+}, [user.id]);
+
 /// socket ////////
 
 
