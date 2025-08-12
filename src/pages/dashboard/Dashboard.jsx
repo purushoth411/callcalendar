@@ -59,7 +59,7 @@ function Dashboard() {
 
   const submitAndRedirect = (status) => {
     console.log("Redirect to", status);
-    // e.g. 
+    
     navigate(`/bookings/${status}`);
   };
 

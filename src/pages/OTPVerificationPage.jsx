@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Calendar, Clock, User, Mail, Building, Phone } from 'lucide-react';
+import { Calendar, Clock, User, Mail, Building, Phone, AlertTriangle } from 'lucide-react';
+import toast, { Toaster } from 'react-hot-toast';
 
 const OTPVerificationPage = () => {
   // State management
   const [otp, setOtp] = useState(['', '', '', '']);
   const [loading, setLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
-  const [message, setMessage] = useState('');
-  const [messageType, setMessageType] = useState('');
   const [urlStatus, setUrlStatus] = useState('');
   const [bookingData, setBookingData] = useState({
     id: '',
@@ -59,7 +58,7 @@ const OTPVerificationPage = () => {
 
       const data = await response.json();
 
-      if (data.status ) {
+      if (data.status) {
         setBookingData({
           id: data.booking.id,
           name: data.booking.fld_name,
@@ -82,12 +81,14 @@ const OTPVerificationPage = () => {
         }
         
         setUrlStatus('Valid');
+      //  toast.success('Booking details loaded successfully!');
       } else {
         setUrlStatus('Expired');
       }
     } catch (error) {
       console.error('Error fetching booking data:', error);
       setUrlStatus('Expired');
+      toast.error('Failed to load booking details');
     } finally {
       setPageLoading(false);
     }
@@ -133,65 +134,74 @@ const OTPVerificationPage = () => {
   };
 
   // Validate and submit OTP
-  const handleSubmit = async () => {
-    const otpString = otp.join('');
-    const { bookingId } = getUrlParams();
-    
-    if (otpString.length !== 4) {
-      setMessage('Please Enter Complete OTP');
-      setMessageType('error');
-      return;
-    }
+const handleSubmit = async () => {
+  const otpString = otp.join('');
+  const { bookingId } = getUrlParams();
+  
+  if (otpString.length !== 4) {
+    toast.error('Please Enter Complete OTP');
+    return;
+  }
 
-    setLoading(true);
-    setMessage('Please Wait!');
-    setMessageType('info');
+  setLoading(true);
+  const loadingToast = toast.loading('Please Wait!');
 
-    try {
-      const response = await fetch('/api/validateotp', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          str2: otpString,
-          booking_id: bookingId,
-          verify_otp_url: bookingData.verifyOtpUrl
-        })
+  try {
+    const response = await fetch('https://callback-2suo.onrender.com/api/helpers/validateOtp', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        str2: otpString,
+        booking_id: bookingId,
+        verify_otp_url: bookingData.verifyOtpUrl
+      })
+    });
+
+    const result = await response.json(); // always JSON
+
+    toast.dismiss(loadingToast);
+
+    if (!result.status && result.message === "error") {
+      toast.error('Something Went Wrong Please Try Again Later!');
+    } 
+    else if (!result.status && result.message === "other_confirmed") {
+      toast('Unfortunately, the time slot has already been booked due to a slight delay in accepting the call. I truly appreciate your flexibility, and we look forward to an alternate suitable time for us to connect soon!\n\nThank you for your understanding!', {
+        icon: '⚠️',
+        duration: 8000,
+        style: {
+          background: '#FEF3C7',
+          color: '#92400E',
+          border: '1px solid #F59E0B',
+          maxWidth: '500px',
+        }
       });
-
-      const result = await response.text();
-      
-      if (result === 'error') {
-        setMessage('Something Went Wrong Please Try Again Later!');
-        setMessageType('error');
-      } else if (result === 'other_confirmed') {
-        setMessage('Unfortunately, the time slot has already been booked due to a slight delay in accepting the call. I truly appreciate your flexibility, and we look forward to an alternate suitable time for us to connect soon!\n\nThank you for your understanding!');
-        setMessageType('warning');
-        setTimeout(() => {
-          window.location.reload();
-        }, 5000);
-      } else if (result === 'fail') {
-        setMessage('Invalid OTP!');
-        setMessageType('error');
-      } else {
-        setMessage('OTP Verified Successfully');
-        setMessageType('success');
-        
-        // Redirect to booking details
-        setTimeout(() => {
-          window.location.href = `/booking_details/${result}`;
-        }, 1000);
-      }
-    } catch (error) {
-      console.error('Error validating OTP:', error);
-      setMessage('Something Went Wrong Please Try Again Later!');
-      setMessageType('error');
-    } finally {
-      setLoading(false);
-      setTimeout(() => setMessage(''), 5000);
+      setTimeout(() => {
+        window.location.reload();
+      }, 8000);
+    } 
+    else if (!result.status && result.message === "fail") {
+      toast.error('Invalid OTP!');
+    } 
+    else if (result.status) {
+      toast.success('OTP Verified Successfully');
+      setTimeout(() => {
+        window.location.href = `/booking_details/${result.bookingId}`;
+      }, 1000);
+    } 
+    else {
+      toast.error('Something Went Wrong Please Try Again Later!');
     }
-  };
+
+  } catch (error) {
+    console.error('Error validating OTP:', error);
+    toast.error('Something Went Wrong Please Try Again Later!');
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const getDateParts = () => {
     const formatted = formatDate(bookingData.bookingDate);
@@ -205,48 +215,146 @@ const OTPVerificationPage = () => {
 
   const { day, month, year } = getDateParts();
 
-  const MessageAlert = ({ message, type }) => {
-    if (!message) return null;
-    
-    const bgColor = {
-      error: 'bg-red-100 text-red-700 border-red-200',
-      success: 'bg-green-100 text-green-700 border-green-200',
-      info: 'bg-blue-100 text-blue-700 border-blue-200',
-      warning: 'bg-yellow-100 text-yellow-700 border-yellow-200'
-    }[type] || 'bg-gray-100 text-gray-700 border-gray-200';
+  // Skeleton Loader Component
+  const SkeletonLoader = () => (
+    <div className="min-h-screen bg-gray-100 font-sans">
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Left Column Skeleton */}
+          <div className="lg:w-2/3">
+            <div className="mb-6">
+              <div className="h-8 bg-gray-300 rounded w-48 mb-6 animate-pulse"></div>
+              
+              {/* Calendar Card Skeleton */}
+              <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-4">
+                <div className="flex flex-col md:flex-row">
+                  <div className="md:w-1/4 bg-gray-200 p-6 flex flex-col items-center justify-center relative min-h-44 animate-pulse">
+                    <div className="w-16 h-16 bg-gray-300 rounded mb-2"></div>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                      <div className="bg-gray-400 px-2 py-1 rounded-t w-12 h-6"></div>
+                      <div className="bg-gray-300 px-4 py-2 w-16 h-10"></div>
+                      <div className="bg-gray-300 px-2 pb-2 rounded-b w-12 h-6"></div>
+                    </div>
+                  </div>
+                  <div className="md:w-1/2 p-6 border-x border-gray-200">
+                    <div className="h-6 bg-gray-300 rounded w-3/4 mb-4 animate-pulse"></div>
+                    <div className="space-y-2">
+                      <div className="h-4 bg-gray-300 rounded w-1/2 animate-pulse"></div>
+                    </div>
+                  </div>
+                  <div className="md:w-1/2 p-6">
+                    <div className="h-6 bg-gray-300 rounded w-20 mb-2 animate-pulse"></div>
+                    <div className="h-4 bg-gray-300 rounded w-32 mb-3 animate-pulse"></div>
+                    <div className="h-3 bg-gray-300 rounded w-24 mb-2 animate-pulse"></div>
+                    <div className="h-4 bg-gray-300 rounded w-40 animate-pulse"></div>
+                    <div className="h-3 bg-gray-300 rounded w-24 animate-pulse"></div>
+                  </div>
+                </div>
+              </div>
 
-    // Show loading spinner while fetching data
-  if (pageLoading) {
-    return (
-      <div className="min-h-screen bg-gray-100 font-sans flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-red-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading...</p>
+              {/* Email Template Skeleton */}
+              <div className="bg-white rounded-lg shadow-lg p-6">
+                <div className="bg-gray-300 h-4 rounded-t-lg -mx-6 -mt-6 mb-6 animate-pulse"></div>
+                <div className="space-y-4">
+                  <div className="h-4 bg-gray-300 rounded w-32 animate-pulse"></div>
+                  <div className="h-4 bg-gray-300 rounded w-full animate-pulse"></div>
+                  <div className="h-4 bg-gray-300 rounded w-3/4 animate-pulse"></div>
+                  <div className="h-4 bg-gray-300 rounded w-1/2 animate-pulse"></div>
+                  <div className="h-4 bg-gray-300 rounded w-full animate-pulse"></div>
+                  <div className="h-4 bg-gray-300 rounded w-2/3 animate-pulse"></div>
+                  <div className="h-4 bg-gray-300 rounded w-20 animate-pulse"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column Skeleton */}
+          <div className="lg:w-1/3">
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <div className="text-center">
+                <div className="h-6 bg-gray-300 rounded w-3/4 mx-auto mb-2 animate-pulse"></div>
+                <div className="h-4 bg-gray-300 rounded w-1/2 mx-auto mb-3 animate-pulse"></div>
+                <div className="h-4 bg-gray-300 rounded w-2/3 mx-auto mb-6 animate-pulse"></div>
+                
+                <div className="flex justify-center gap-2 mb-4">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div key={i} className="w-12 h-12 bg-gray-300 rounded-lg animate-pulse"></div>
+                  ))}
+                </div>
+                
+                <div className="h-10 bg-gray-300 rounded-full w-24 mx-auto animate-pulse"></div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
+    </div>
+  );
+
+  // Show loading skeleton while fetching data
+  if (pageLoading) {
+    return (
+      <>
+        <SkeletonLoader />
+        <Toaster position="top-center" reverseOrder={false} />
+      </>
     );
   }
 
   // Show expired message if URL is invalid
   if (urlStatus === 'Expired') {
     return (
-      <div className="min-h-screen bg-gray-100 font-sans">
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex justify-center">
-            <div className="bg-white rounded-lg shadow-lg p-8 text-center">
-              <h1 className="text-2xl font-bold text-red-600 mb-4">Link Expired</h1>
-              <p className="text-gray-600">This verification link is no longer valid.</p>
+      <>
+        <div className="min-h-screen bg-gray-100 font-sans">
+          <div className="container mx-auto px-4 py-8">
+            <div className="flex justify-center">
+              <div className="bg-white rounded-lg shadow-lg overflow-hidden max-w-md w-full">
+                {/* Danger header */}
+                <div className="bg-red-600 px-6 py-4">
+                  <div className="flex items-center">
+                    <AlertTriangle className="w-8 h-8 text-white mr-3" />
+                    <h1 className="text-2xl font-bold text-white">Link Expired</h1>
+                  </div>
+                </div>
+                
+                {/* Content */}
+                <div className="p-6">
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+                    <div className="flex items-center">
+                      <AlertTriangle className="w-5 h-5 text-red-600 mr-2" />
+                      <span className="text-red-800 font-medium">Access Denied</span>
+                    </div>
+                    <p className="text-red-700 mt-2">
+                      This verification link is no longer valid or has expired.
+                    </p>
+                  </div>
+                  
+                  <div className="text-center">
+                    <p className="text-gray-600 mb-4">
+                      Please contact support or request a new verification link to continue.
+                    </p>
+                    {/* <button 
+                      onClick={() => window.location.href = '/'}
+                      className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition-colors"
+                    >
+                      Go Back Home
+                    </button> */}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
+          
+          <footer className="bg-gray-900 text-white py-4 fixed bottom-0 w-full">
+            <div className="container mx-auto px-4">
+              <div className="text-sm">
+                All Rights Reserved, Rapid Collaborate, (c) Copyright 2024.
+              </div>
+            </div>
+          </footer>
         </div>
-        <footer className="bg-gray-900 text-white py-4 fixed bottom-0 w-full">
-          <div className="container mx-auto px-4">
-            <div className="text-sm">
-              All Rights Reserved, Rapid Collaborate, (c) Copyright 2024.
-            </div>
-          </div>
-        </footer>
-      </div>
+        <Toaster position="top-center" reverseOrder={false} />
+      </>
     );
   }
 
@@ -257,145 +365,140 @@ const OTPVerificationPage = () => {
   }
 
   return (
-      <div className={`border rounded-lg p-3 mb-4 ${bgColor}`}>
-        {message}
-      </div>
-    );
-  };
-
-  return (
-    <div className="min-h-screen bg-gray-100 font-sans">
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Left Column - Call Summary */}
-          <div className="lg:w-2/3">
-            <div className="mb-6">
-              <h1 className="text-2xl font-bold text-gray-800 mb-6">Call Summary</h1>
-              
-              {/* Calendar Card */}
-              <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-4">
-                <div className="flex flex-col md:flex-row">
-                  {/* Calendar Visual */}
-                  <div className="md:w-1/4 bg-gray-200 p-6 flex flex-col items-center justify-center relative min-h-44">
-                    <Calendar className="w-16 h-16 text-gray-600 mb-2" />
-                    <div className="absolute inset-0 flex flex-col items-center justify-center">
-                      <span className="text-white font-medium text-sm bg-red-500 px-2 py-1 rounded-t">
-                        {month}
-                      </span>
-                      <span className="text-2xl font-bold text-gray-800 bg-white px-4 py-2">
-                        {day}
-                      </span>
-                      <span className="text-xs font-bold text-gray-600 bg-white px-2 pb-2 rounded-b">
-                        {year}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Meeting Details */}
-                  <div className="md:w-1/2 p-6 border-x border-gray-200">
-                    <h3 className="font-semibold text-lg mb-4">{bookingData.callRegarding}</h3>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex items-center">
-                        <span className="text-gray-500 w-20">Timezone</span>
-                        <span>{bookingData.timezone}</span>
+    <>
+      <div className="min-h-screen bg-gray-100 font-sans">
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex flex-col lg:flex-row gap-8">
+            {/* Left Column - Call Summary */}
+            <div className="lg:w-2/3">
+              <div className="mb-6">
+                <h1 className="text-2xl font-bold text-gray-800 mb-6">Call Summary</h1>
+                
+                {/* Calendar Card */}
+                <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-4">
+                  <div className="flex flex-col md:flex-row">
+                    {/* Calendar Visual */}
+                    <div className="md:w-1/4 bg-gray-200 p-6 flex flex-col items-center justify-center relative min-h-44">
+                      <Calendar className="w-16 h-16 text-gray-600 mb-2" />
+                      <div className="absolute inset-0 flex flex-col items-center justify-center">
+                        <span className="text-white font-medium text-sm bg-red-500 px-2 py-1 rounded-t">
+                          {month}
+                        </span>
+                        <span className="text-2xl font-bold text-gray-800 bg-white px-4 py-2">
+                          {day}
+                        </span>
+                        <span className="text-xs font-bold text-gray-600 bg-white px-2 pb-2 rounded-b">
+                          {year}
+                        </span>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Agenda */}
-                  <div className="md:w-1/2 p-6">
-                    <h3 className="font-semibold text-lg mb-2">Agenda</h3>
-                    <p className="text-sm text-gray-600 mb-3">{formatDate(bookingData.bookingDate)}</p>
-                    <p className="text-xs text-gray-500 italic mb-2">No Earlier Events</p>
-                    <p className="text-sm font-medium">{bookingData.bookingSlot} {bookingData.callRegarding}</p>
-                    <p className="text-xs text-gray-500 italic">No Later Events</p>
+                    {/* Meeting Details */}
+                    <div className="md:w-1/2 p-6 border-x border-gray-200">
+                      <h3 className="font-semibold text-lg mb-4">{bookingData.callRegarding}</h3>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex items-center">
+                          <span className="text-gray-500 w-20">Timezone</span>
+                          <span>{bookingData.timezone}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Agenda */}
+                    <div className="md:w-1/2 p-6">
+                      <h3 className="font-semibold text-lg mb-2">Agenda</h3>
+                      <p className="text-sm text-gray-600 mb-3">{formatDate(bookingData.bookingDate)}</p>
+                      <p className="text-xs text-gray-500 italic mb-2">No Earlier Events</p>
+                      <p className="text-sm font-medium">{bookingData.bookingSlot} {bookingData.callRegarding}</p>
+                      <p className="text-xs text-gray-500 italic">No Later Events</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Email Template */}
+                <div className="bg-white rounded-lg shadow-lg p-6">
+                  <div className="bg-purple-800 h-4 rounded-t-lg -mx-6 -mt-6 mb-6"></div>
+                  <div className="prose max-w-none">
+                    <p className="mb-4">Hi <strong>{bookingData.name}</strong>,</p>
+                    <p className="mb-4">
+                      Your appointment ID: <strong>{bookingData.bookingCode}</strong> has been confirmed. 
+                      Here are the details of your appointment:
+                    </p>
+                    <p className="mb-4">
+                      <em><strong>Topic - {bookingData.callRegarding}</strong></em>
+                    </p>
+                    <p className="mb-4">
+                      <em><strong>
+                        {getDayName(bookingData.bookingDate)} {formatDate(bookingData.bookingDate)}, {bookingData.bookingSlot}, {bookingData.timezone}
+                        <br />
+                        MEETING LINK: <a href={bookingData.joiningLink} className="text-blue-600 hover:underline">
+                          {bookingData.joiningLink}
+                        </a>
+                      </strong></em>
+                    </p>
+                    <p>Thanks,<br />Rapid Collaborate.</p>
                   </div>
                 </div>
               </div>
+            </div>
 
-              {/* Email Template */}
+            {/* Right Column - OTP Verification */}
+            <div className="lg:w-1/3">
               <div className="bg-white rounded-lg shadow-lg p-6">
-                <div className="bg-purple-800 h-4 rounded-t-lg -mx-6 -mt-6 mb-6"></div>
-                <div className="prose max-w-none">
-                  <p className="mb-4">Hi <strong>{bookingData.name}</strong>,</p>
-                  <p className="mb-4">
-                    Your appointment ID: <strong>{bookingData.bookingCode}</strong> has been confirmed. 
-                    Here are the details of your appointment:
+                <div className="text-center">
+                  <h2 className="text-xl font-bold text-gray-800 mb-2">
+                    Securely Confirm Your Appointment with Our Expert
+                  </h2>
+                  <h3 className="text-red-600 text-sm mb-3">
+                    Please enter the one time password to verify your account
+                  </h3>
+                  <p className="text-sm text-gray-600 mb-6">
+                    A code has been sent to your email id {bookingData.email}
                   </p>
-                  <p className="mb-4">
-                    <em><strong>Topic - {bookingData.callRegarding}</strong></em>
-                  </p>
-                  <p className="mb-4">
-                    <em><strong>
-                      {getDayName(bookingData.bookingDate)} {formatDate(bookingData.bookingDate)}, {bookingData.bookingSlot}, {bookingData.timezone}
-                      <br />
-                      MEETING LINK: <a href={bookingData.joiningLink} className="text-blue-600 hover:underline">
-                        {bookingData.joiningLink}
-                      </a>
-                    </strong></em>
-                  </p>
-                  <p>Thanks,<br />Rapid Collaborate.</p>
-                </div>
-              </div>
-            </div>
-          </div>
 
-          {/* Right Column - OTP Verification */}
-          <div className="lg:w-1/3">
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <div className="text-center">
-                <h2 className="text-xl font-bold text-gray-800 mb-2">
-                  Securely Confirm Your Appointment with Our Expert
-                </h2>
-                <h3 className="text-red-600 text-sm mb-3">
-                  Please enter the one time password to verify your account
-                </h3>
-                <p className="text-sm text-gray-600 mb-6">
-                  A code has been sent to your email id {bookingData.email}
-                </p>
+                  <div>
+                    <div className="flex justify-center gap-2 mb-4">
+                      {otp.map((digit, index) => (
+                        <input
+                          key={index}
+                          ref={inputRefs[index]}
+                          type="tel"
+                          maxLength="1"
+                          className="w-12 h-12 text-center border border-gray-300 rounded-lg text-lg font-semibold focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-200"
+                          value={digit}
+                          onChange={(e) => handleOTPChange(index, e.target.value)}
+                          onKeyDown={(e) => handleKeyDown(index, e)}
+                          disabled={loading}
+                        />
+                      ))}
+                    </div>
 
-                <MessageAlert message={message} type={messageType} />
-
-                <div>
-                  <div className="flex justify-center gap-2 mb-4">
-                    {otp.map((digit, index) => (
-                      <input
-                        key={index}
-                        ref={inputRefs[index]}
-                        type="tel"
-                        maxLength="1"
-                        className="w-12 h-12 text-center border border-gray-300 rounded-lg text-lg font-semibold focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-200"
-                        value={digit}
-                        onChange={(e) => handleOTPChange(index, e.target.value)}
-                        onKeyDown={(e) => handleKeyDown(index, e)}
-                        disabled={loading}
-                      />
-                    ))}
+                    <button
+                      onClick={handleSubmit}
+                      disabled={loading}
+                      className="bg-red-600 text-white px-8 py-2 rounded-full hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      {loading ? 'Validating...' : 'Validate'}
+                    </button>
                   </div>
-
-                  <button
-                    onClick={handleSubmit}
-                    disabled={loading}
-                    className="bg-red-600 text-white px-8 py-2 rounded-full hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    {loading ? 'Validating...' : 'Validate'}
-                  </button>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white py-4">
-        <div className="container mx-auto px-4">
-          <div className="text-sm">
-            All Rights Reserved, Rapid Collaborate, (c) Copyright 2024.
+        {/* Footer */}
+        <footer className="bg-gray-900 text-white py-4">
+          <div className="container mx-auto px-4">
+            <div className="text-sm">
+              All Rights Reserved, Rapid Collaborate, (c) Copyright 2024.
+            </div>
           </div>
-        </div>
-      </footer>
-    </div>
+        </footer>
+      </div>
+      
+    
+    </>
   );
 };
 
