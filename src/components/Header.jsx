@@ -45,6 +45,18 @@ export default function Header() {
   const isAdmin = user.fld_admin_type == "SUPERADMIN";
   const isExecutive = user.fld_admin_type == "EXECUTIVE";
   const isConsultant = user.fld_admin_type == "CONSULTANT";
+  let canApproveCallRequest = false;
+
+  if (user?.fld_permission) {
+    try {
+      const permission = JSON.parse(user.fld_permission);
+      if (Array.isArray(permission)) {
+        canApproveCallRequest = permission.includes("Approve_Add_Call_Request");
+      }
+    } catch (error) {
+      console.error("Invalid permission JSON", error);
+    }
+  }
 
   return (
     <>
@@ -203,31 +215,39 @@ export default function Header() {
                 Domain Pref
               </NavLink>
             )}
-            <NavLink
-              to="/followers"
-              className={({ isActive }) =>
-                isActive
-                  ? "flex items-center text-white underline font-semibold"
-                  : "flex items-center text-white hover:text-gray-300"
-              }
-            >
-              <Users2 className="mr-1" size={14} />
-              Follower Calls
-            </NavLink>
+            {(user?.fld_admin_type == "SUPERADMIN" ||
+              user?.fld_admin_type == "SUBADMIN" ||
+              user?.fld_admin_type == "CONSULTANT") && (
+              <NavLink
+                to="/followers"
+                className={({ isActive }) =>
+                  isActive
+                    ? "flex items-center text-white underline font-semibold"
+                    : "flex items-center text-white hover:text-gray-300"
+                }
+              >
+                <Users2 className="mr-1" size={14} />
+                Follower Calls
+              </NavLink>
+            )}
 
             {/* Call Ratings */}
-            <NavLink
-              to="/completedcallratings"
-              className={({ isActive }) =>
-                isActive
-                  ? "flex items-center text-white underline font-semibold"
-                  : "flex items-center text-white hover:text-gray-300"
-              }
-            >
-              <BarChart2 className="mr-1" size={14} />
-              Call Ratings
-            </NavLink>
-            <PlansDropdown />
+            {user?.fld_admin_type == "SUPERADMIN" && (
+              <NavLink
+                to="/completedcallratings"
+                className={({ isActive }) =>
+                  isActive
+                    ? "flex items-center text-white underline font-semibold"
+                    : "flex items-center text-white hover:text-gray-300"
+                }
+              >
+                <BarChart2 className="mr-1" size={14} />
+                Call Ratings
+              </NavLink>
+            )}
+            {(user?.fld_admin_type == "SUPERADMIN" ||
+              (user?.fld_admin_type == "SUBADMIN" &&
+                canApproveCallRequest)) && <PlansDropdown />}
           </div>
         </div>
       </nav>
