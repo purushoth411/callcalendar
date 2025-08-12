@@ -22,7 +22,7 @@ export default function Completedcallratings() {
     try {
       setIsLoading(true);
       const response = await fetch(
-        "http://localhost:5000/api/completedcallratings/getAllCompletedcallratings"
+        "https://callback-2suo.onrender.com/api/completedcallratings/getAllCompletedcallratings"
       );
       const result = await response.json();
       

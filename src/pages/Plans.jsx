@@ -30,7 +30,7 @@ export default function Plans() {
     try {
       setIsLoading(true);
       const response = await fetch(
-        "http://localhost:5000/api/plans/getAllPlans"
+        "https://callback-2suo.onrender.com/api/plans/getAllPlans"
       );
       const result = await response.json();
       
@@ -50,7 +50,7 @@ export default function Plans() {
   const updatePlanStatus = async (planId, status) => {
     try {
       const res = await fetch(
-        `http://localhost:5000/api/plans/update-plan-status/${planId}`,
+        `https://callback-2suo.onrender.com/api/plans/update-plan-status/${planId}`,
         {
           method: "PUT",
           headers: {
@@ -81,7 +81,7 @@ export default function Plans() {
 
     try {
       const method = "POST";
-      const url = "http://localhost:5000/api/plans/addPlan";
+      const url = "https://callback-2suo.onrender.com/api/plans/addPlan";
 
       const response = await fetch(url, {
         method,
@@ -121,7 +121,7 @@ export default function Plans() {
 
     try {
       const method = "PUT";
-      const url = `http://localhost:5000/api/plans/updatePlan/${editId}`;
+      const url = `https://callback-2suo.onrender.com/api/plans/updatePlan/${editId}`;
 
       const response = await fetch(url, {
         method,
