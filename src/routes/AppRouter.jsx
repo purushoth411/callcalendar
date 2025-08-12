@@ -17,6 +17,10 @@ import EditBooking from "../pages/managebooking/EditBooking";
 import DomainPref from "../pages/DomainPref";
 import Summary from "../pages/summary/Summary";
 import ViewAllTable from "../pages/summary/ViewAllTable";
+import Plans from "../pages/Plans";
+import Approveaddcallrequests from "../pages/Approveaddcallrequests";
+import Completedcallratings from "../pages/Completedcallratings";
+import Followers from "../pages/Followers";
 
 
 
@@ -44,7 +48,11 @@ export default function AppRouter() {
             <Route path="/admin/edit_booking/:bookingId" element={<EditBooking />} />
             <Route path="/domain_pref" element={<DomainPref />} />
             <Route path="/summary" element={<Summary />} />
-           <Route path="/summary/viewall" element={<ViewAllTable />} />
+            <Route path="/summary/viewall" element={<ViewAllTable />} />
+            <Route path="/plans" element={<Plans />} />
+            <Route path="/approveaddcallrequests" element={<Approveaddcallrequests />} />
+            <Route path="/completedcallratings" element={<Completedcallratings />} />
+            <Route path="/followers" element={<Followers />} />
 
             
           </Route>

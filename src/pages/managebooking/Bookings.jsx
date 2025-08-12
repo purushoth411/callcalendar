@@ -21,6 +21,7 @@ import toast from "react-hot-toast";
 import moment from "moment/moment.js";
 import EditSubjectArea from "./EditSubjectArea.jsx";
 import SocketHandler from "../../hooks/SocketHandler.jsx";
+import { getSocket } from "../../utils/Socket.jsx";
 
 
 export default function Bookings() {
@@ -47,6 +48,60 @@ export default function Bookings() {
   const [selectedRow, setSelectedRow] = useState([]);
 
   const { bookingid } = useParams();
+
+
+    ///socket ////////
+  
+    useEffect(() => {
+        const socket = getSocket();
+     const handleBookingAdded = (newBooking) => {
+  const mappedBooking = {
+    ...newBooking,
+    client_name: newBooking.user_name,
+    client_email: newBooking.user_email,
+    client_phone: newBooking.user_phone
+  };
+
+  console.log(mappedBooking);
+  console.log("Socket Called - Booking Added");
+
+  setBookings((prev) => {
+    const list = Array.isArray(prev) ? prev : [];
+    if (list.some((booking) => booking.id == mappedBooking.id)) {
+      return list;
+    }
+    return [...list, mappedBooking];
+  });
+};
+
+  
+      const handleBookingUpdated = (updatedBooking) => {
+        console.log("Socket Called - Booking Updated");
+        setBookings((prev) => {
+          const list = Array.isArray(prev) ? prev : [];
+          return list.map((booking) =>
+            booking.id == updatedBooking.id ? updatedBooking : booking
+          );
+        });
+      };
+
+      const handleBookingDeleted = ({ bookingId }) => {
+      console.log("Socket Called - Booking Deleted");
+      setBookings((prev) => prev.filter((booking) => booking.id != bookingId));
+    };
+  
+      socket.on("bookingAdded", handleBookingAdded);
+      socket.on("bookingUpdated", handleBookingUpdated);
+      socket.on("bookingDeleted", handleBookingDeleted);
+  
+      return () => {
+        socket.off("bookingAdded", handleBookingAdded);
+        socket.off("bookingUpdated", handleBookingUpdated);
+        socket.off("bookingDeleted", handleBookingDeleted);
+      };
+    }, [user.id]);
+  
+    ////////socket////////
 
   useEffect(() => {
     if (bookingid) {

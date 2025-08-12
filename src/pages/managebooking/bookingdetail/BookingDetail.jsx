@@ -60,7 +60,7 @@ const BookingDetail = () => {
   const [loadingFollowers, setLoadingFollowers] = useState(false);
 
 
-  // ///socket
+  ///socket
   //   useEffect(() => {
   //   const socket = getSocket();
 
@@ -80,16 +80,54 @@ const BookingDetail = () => {
   //   };
   // }, []);
 
+  useEffect(() => {
+  const socket = getSocket();
+  if (!socket) return;
+
+  const handleBookingDeleted = ({ bookingId: deletedId }) => {
+    if (String(deletedId) == String(bookingId)) {
+      toast.error("Booking deleted by other user", { duration: 3000 });
+
+      setTimeout(() => {
+        navigate("/bookings");
+      }, 2000);
+    }
+  };
+
+  const handleBookingUpdated = (updatedBooking) => {
+    if (String(updatedBooking.id) == String(bookingId)) {
+      fetchBookingById(updatedBooking.id, false);
+    }
+  };
+
+  socket.on("bookingDeleted", handleBookingDeleted);
+  socket.on("bookingUpdated", handleBookingUpdated);
+
+  return () => {
+    socket.off("bookingDeleted", handleBookingDeleted);
+    socket.off("bookingUpdated", handleBookingUpdated);
+  };
+}, [navigate, bookingId]);
+
+
+
+
 
   useEffect(() => {
     fetchBookingById(bookingId);
   }, [bookingId]);
 
-  const fetchBookingById = async (bookingId) => {
+  const fetchBookingById = async (bookingId,loader=true) => {
     let tempBooking = null;
     try {
-      setIsProcessing(true);
-      setLoaderMessage("Loading...");
+      if(!loader){
+        setIsProcessing(true);
+        setLoaderMessage("Updating Booking Details...");
+      }else{
+        setIsProcessing(true);
+        setLoaderMessage("Loading...");
+      }
+
       const response = await fetch(
         `http://localhost:5000/api/bookings/fetchBookingById`,
         {
@@ -281,7 +319,7 @@ const BookingDetail = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:5000/bookings/delete`, {
+      const response = await fetch(`http://localhost:5000/api/bookings/deleteBookingById`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -1086,7 +1124,7 @@ const BookingDetail = () => {
   // Check conditions for various buttons
   const canDelete =
     bookingData.fld_consultation_sts !== "Completed" &&
-    bookingData.fld_consultantid < 1 &&
+    bookingData.fld_consultantid > 1 &&
     bookingData.fld_call_related_to !== "I_am_not_sure";
 
   const hasOtherConfirmedBooking = (otherBookings || []).some(
@@ -1136,7 +1174,7 @@ const BookingDetail = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 p-4">
-       <SocketHandler otherSetters={[{ setFn: setConsultantList, isBookingList: false },{ setFn: setFollowerConsultants, isBookingList: false }]} />
+       <SocketHandler otherSetters={[{ setFn: setConsultantList, isBookingList: true },{ setFn: setFollowerConsultants, isBookingList: false }]} />
       <div className="max-w-7xl mx-auto">
         <div className="bg-white rounded-lg shadow-sm">
           <div className="p-6">

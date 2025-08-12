@@ -21,8 +21,8 @@ const ScheduleCall = () => {
   const [callLink, setCallLink] = useState("");
   const [submitMessage, setSubmitMessage] = useState("");
   const [loadingSlots, setLoadingSlots] = useState(false);
-   const { bookingId } = useParams();
-     const [isSubmitting,setIsSubmitting]=useState(false);
+  const { bookingId } = useParams();
+  const [isSubmitting,setIsSubmitting]=useState(false);
 
    
 

@@ -15,6 +15,7 @@ import {
 import { AnimatePresence, motion } from "framer-motion";
 import logo from "../assets/images/callcalendar-logo.png";
 import Notification from "./Notification.jsx";
+import PlansDropdown from "./PlansDropdown.jsx";
 
 export default function Header() {
   const { user, logout } = useAuth();
@@ -38,9 +39,9 @@ export default function Header() {
     navigate("/login");
     return null;
   }
-  console.log(user)
+  console.log(user);
 
-  const isSubadmin = user.fld_admin_type =="SUBADMIN";
+  const isSubadmin = user.fld_admin_type == "SUBADMIN";
   const isAdmin = user.fld_admin_type == "SUPERADMIN";
   const isExecutive = user.fld_admin_type == "EXECUTIVE";
   const isConsultant = user.fld_admin_type == "CONSULTANT";
@@ -134,7 +135,7 @@ export default function Header() {
                 Users
               </NavLink>
             )}
-             {(isAdmin || isSubadmin) && (
+            {(isAdmin || isSubadmin) && (
               <NavLink
                 to="/teams"
                 className={({ isActive }) =>
@@ -189,7 +190,7 @@ export default function Header() {
                 Call Request From RC
               </NavLink>
             )}
-             {(isAdmin || isSubadmin) && (
+            {(isAdmin || isSubadmin) && (
               <NavLink
                 to="/domain_pref"
                 className={({ isActive }) =>
@@ -202,6 +203,31 @@ export default function Header() {
                 Domain Pref
               </NavLink>
             )}
+            <NavLink
+              to="/followers"
+              className={({ isActive }) =>
+                isActive
+                  ? "flex items-center text-white underline font-semibold"
+                  : "flex items-center text-white hover:text-gray-300"
+              }
+            >
+              <Users2 className="mr-1" size={14} />
+              Follower Calls
+            </NavLink>
+
+            {/* Call Ratings */}
+            <NavLink
+              to="/completedcallratings"
+              className={({ isActive }) =>
+                isActive
+                  ? "flex items-center text-white underline font-semibold"
+                  : "flex items-center text-white hover:text-gray-300"
+              }
+            >
+              <BarChart2 className="mr-1" size={14} />
+              Call Ratings
+            </NavLink>
+            <PlansDropdown />
           </div>
         </div>
       </nav>

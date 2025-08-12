@@ -38,11 +38,12 @@ export default function Users() {
     subadmin_type: "",
     permissions: [],
   });
-  const socket = getSocket();
+
 
   ///socket ////////
 
   useEffect(() => {
+      const socket = getSocket();
     const handleUserAdded = (newUser) => {
       console.log("Socket Called - User Added");
       setAllUsers((prev) => {
