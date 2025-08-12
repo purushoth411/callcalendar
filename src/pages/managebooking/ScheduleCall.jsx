@@ -313,7 +313,7 @@ const ScheduleCall = () => {
         setSelectedSlot("");
 
         setTimeout(() => {
-          window.location.href = "http://localhost:5173/bookings";
+          window.location.href = "https://callback-2suo.onrender.com/bookings";
         }, 1500); // optional delay to let toast show
       } else {
         toast.errro("Failed to submit booking.");

@@ -17,6 +17,7 @@ export default function Plans() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
   const [editId, setEditId] = useState(null);
+  const [updating, setUpdating] = useState(false);
 
   const [formData, setFormData] = useState({
     plan: "",
@@ -120,6 +121,7 @@ export default function Plans() {
     }
 
     try {
+      setUpdating(true);
       const method = "PUT";
       const url = `https://callback-2suo.onrender.com/api/plans/updatePlan/${editId}`;
 
@@ -144,6 +146,8 @@ export default function Plans() {
     } catch (err) {
       console.error("Save error:", err);
       toast.error("Failed to save");
+    }finally{
+      setUpdating(false);
     }
   };
 
@@ -345,9 +349,10 @@ export default function Plans() {
                 <div className="flex justify-end gap-3 ">
                   <button
                     onClick={handleUpdate}
+                    disabled={updating}
                     className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-[11px] flex items-center gap-1 cursor-pointer"
                   >
-                    Update
+                    {updating?"Updating...":"Update"}
                   </button>
                 </div>
 
