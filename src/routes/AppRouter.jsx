@@ -21,6 +21,8 @@ import Plans from "../pages/Plans";
 import Approveaddcallrequests from "../pages/Approveaddcallrequests";
 import Completedcallratings from "../pages/Completedcallratings";
 import Followers from "../pages/Followers";
+import OTPVerificationPage from "../pages/OTPVerificationPage";
+import ClientBookingDetails from "../pages/ClientBookingDetails";
 
 
 
@@ -31,7 +33,8 @@ export default function AppRouter() {
       <Routes>
         {/* Public Restaurant Routes (NO layout) */}
         <Route path="/login" element={<Login/>} />
-
+       <Route path="/otp/:bookingId/:verifyOtpUrl" element={<OTPVerificationPage />} />
+       <Route path="/booking_details/:bookingId" element={<ClientBookingDetails />} />
         <Route element={<PrivateRoute />}>
           <Route element={<Layout />}>
             <Route path="/" element={<Dashboard />} />
@@ -53,6 +56,7 @@ export default function AppRouter() {
             <Route path="/approveaddcallrequests" element={<Approveaddcallrequests />} />
             <Route path="/completedcallratings" element={<Completedcallratings />} />
             <Route path="/followers" element={<Followers />} />
+           
 
             
           </Route>

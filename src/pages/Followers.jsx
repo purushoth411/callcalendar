@@ -5,17 +5,15 @@ import DT from "datatables.net-dt";
 import $ from "jquery";
 import { toast } from "react-hot-toast";
 import { useAuth } from "../utils/idb.jsx";
-import { PlusIcon} from "lucide-react";
+import { PlusIcon } from "lucide-react";
 import SkeletonLoader from "../components/SkeletonLoader.jsx";
 import { AnimatePresence, motion } from "framer-motion";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Select from "react-select";
 import { useNavigate, useParams } from "react-router-dom";
-import {
-  formatBookingDateTime,
-  formatDate,
-} from "../helpers/CommonHelper.jsx";
+import { formatBookingDateTime, formatDate } from "../helpers/CommonHelper.jsx";
+import { getSocket } from "../utils/Socket.jsx";
 
 export default function Followers() {
   const { user } = useAuth();
@@ -28,7 +26,7 @@ export default function Followers() {
   const [historyData, setHistoryData] = useState({}); // Store history for each follower
   const [loadingHistory, setLoadingHistory] = useState(new Set());
   const [showAddForm, setShowAddForm] = useState(false);
-  
+
   const [showFilters, setShowFilters] = useState(false);
   const [consultants, setConsultants] = useState([]);
   const [filteredConsultants, setFilteredConsultants] = useState([]);
@@ -40,11 +38,36 @@ export default function Followers() {
 
   const { followerid } = useParams();
 
-  
   const navigate = useNavigate();
 
-
   const tableRef = useRef(null);
+
+  ///socket ////////
+
+  useEffect(() => {
+    const socket = getSocket();
+
+   const handleCallClaimed = (followerId) => {
+      console.log("Socket Called - Call Claimed ");
+      setFollowers((prev) => {
+        const list = Array.isArray(prev) ? prev : [];
+        return list.map((follower) =>
+          follower.followerid == followerId
+            ? { ...follower, followstatus: "Claimed" } // use correct column name
+            : follower
+        );
+      });
+    };
+
+
+    socket.on("callClaimed", handleCallClaimed);
+
+    return () => {
+      socket.off("callClaimed", handleCallClaimed);
+    };
+  }, [user.id]);
+
+  ///socket
 
   useEffect(() => {
     fetchAllFollowers();
@@ -72,7 +95,7 @@ export default function Followers() {
       setIsLoading(true);
 
       const response = await fetch(
-        "http://localhost:5000/api/followers/getAllFollowers"
+        "https://callback-2suo.onrender.com/api/followers/getAllFollowers"
       );
 
       const result = await response.json();
@@ -100,7 +123,7 @@ export default function Followers() {
 
     try {
       const res = await fetch(
-        `http://localhost:5000/api/bookings/history/${bookingId}`
+        `https://callback-2suo.onrender.com/api/bookings/history/${bookingId}`
       );
       const result = await res.json();
 
@@ -179,13 +202,13 @@ export default function Followers() {
   const updateFollowersStatus = async (approveData, followerid, bookingid) => {
     try {
       const res = await fetch(
-        `http://localhost:5000/api/followers/followerclaimbooking/${followerid}/${bookingid}`,
+        `https://callback-2suo.onrender.com/api/followers/followerclaimbooking/${followerid}/${bookingid}`,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ userId:user.id,userName:user.fld_name }),
+          body: JSON.stringify({ userId: user.id, userName: user.fld_name }),
         }
       );
 
@@ -208,8 +231,8 @@ export default function Followers() {
       const bookingid = $(this).data("bookingid");
       const selected = followers.find((d) => d.id === followerid);
       //console.log(selected);
-      
-      updateFollowersStatus(selected,followerid,bookingid);
+
+      updateFollowersStatus(selected, followerid, bookingid);
     });
 
     return () => {
@@ -218,15 +241,15 @@ export default function Followers() {
   }, [followers]);
 
   //console.log(user.fld_admin_type);
-  
+
   const columns = [
     {
       title: "Client",
       data: "user_name",
       render: (data, type, row) => {
         const clientId = row.fld_client_id || "";
-        const isDeleted = row.delete_sts === 'Yes';
-        const textStyle = isDeleted ? 'line-through text-gray-400' : '';
+        const isDeleted = row.delete_sts === "Yes";
+        const textStyle = isDeleted ? "line-through text-gray-400" : "";
 
         return `
           <button class="details-btn font-medium text-blue-600 hover:underline ${textStyle}" data-id="${row.id}">
@@ -266,10 +289,8 @@ export default function Followers() {
     {
       title: "Added On ",
       data: "addedon",
-      render: (data,type,row) => {
-        const formatted = formatDate(
-          row.addedon
-        );
+      render: (data, type, row) => {
+        const formatted = formatDate(row.addedon);
         return `
       <div class="flex items-center gap-2">
         <div class="text-gray-600">${formatted}</div>
@@ -282,7 +303,7 @@ export default function Followers() {
       render: (data) => {
         if (data === "Pending") {
           return `<div class="text-red-600 font-semibold">Pending</div>`;
-        }  else {
+        } else {
           return `<div class="text-green-600 font-semibold">Claimed</div>`;
         }
       },
@@ -292,9 +313,16 @@ export default function Followers() {
       data: "followstatus",
       orderable: false,
       render: function (data, type, row) {
-        let bookingTime = new Date(`${row.fld_booking_date} ${row.fld_booking_slot}`); // use ISO format
+        let bookingTime = new Date(
+          `${row.fld_booking_date} ${row.fld_booking_slot}`
+        ); // use ISO format
         let currentTime = new Date();
-        if (data === "Pending" && (currentTime<bookingTime) && (user.fld_admin_type=="SUBADMIN" || user.fld_admin_type=="CONSULTANT")) {
+        if (
+          data === "Pending" &&
+          currentTime < bookingTime &&
+          (user.fld_admin_type == "SUBADMIN" ||
+            user.fld_admin_type == "CONSULTANT")
+        ) {
           return `
             <button 
               class="edit-btn bg-green-500 hover:bg-green-600 text-white text-sm px-3 py-1 rounded mr-2" 
@@ -306,7 +334,7 @@ export default function Followers() {
           return ` `;
         }
       },
-    }
+    },
   ];
 
   const tableOptions = {
@@ -387,7 +415,6 @@ export default function Followers() {
           </div>
 
           <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-
             <div className="p-6">
               {isLoading ? (
                 <SkeletonLoader
@@ -416,6 +443,8 @@ export default function Followers() {
           </div>
         </div>
       </div>
+      
+
       
 
     </div>

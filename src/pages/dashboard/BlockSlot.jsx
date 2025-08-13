@@ -25,7 +25,7 @@ const BlockSlot = ({ user }) => {
     const fetchConsultantSettingData = async () => {
       try {
         const response = await fetch(
-          "http://localhost:5000/api/dashboard/getconsultantsettings",
+          "https://callback-2suo.onrender.com/api/dashboard/getconsultantsettings",
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -141,7 +141,7 @@ const BlockSlot = ({ user }) => {
       setSubmitting(true);
       // Format like "3:30 PM - 4:30 PM - 5:30 PM"
       const blockedSlotsString = selectedSlots.join(" - ");
-      const response = await fetch("http://localhost:5000/api/dashboard/updateBlockSlots", {
+      const response = await fetch("https://callback-2suo.onrender.com/api/dashboard/updateBlockSlots", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

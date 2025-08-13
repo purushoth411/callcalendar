@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import { useAuth } from "../utils/idb";
 
 function Dashboard() {
+  
   const { user } = useAuth();
   const [allConsultants, setAllConsultants] = useState([]);
   const [selectedConsultant, setSelectedConsultant] = useState("");
@@ -16,7 +17,7 @@ function Dashboard() {
   const fetchAdmins = async (type, status, setter) => {
     try {
       const response = await fetch(
-        "http://localhost:5000/api/helpers/getAdmin",
+        "https://callback-2suo.onrender.com/api/helpers/getAdmin",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -47,7 +48,7 @@ function Dashboard() {
   const fetchCallStats = async () => {
     try {
       const res = await fetch(
-        "http://localhost:5000/api/dashboard/getcall_statistics",
+        "https://callback-2suo.onrender.com/api/dashboard/getcall_statistics",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

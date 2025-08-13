@@ -64,7 +64,7 @@ const EditSubjectArea = ({
 
     try {
       const res = await fetch(
-        "http://localhost:5000/api/helpers/getConsultantsBySubjectArea",
+        "https://callback-2suo.onrender.com/api/helpers/getConsultantsBySubjectArea",
         {
           method: "POST",
           headers: {
@@ -110,7 +110,7 @@ const EditSubjectArea = ({
       setUpdatingSubjectArea(true);
 
       const response = await fetch(
-        "http://localhost:5000/api/bookings/updateSubjectArea",
+        "https://callback-2suo.onrender.com/api/bookings/updateSubjectArea",
         {
           method: "POST",
           headers: {
