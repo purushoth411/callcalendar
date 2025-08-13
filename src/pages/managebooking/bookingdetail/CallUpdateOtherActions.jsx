@@ -344,24 +344,26 @@ const CallUpdateOtherActions = ({
       {/* Add Follower */}
       {showFollowerSection && (
         <div className="bg-white border border-gray-200 rounded-lg p-4">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-            <UserPlus className="w-5 h-5 mr-2" />
-            Add Follower
-          </h2>
+          <div className="flex justify-between">
+            <h2 className="text-[15px] font-semibold text-gray-900 flex items-center">
+              <UserPlus className="w-4 h-4 mr-2" />
+              Add Follower
+            </h2>
 
-          <button
-            className="inline-flex items-center px-2 py-1 bg-orange-500 text-white text-[13px] text-sm font-medium rounded-sm hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-colors mb-4"
-            onClick={() => {
-              setShowFollowerForm(!showFollowerForm);
-              getFollowerConsultant();
-            }}
-          >
-            <UserPlus className="w-4 h-4 mr-2" />
-            Add Follower
-          </button>
+            <button
+              className="inline-flex items-center px-2 py-1 bg-orange-500 text-white text-[11px] font-medium rounded-sm hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-colors"
+              onClick={() => {
+                setShowFollowerForm(!showFollowerForm);
+                getFollowerConsultant();
+              }}
+            >
+              <UserPlus className="w-3 h-3 mr-1" />
+              Add Follower
+            </button>
+          </div>
 
           {showFollowerForm && (
-            <div className="space-y-4">
+            <div className="space-y-4 mt-4">
               {loadingFollowers ? (
                 <p className="text-blue-600 text-sm mb-2">
                   Fetching followers...This may take some time.

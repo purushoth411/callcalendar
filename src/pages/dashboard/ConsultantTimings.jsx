@@ -365,7 +365,7 @@ function ConsultantTimings() {
   return (
     <div className="">
       <SocketHandler otherSetters={[{ setFn: setAllConsultants, isBookingList: false }]} />
-      <div className="mb-6">
+      <div className="">
         <label className="block mb-2 text-sm font-medium text-gray-700">
           Select Consultant
         </label>
@@ -380,7 +380,7 @@ function ConsultantTimings() {
       </div>
 
       {selectedConsultant && consultantSettings && (
-        <div className="space-y-6">
+        <div className="space-y-6 mt-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Working Hours */}
             <div className="bg-white p-6 rounded-lg shadow-sm border">

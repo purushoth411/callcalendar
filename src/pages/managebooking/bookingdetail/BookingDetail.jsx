@@ -1173,14 +1173,14 @@ const BookingDetail = () => {
     bookingData.fld_call_request_sts !== "Completed";
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4">
+    <div className="">
        <SocketHandler otherSetters={[{ setFn: setConsultantList, isBookingList: true },{ setFn: setFollowerConsultants, isBookingList: false }]} />
-      <div className="max-w-7xl mx-auto">
+      <div className="">
         <div className="bg-white rounded-lg shadow-sm">
           <div className="p-6">
             {/* Header */}
             <div className="flex justify-between items-center mb-6">
-              <h4 className="text-xl font-semibold text-gray-800">
+              <h4 className="text-[16px] font-semibold text-gray-900">
                 View Booking Information
               </h4>
 
@@ -1189,9 +1189,9 @@ const BookingDetail = () => {
                 {canDelete && (
                   <button
                     onClick={handleDeleteCallRequest}
-                    className="bg-red-500 hover:bg-red-600 text-white px-2 py-1  rounded-md flex items-center space-x-2 transition-colors View Booking Information"
+                    className="bg-red-500 hover:bg-red-600 text-[12px] text-white px-2 py-1  rounded-md flex items-center space-x-1 transition-colors cursor-pointer"
                   >
-                    <Trash2 size={16} />
+                    <Trash2 size={10} />
                     <span>Delete Call Request</span>
                   </button>
                 )}
@@ -1201,7 +1201,7 @@ const BookingDetail = () => {
                   <>
                     <button
                       onClick={() => setShowConvertModal(true)}
-                      className="bg-green-600 hover:bg-green-600 text-white px-4 rounded-sm the_act"
+                      className="bg-green-600 hover:bg-green-600 text-white px-4 rounded-sm the_act cursor-pointer"
                     >
                       Set as Converted
                     </button>
@@ -1231,7 +1231,7 @@ const BookingDetail = () => {
                   <div className="flex justify-end">
                     <button
                       onClick={handleMarkAsConfirmed}
-                      className="bg-blue-500 hover:bg-blue-600 text-white px-2 rounded-md transition-colors"
+                      className="bg-blue-500 hover:bg-blue-600 text-white px-2 rounded-md transition-colors cursor-pointer"
                     >
                       Mark as Confirmed by Client
                     </button>
@@ -1289,7 +1289,7 @@ const BookingDetail = () => {
                       <div className=" flex justify-end">
                         <button
                           onClick={() => setShowReassignForm(true)}
-                          className="bg-yellow-500 hover:bg-yellow-600 text-white px-2 rounded-md transition-colors"
+                          className="bg-yellow-500 hover:bg-yellow-600 text-white px-2 rounded-md transition-colors cursor-pointer"
                         >
                           Request for reassign
                         </button>
@@ -1307,8 +1307,7 @@ const BookingDetail = () => {
                   )}
                 <button
                   onClick={() => navigate(-1)}
-                  className="bg-none hover:bg-gray-600  text-black text-[11px] the_tcn rounded-sm flex items-center space-x-2 transition-colors hover:text-white
-"
+                  className="bg-none hover:bg-gray-300  text-black text-[11px] px-2 py-1 cursor-pointer  rounded-sm flex items-center space-x-2 transition-colors hover:text-gray-700"
                 >
                   <ArrowLeft className="mr-1" size={12} />
                   <span>Back</span>

@@ -134,7 +134,7 @@ export default function Completedcallratings() {
             <DataTable
               data={completedcallratings}
               columns={columns}
-              className="display table table-auto w-full text-[13px] border border-gray-300 n-table-set dataTable"
+              className="display table table-auto w-full text-[12px] border border-gray-300 n-table-set dataTable"
               options={tableOptions}
             />
           )}
