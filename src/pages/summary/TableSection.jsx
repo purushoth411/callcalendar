@@ -177,7 +177,7 @@ const TableSection = ({
           </span>
         </h1>
 
-        <div className="flex flex-col sm:flex-row items-center gap-2">
+        <div className="flex flex-col sm:flex-row items-center gap-2 ">
           <input
             type="text"
             placeholder="Search bookings..."
@@ -201,7 +201,7 @@ const TableSection = ({
                   )}`
                 );
               }}
-              className="bg-blue-500 text-white px-2 py-1 rounded text-[11px] whitespace-nowrap hover:bg-blue-600 transition"
+              className="bg-blue-500 text-white px-2 py-1 rounded text-[11px] whitespace-nowrap hover:bg-blue-600 transition cursor-pointer"
             >
               View All
             </button>

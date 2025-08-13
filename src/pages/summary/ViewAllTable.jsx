@@ -869,20 +869,16 @@ const ViewAllTable = () => {
               <h2 className="text-[16px] font-semibold text-gray-900">
                 {" "} {selectedStatus}
               </h2>
-              <div>
                 {/* Search Bar */}
                 {allData.length > 0 && (
-                  <div className="flex justify-end items-center">
                     <input
                       type="text"
-                      className="w-full  border px-3 py-1 bg-white rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
+                      className="w-[16%] border px-3 py-1 bg-white rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
                       placeholder="Search in current page results..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                     />
-                  </div>
                 )}
-              </div>
             </div>
         </div>
         <div className="p-4"> 

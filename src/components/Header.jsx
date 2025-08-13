@@ -118,7 +118,7 @@ export default function Header() {
                   : "flex items-center text-white hover:text-gray-300"
               }
             >
-              <LayoutDashboard className="mr-1" size={14} />
+              <LayoutDashboard className="mr-1" size={12} />
               Dashboard
             </NavLink>
             {(isAdmin || isSubadmin) && (
@@ -130,7 +130,7 @@ export default function Header() {
                     : "flex items-center text-white hover:text-gray-300"
                 }
               >
-                <BarChart2 className="mr-1" size={14} />
+                <BarChart2 className="mr-1" size={12} />
                 Summary
               </NavLink>
             )}
@@ -143,7 +143,7 @@ export default function Header() {
                     : "flex items-center text-white hover:text-gray-300"
                 }
               >
-                <Users2 className="mr-1" size={14} />
+                <Users2 className="mr-1" size={12} />
                 Users
               </NavLink>
             )}
@@ -156,7 +156,7 @@ export default function Header() {
                     : "flex items-center text-white hover:text-gray-300"
                 }
               >
-                <Users2 className="mr-1" size={14} />
+                <Users2 className="mr-1" size={12} />
                 Teams
               </NavLink>
             )}
@@ -168,7 +168,7 @@ export default function Header() {
                   : "flex items-center text-white hover:text-gray-300"
               }
             >
-              <CalendarCheckIcon className="mr-1" size={14} />
+              <CalendarCheckIcon className="mr-1" size={12} />
               Bookings
             </NavLink>
 
@@ -184,7 +184,7 @@ export default function Header() {
                     : "flex items-center text-white hover:text-gray-300"
                 }
               >
-                <Phone className="mr-1" size={14} />
+                <Phone className="mr-1" size={12} />
                 External Calls
               </NavLink>
             )}
@@ -198,7 +198,7 @@ export default function Header() {
                     : "flex items-center text-white hover:text-gray-300"
                 }
               >
-                <Phone className="mr-1" size={14} />
+                <Phone className="mr-1" size={12} />
                 Call Request From RC
               </NavLink>
             )}
@@ -211,7 +211,7 @@ export default function Header() {
                     : "flex items-center text-white hover:text-gray-300"
                 }
               >
-                <Globe2 className="mr-1" size={16} />
+                <Globe2 className="mr-1" size={12} />
                 Domain Pref
               </NavLink>
             )}
@@ -226,7 +226,7 @@ export default function Header() {
                     : "flex items-center text-white hover:text-gray-300"
                 }
               >
-                <Users2 className="mr-1" size={14} />
+                <Users2 className="mr-1" size={12} />
                 Follower Calls
               </NavLink>
             )}
@@ -241,7 +241,7 @@ export default function Header() {
                     : "flex items-center text-white hover:text-gray-300"
                 }
               >
-                <BarChart2 className="mr-1" size={14} />
+                <BarChart2 className="mr-1" size={12} />
                 Call Ratings
               </NavLink>
             )}

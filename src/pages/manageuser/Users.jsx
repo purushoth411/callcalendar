@@ -317,7 +317,7 @@ export default function Users() {
       data: "fld_admin_type",
       orderable: true,
       render: (data) =>
-        `<div class="px-2 py-1 text-[11px] font-semibold text-indigo-600 bg-indigo-50 rounded-md inline-block">${
+        `<div class="px-2 py-1 text-[10px] font-semibold text-indigo-600 bg-indigo-50 rounded-md inline-block">${
           data || ""
         }</div>`,
     },
@@ -451,12 +451,12 @@ export default function Users() {
       container
         .find('input[type="search"]')
         .addClass(
-          "px-3 !py-1 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 text-[13px]"
+          "border px-3 py-1 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600 !py-1 border-gray-300 text-[12px]"
         );
       container
         .find("select")
         .addClass(
-          "px-3 !py-1 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 text-[13px]"
+          "border px-3 py-1 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600 !py-1 border-gray-300 text-[12px]"
         );
     },
   };

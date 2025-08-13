@@ -343,17 +343,17 @@ function ConsultantTimings() {
               <button
                 type="button"
                 onClick={() => addTimeSlot(dayId)}
-                className="p-1 text-blue-600 hover:text-blue-800"
+                className="p-1 text-white rounded  bg-green-600 hover:bg-green-700 cursor-pointer"
               >
-                <Plus className="w-4 h-4" />
+                <Plus className="" size={13} />
               </button>
             ) : (
               <button
                 type="button"
                 onClick={() => removeTimeSlot(dayId, index)}
-                className="p-1 text-red-600 hover:text-red-800"
+                className="p-1 text-white rounded  bg-red-600 hover:bg-red-700 cursor-pointer"
               >
-                <X className="w-4 h-4" />
+                <X className="" size={13} />
               </button>
             )}
           </div>
@@ -380,79 +380,78 @@ function ConsultantTimings() {
       </div>
 
       {selectedConsultant && consultantSettings && (
-        <div className="space-y-6 mt-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="space-y-6 mt-6 ">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* Working Hours */}
-            <div className="bg-white p-6 rounded-lg shadow-sm border">
-              <h4 className="text-lg font-semibold mb-4">Working Hours</h4>
+            <div className="bg-white p-4 rounded shadow-md border border-gray-200">
+              <h4 className="text-base font-semibold mb-3 border-b border-gray-100 pb-2">
+                Working Hours
+              </h4>
 
-              <div className="space-y-4">
+              <div className="space-y-2">
                 {weekDays.map((day) => (
                   <div
                     key={day.id}
-                    className="flex items-start space-x-4 py-3 border-b border-gray-200 last:border-b-0"
+                    className="flex items-start gap-4 pb-3 bg-gray-100 rounded py-2 px-3"
                   >
-                    <div className="flex items-center">
+                    {/* Checkbox + Label */}
+                    <div className="flex items-center min-w-[110px]">
                       <input
                         type="checkbox"
                         id={`day-${day.id}`}
                         checked={formData.selectedWeekDays.includes(day.id)}
-                        onChange={(e) =>
-                          handleWeekDayChange(day.id, e.target.checked)
-                        }
-                        className="mr-2"
+                        onChange={(e) => handleWeekDayChange(day.id, e.target.checked)}
+                        className="mr-2 rounded text-blue-600 focus:ring-blue-500"
                       />
                       <label
                         htmlFor={`day-${day.id}`}
-                        className="font-medium text-sm min-w-[3rem]"
+                        className="font-medium text-sm text-gray-700"
                       >
                         {day.name}
                       </label>
                     </div>
+
+                    {/* Time slots */}
                     <div className="flex-1">{renderTimeSlots(day.id)}</div>
                   </div>
                 ))}
               </div>
 
               {/* Saturday Week Off */}
-              <div className="mt-6 pt-4 border-t border-gray-200">
-                <label className="block text-sm font-medium text-gray-700 mb-3">
+              <div className="mt-4">
+                <div className="text-base font-semibold mb-3 border-b border-gray-100 pb-2">
                   Saturday Week Off
-                </label>
+                </div>
                 <div className="flex flex-wrap gap-4">
                   {[1, 2, 3, 4, 5].map((week) => (
-                    <div key={week} className="flex items-center">
+                    <label key={week} className="flex items-center text-sm text-gray-600 bg-gray-100 p-2 rounded py-1 hover:bg-gray-200 cursor-pointer">
                       <input
                         type="checkbox"
                         id={`week-${week}`}
                         checked={formData.saturdayOff.includes(week)}
-                        onChange={(e) =>
-                          handleSaturdayOffChange(week, e.target.checked)
-                        }
-                        className="mr-2"
+                        onChange={(e) => handleSaturdayOffChange(week, e.target.checked)}
+                        className="mr-2 rounded text-blue-600 focus:ring-blue-500"
                       />
-                      <label htmlFor={`week-${week}`} className="text-sm">
-                        {week === 1
-                          ? "1st"
-                          : week === 2
-                          ? "2nd"
-                          : week === 3
-                          ? "3rd"
-                          : `${week}th`}{" "}
-                        Week
-                      </label>
-                    </div>
+                      {week === 1
+                        ? "1st"
+                        : week === 2
+                        ? "2nd"
+                        : week === 3
+                        ? "3rd"
+                        : `${week}th`}{" "}
+                      Week
+                    </label>
                   ))}
                 </div>
               </div>
             </div>
 
             {/* Timezone and Exclusions */}
-            <div className="bg-white p-6 rounded-lg shadow-sm border">
+            <div className="bg-white p-4 rounded shadow-md border border-gray-200">
               {/* Timezone */}
               <div className="mb-6">
-                <h4 className="text-lg font-semibold mb-2">Timezone</h4>
-                <p className="text-sm text-gray-600 mb-4">
+                <h4 className="text-base font-semibold mb-3 border-b border-gray-100 pb-2">Timezone</h4>
+                <p className="text-sm text-gray-500 mb-1">
                   Select the timezone for your calendar.
                 </p>
                 <Select
@@ -464,7 +463,7 @@ function ConsultantTimings() {
                       timezone: option,
                     }))
                   }
-                  getOptionValue={(opt) => opt.id} // or `opt.value` if that is more consistent
+                  getOptionValue={(opt) => opt.id}
                   getOptionLabel={(opt) => opt.label}
                   placeholder="Select timezone..."
                 />
@@ -472,25 +471,25 @@ function ConsultantTimings() {
 
               {/* Exclusions */}
               <div>
-                <h4 className="text-lg font-semibold mb-2">Exclusions</h4>
-                <p className="text-sm text-gray-600 mb-4">
-                  Add dates or custom range to exclude from your availability.
-                  E.g holidays, vacation etc.
+                <h4 className="text-base font-semibold mb-3 border-b border-gray-100 pb-2">Exclusions</h4>
+                <p className="text-sm text-gray-500 mb-1">
+                  Add dates or a custom range to exclude from your availability
+                  (holidays, vacation, etc.).
                 </p>
 
                 {/* Existing exclusions */}
                 {formData.exclusions.length > 0 && (
-                  <ul className="space-y-2 mb-4">
+                  <ul className="space-y-2 mb-6">
                     {formData.exclusions.map((exclusion, index) => (
                       <li
                         key={index}
-                        className="flex items-center justify-between p-2 bg-gray-50 rounded"
+                        className="flex items-center justify-between p-2 bg-gray-50 rounded border border-gray-200"
                       >
                         <span className="text-sm">{exclusion}</span>
                         <button
                           type="button"
                           onClick={() => removeExclusion(index)}
-                          className="text-red-600 hover:text-red-800"
+                          className="text-red-600 hover:text-red-800 transition"
                         >
                           <X className="w-4 h-4" />
                         </button>
@@ -501,8 +500,8 @@ function ConsultantTimings() {
 
                 {/* Add exclusion */}
                 <div className="space-y-3">
-                  <div className="flex space-x-4">
-                    <label className="flex items-center">
+                  <div className="flex gap-4">
+                    <label className="flex items-center text-sm">
                       <input
                         type="radio"
                         name="exclusionType"
@@ -515,11 +514,11 @@ function ConsultantTimings() {
                             endDate: "",
                           }))
                         }
-                        className="mr-2"
+                        className="mr-2 text-blue-600 focus:ring-blue-500"
                       />
                       Single date
                     </label>
-                    <label className="flex items-center">
+                    <label className="flex items-center text-sm">
                       <input
                         type="radio"
                         name="exclusionType"
@@ -531,13 +530,13 @@ function ConsultantTimings() {
                             type: e.target.value,
                           }))
                         }
-                        className="mr-2"
+                        className="mr-2 text-blue-600 focus:ring-blue-500"
                       />
                       Date ranges
                     </label>
                   </div>
 
-                  <div className="flex space-x-2">
+                  <div className="flex flex-wrap items-end gap-2">
                     <input
                       type="date"
                       value={tempExclusion.startDate}
@@ -547,7 +546,7 @@ function ConsultantTimings() {
                           startDate: e.target.value,
                         }))
                       }
-                      className="px-3 py-2 border border-gray-300 rounded"
+                      className="px-3 py-1 border border-gray-300 rounded w-[160px] text-[13px]"
                     />
                     {tempExclusion.type === "ranges" && (
                       <input
@@ -559,21 +558,22 @@ function ConsultantTimings() {
                             endDate: e.target.value,
                           }))
                         }
-                        className="px-3 py-2 border border-gray-300 rounded"
+                        className="px-3 py-1 border border-gray-300 rounded w-[160px] text-[13px]"
                       />
                     )}
                     <button
                       type="button"
                       onClick={handleExclusionAdd}
-                      className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 flex items-center"
+                      className="px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 flex items-center gap-1 text-[11px]"
                     >
-                      <Plus className="w-4 h-4 mr-1" />
+                      <Plus className="" size={12} />
                       Add
                     </button>
                   </div>
                 </div>
               </div>
             </div>
+
           </div>
 
           {/* Submit Button */}
@@ -582,7 +582,7 @@ function ConsultantTimings() {
               type="button"
               onClick={handleSubmit}
               disabled={loading || !selectedConsultant}
-              className="px-2 py-0.5 bg-yellow-600 text-white rounded hover:bg-yellow-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-2 py-1 bg-green-600 text-white rounded hover:bg-green-700 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? "Saving..." : "Save Settings"}
             </button>

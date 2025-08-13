@@ -378,9 +378,9 @@ export default function Bookings() {
     }
 
     return `
-    <div class="history-timeline-container relative pl-8">
-      <!-- Vertical Line -->
-      <div class="absolute left-2 top-0 h-full border-l-2 border-blue-400"></div>
+    <div class="history-timeline-container relative pl-5">
+      <!-- Vertical Line 
+      <div class="absolute left-2 top-0 h-full border-l-2 border-blue-400"></div>-->
     
       ${history
         .map(
@@ -601,7 +601,7 @@ export default function Bookings() {
       container
         .find('input[type="search"], select')
         .addClass(
-          "form-input px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 sm:text-sm"
+          "border px-3 py-1 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600 !py-1 border-gray-300 text-[12px]"
         );
 
       container

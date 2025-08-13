@@ -401,12 +401,12 @@ useEffect(() => {
       container
         .find('input[type="search"]')
         .addClass(
-          "px-3 !py-1 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 text-[13px]"
+          "border px-3 py-1 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600 !py-1 border-gray-300 text-[12px]"
         );
       container
         .find("select")
         .addClass(
-          "px-3 !py-1 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 text-[13px]"
+          "border px-3 py-1 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600 !py-1 border-gray-300 text-[12px]"
         );
     },
   };
@@ -436,7 +436,7 @@ useEffect(() => {
       <div className="">
         <div className="">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-bold text-gray-800">
+            <h2 className="text-[16px] font-semibold text-gray-900">
               Domain Preferences
             </h2>
             <button
