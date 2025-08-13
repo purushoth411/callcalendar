@@ -401,12 +401,12 @@ useEffect(() => {
       container
         .find('input[type="search"]')
         .addClass(
-          "form-input px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          "px-3 !py-1 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 text-[13px]"
         );
       container
         .find("select")
         .addClass(
-          "form-select px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          "px-3 !py-1 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 text-[13px]"
         );
     },
   };
@@ -431,22 +431,23 @@ useEffect(() => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="">
       <SocketHandler otherSetters={[{ setFn: setAllConsultants, isBookingList: false }]} />
       <div className="">
-        <div className="p-3 bg-gray-100 rounded  text-[13px]">
+        <div className="">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-bold text-gray-800">
               Domain Preferences
             </h2>
             <button
               onClick={openAddForm}
-              className="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 transition-colors text-[11px] "
+              className="bg-green-600 leading-none text-white px-2 py-1.5 rounded hover:bg-green-700 text-[11px] flex items-center gap-1"
             >
               Add New
             </button>
           </div>
 
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
           {isLoading ? (
             <SkeletonLoader
               rows={6}
@@ -466,7 +467,7 @@ useEffect(() => {
             <DataTable
               data={domains}
               columns={columns}
-              className="display w-full text-[13px]"
+              className="display table table-auto w-full text-[12px]  border border-gray-300 n-table-set"
               options={tableOptions}
             />
           ) : (
@@ -474,6 +475,7 @@ useEffect(() => {
               No domains available.
             </div>
           )}
+        </div>
         </div>
       </div>
 

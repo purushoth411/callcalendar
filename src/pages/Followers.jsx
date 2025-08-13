@@ -267,7 +267,7 @@ export default function Followers() {
           row.fld_booking_slot
         );
         return `
-      <div class="flex items-center gap-2">
+      <div class="flex justify-between gap-2">
         <div class="text-gray-600">${formatted}</div>
         <button class="show-history-btn text-xs px-2 py-1 rounded" 
                 data-booking-id="${row.id}">
@@ -391,7 +391,7 @@ export default function Followers() {
       container
         .find('input[type="search"], select')
         .addClass(
-          "form-input px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 sm:text-sm"
+          "px-3 !py-1 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 text-[13px]"
         );
 
       container
@@ -414,8 +414,8 @@ export default function Followers() {
             </h2>
           </div>
 
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-            <div className="p-6">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+            <div className="">
               {isLoading ? (
                 <SkeletonLoader
                   rows={6}
