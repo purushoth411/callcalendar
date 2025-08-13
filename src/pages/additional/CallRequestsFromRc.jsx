@@ -201,16 +201,16 @@ function CallRequestsFromRc() {
 
   return (
     <div className=" bg-gray-100 mx-auto">
-      <div className="flex items-center max-w-7xl  rounded  pb-4">
-        <h2 className="block text-[18px] font-semibold text-gray-800 mb-1">
+      <div className="flex items-center rounded  pb-4 justify-between">
+        <h2 className="text-[16px] font-semibold text-gray-900">
           Call Requests From RC
         </h2>
 
         <button
-          className="border border-gray-500 text-gray-500 hover:text-white px-2 py-1 rounded hover:bg-gray-500 text-sm ml-3   "
+          className="border border-gray-500 text-gray-500 hover:text-white px-2 py-1 rounded hover:bg-gray-500 text-sm ml-3 cursor-pointer "
           onClick={fetchDatas}
         >
-          <RefreshCcw size={15} />
+          <RefreshCcw size={13} />
         </button>
       </div>
       <div className="">
@@ -234,7 +234,7 @@ function CallRequestsFromRc() {
               ref={tableRef}
               data={calls}
               columns={columns}
-              className="display table table-auto w-full text-[13px] the_request  border border-gray-300"
+              className="display table table-auto w-full text-[12px]  border border-gray-300 n-table-set"
               options={{
                 pageLength: 50,
                 ordering: false,

@@ -5,7 +5,7 @@ export default function Layout() {
   const navigate = useNavigate();
 
   return (
-    <div className="h-screen flex flex-col text-[13px]">
+    <div className="h-screen flex flex-col text-[12px]">
       <Header />
 
       <main

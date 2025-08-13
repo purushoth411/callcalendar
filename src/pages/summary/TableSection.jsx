@@ -168,11 +168,11 @@ const TableSection = ({
   };
 
   return (
-    <div className="col-span-1 mb-6">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-4">
-        <h1 className="text-xl font-semibold text-gray-800">
+    <div className="col-span-1 bg-white rounded shadow-sm">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-4 bg-[#d7efff7d] rounded rounded-b-none p-3 py-2">
+        <h1 className="text-[14px] font-semibold text-gray-800">
           {title}{" "}
-          <span className="text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+          <span className="text-[12px] bg-blue-100 text-blue-800 px-2 py-1 rounded">
             {data.length}
           </span>
         </h1>
@@ -181,7 +181,7 @@ const TableSection = ({
           <input
             type="text"
             placeholder="Search bookings..."
-            className="border border-gray-300 px-3 py-2 rounded text-sm w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-blue-200"
+            className="border border-gray-300 px-2 py-1 bg-white rounded text-[12px] w-full sm:w-54 focus:outline-none focus:ring-2 focus:ring-blue-200"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -201,7 +201,7 @@ const TableSection = ({
                   )}`
                 );
               }}
-              className="bg-blue-500 text-white px-4 py-2 rounded text-sm hover:bg-blue-600 transition"
+              className="bg-blue-500 text-white px-2 py-1 rounded text-[11px] whitespace-nowrap hover:bg-blue-600 transition"
             >
               View All
             </button>
@@ -210,9 +210,9 @@ const TableSection = ({
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="overflow-hidden px-3">
         <div className="overflow-y-auto" style={{ height: "300px" }}>
-          <table className="w-full text-sm">
+          <table className="w-full text-[12px]">
             <thead className="sticky top-0 bg-gray-100 shadow text-gray-700">
               <tr>
                 {[
@@ -223,7 +223,7 @@ const TableSection = ({
                   "Call Type",
                   "Status",
                 ].map((col) => (
-                  <th key={col} className="px-4 py-2 border-b font-medium">
+                  <th key={col} className="px-4 py-2 border-b font-medium whitespace-nowrap text-left">
                     {col}
                   </th>
                 ))}

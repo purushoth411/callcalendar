@@ -122,7 +122,7 @@ export default function Completedcallratings() {
       <div className="">
         <div className="">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-[18px] font-semibold text-gray-900">Completed Call Ratings Management</h2>
+            <h2 className="text-[16px] font-semibold text-gray-900">Completed Call Ratings Management</h2>
           </div>
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
           {isLoading ? (

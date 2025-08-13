@@ -124,25 +124,37 @@ export default function ExternalCalls() {
     }
 
     return `
-    <div class="history-timeline-container relative  py-3">
-      ${history
-        .map(
-          (item) => `
-        <div class="history-timeline-item mb-4 last:mb-0 relative">
-          <div class="history-timeline-dot absolute -left-1.5 top-1.5 w-3 h-3 bg-blue-500 rounded-full border-2 border-white z-10"></div>
-          <div class="bg-white p-3 border border-gray-200 rounded-lg shadow-sm ml-4">
-            <div class="text-gray-700 text-sm font-medium">${
-              item.fld_comment
-            }</div>
-            <div class="text-gray-400 text-xs mt-1">🕒 ${formatDate(
-              item.fld_addedon
-            )}</div>
+    <div class="history-timeline-container relative pl-8">
+  <!-- Vertical Line -->
+  <div class="absolute left-2 top-0 h-full border-l-2 border-blue-400"></div>
+
+  ${history
+    .map(
+      (item) => `
+      <div class="relative mb-2">
+        
+        <!-- Timeline Dot -->
+        <div class="absolute -left-[10px] top-1.5 w-4 h-4 bg-white border-2 border-blue-500 rounded-full flex items-center justify-center shadow-md">
+          <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+        </div>
+
+        <!-- Timeline Card -->
+        <div class="bg-white shadow-sm rounded-lg py-2 px-4 border border-gray-100">
+          <p class="text-gray-800 text-[12px] leading-snug">
+            ${item.fld_comment}
+          </p>
+          <div class="flex items-center text-gray-500 text-[10px] mt-1 leading-snug">
+            <i class="fa fa-clock-o mr-1"></i>
+            ${formatDate(item.fld_addedon)}
           </div>
         </div>
-      `
-        )
-        .join("")}
-    </div>
+
+      </div>
+    `
+    )
+    .join("")}
+</div>
+
   `;
   };
 
@@ -292,11 +304,11 @@ export default function ExternalCalls() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="">
       <div className="">
-        <div className=" bg-gray-100 rounded  text-[13px]">
-          <div className="flex justify-start items-center mb-6">
-            <h2 className="text-[18px] font-semibold text-gray-800">External Calls</h2>
+        <div className="">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-[16px] font-semibold text-gray-900">External Calls</h2>
             <button
               className="border border-gray-500 text-gray-500 hover:text-white px-2 py-1 rounded hover:bg-gray-500 text-sm ml-3  "
               onClick={fetchAllBookings}
@@ -307,7 +319,7 @@ export default function ExternalCalls() {
 
           <div className="bg-white rounded-lg shadow-sm border border-gray-200">
             <div className=" flex justify-between items-center px-3 py-2 bg-[#d7efff7d]">
-              <h2 className="text-[16px] font-semibold text-gray-800">
+              <h2 className="text-[16px] font-semibold text-gray-900">
                 All External Calls
               </h2>
 

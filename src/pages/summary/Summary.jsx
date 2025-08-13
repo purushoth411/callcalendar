@@ -210,22 +210,23 @@ const Summary = () => {
   };
 
   return (
-    <div className="container mx-auto px-4">
+    <div className="">
       <SocketHandler otherSetters={[{ setFn: setConsultants, isBookingList: false,consultantType:consultantType },{ setFn: setFilteredConsultants, isBookingList: false,consultantType:consultantType },{ setFn: setCrms, isBookingList: false }]} />
-      <div className="mb-6 flex justify-between items-center">
+      <div className="mb-4 flex items-center gap-3 justify-between">
         <div className="flex justify-start items-center ">
-          <h4 className="text-2xl font-bold text-gray-800">Call Summary</h4>
-          <button
-            className="border border-gray-500 text-gray-500 hover:text-white px-2 py-1 rounded hover:bg-gray-500 text-sm ml-3  "
-            onClick={handleReload}
-          >
-            <RefreshCcw size={15} />
-          </button>
+          <h4 className="text-[16px] font-semibold text-gray-900">Call Summary</h4>
+          
         </div>
 
-        <div>
+        <div className="flex gap-2 items-center">
           <button
-            className="ml-2 bg-blue-500 text-white px-3 py-1 rounded text-sm"
+            className="border border-gray-500 text-gray-500 hover:text-white px-2 py-1 rounded hover:bg-gray-500 text-sm ml-3 cursor-pointer "
+            onClick={handleReload}
+          >
+            <RefreshCcw size={13} />
+          </button>
+          <button
+            className="bg-blue-500 text-white px-2 py-1 rounded text-[11px]"
             onClick={() => {
               setShowFilters(!showFilters);
               if (showFilters) fetchConsultantsAndCrms();
@@ -239,7 +240,7 @@ const Summary = () => {
       <AnimatePresence>
         {showFilters && (
           <motion.div
-            className="bg-white p-4 rounded-lg shadow mb-6 border"
+            className="bg-white p-4 rounded-lg shadow mb-6 border border-gray-300"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
@@ -247,9 +248,9 @@ const Summary = () => {
           >
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm mb-1">Call Type</label>
+                <label className="block mb-1">Call Type</label>
                 <select
-                  className="w-full border px-3 py-2 rounded text-sm"
+                  className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
                   value={filters.sale_type}
                   onChange={(e) =>
                     setFilters((f) => ({ ...f, sale_type: e.target.value }))
@@ -262,7 +263,7 @@ const Summary = () => {
               </div>
 
               <div>
-                <label className="block text-sm mb-1">Select CRM</label>
+                <label className="block mb-1">Select CRM</label>
                 <Select
                   options={crms.map((c) => ({
                     value: c.id,
@@ -289,9 +290,9 @@ const Summary = () => {
               </div>
 
               <div>
-                <label className="block text-sm mb-1">Consultant Type</label>
+                <label className="block mb-1">Consultant Type</label>
                 <select
-                  className="w-full border px-3 py-2 rounded text-sm"
+                  className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
                   value={filters.consultant_type}
                   onChange={(e) => {
                     handleConsultantTypeChange(e.target.value);
@@ -308,7 +309,7 @@ const Summary = () => {
               </div>
 
               <div>
-                <label className="block text-sm mb-1">Select Consultant</label>
+                <label className="block mb-1">Select Consultant</label>
                 <Select
                   options={filteredConsultants.map((c) => ({
                     value: c.id,
@@ -336,10 +337,10 @@ const Summary = () => {
               </div>
 
               <div>
-                <label className="block text-sm mb-1">Keyword Search</label>
+                <label className="block mb-1">Keyword Search</label>
                 <input
                   type="text"
-                  className="w-full border px-3 py-2 rounded text-sm"
+                  className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
                   placeholder="Search Name or Email"
                   value={filters.keyword_search}
                   onChange={(e) =>
@@ -352,9 +353,9 @@ const Summary = () => {
               </div>
 
               <div>
-                <label className="block text-sm mb-1">Filter Type</label>
+                <label className="block mb-1">Filter Type</label>
                 <select
-                  className="w-full border px-3 py-2 rounded text-sm"
+                  className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
                   value={filters.filter_type}
                   onChange={(e) =>
                     setFilters((f) => ({ ...f, filter_type: e.target.value }))
@@ -366,9 +367,9 @@ const Summary = () => {
               </div>
 
               <div>
-                <label className="block text-sm mb-1">Date Range</label>
+                <label className="block mb-1">Date Range</label>
                 <DatePicker
-                  className="w-full border px-3 py-2 rounded text-sm"
+                  className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
                   selectsRange
                   startDate={filters.date_range[0]}
                   endDate={filters.date_range[1]}
@@ -381,15 +382,15 @@ const Summary = () => {
               </div>
             </div>
 
-            <div className="mt-4 flex gap-2 justify-end">
+            <div className="flex gap-2 justify-end">
               <button
-                className="bg-gray-500 text-white px-4 py-2 rounded text-sm hover:bg-gray-600 transition-colors"
+                className="bg-gray-500 text-white px-2 py-1 rounded text-sm hover:bg-gray-600 transition-colors"
                 onClick={handleClearFilters}
               >
-                <RefreshCcw />
+                <RefreshCcw size={13} />
               </button>
               <button
-                className="bg-green-600 text-white px-4 py-2 rounded text-sm hover:bg-green-700 transition-colors"
+                className="bg-green-600 text-white px-2 py-1 rounded text-[11px] hover:bg-green-700 transition-colors"
                 onClick={handleApplyFilters}
                 disabled={loading}
               >

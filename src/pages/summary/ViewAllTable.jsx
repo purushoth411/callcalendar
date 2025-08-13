@@ -24,6 +24,7 @@ import {
   ChevronRight,
   RefreshCcw,
   ArrowLeft,
+  EyeIcon,
 } from "lucide-react";
 import SocketHandler from "../../hooks/SocketHandler";
 
@@ -148,7 +149,7 @@ const Pagination = ({
 
   return (
     <div className="flex flex-col sm:flex-row items-center justify-between px-4 py-3 border-t border-gray-200 bg-white">
-      <div className="flex items-center text-sm text-gray-700 mb-2 sm:mb-0">
+      <div className="flex items-center  text-gray-700 mb-2 sm:mb-0">
         <span>
           Showing page {currentPage} of {totalPages} ({totalRecords} total
           records)
@@ -160,7 +161,7 @@ const Pagination = ({
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1 || loading}
-          className={`px-3 py-2 text-sm font-medium rounded-md flex items-center transition-colors ${
+          className={`px-3 py-2  font-medium rounded-md flex items-center transition-colors ${
             currentPage === 1 || loading
               ? "text-gray-400 cursor-not-allowed"
               : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
@@ -177,7 +178,7 @@ const Pagination = ({
               <button
                 onClick={() => onPageChange(1)}
                 disabled={loading}
-                className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                className={`px-2 py-1  font-medium rounded-md transition-colors ${
                   loading
                     ? "text-gray-400 cursor-not-allowed"
                     : "text-gray-700 hover:bg-gray-50"
@@ -196,7 +197,7 @@ const Pagination = ({
               key={page}
               onClick={() => onPageChange(page)}
               disabled={loading}
-              className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+              className={`px-2 py-1  font-medium rounded-md transition-colors ${
                 page === currentPage
                   ? "bg-blue-600 text-white"
                   : loading
@@ -211,12 +212,12 @@ const Pagination = ({
           {currentPage < totalPages - 2 && totalPages > 5 && (
             <>
               {currentPage < totalPages - 3 && (
-                <span className="px-2 py-2 text-gray-500">...</span>
+                <span className="px-2 py-1 text-gray-500">...</span>
               )}
               <button
                 onClick={() => onPageChange(totalPages)}
                 disabled={loading}
-                className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                className={`px-2 py-1  font-medium rounded-md transition-colors ${
                   loading
                     ? "text-gray-400 cursor-not-allowed"
                     : "text-gray-700 hover:bg-gray-50"
@@ -229,7 +230,7 @@ const Pagination = ({
         </div>
 
         {/* Mobile page indicator */}
-        <div className="sm:hidden px-3 py-2 text-sm text-gray-700">
+        <div className="sm:hidden px-2 py-1  text-gray-700">
           {currentPage} / {totalPages}
         </div>
 
@@ -237,7 +238,7 @@ const Pagination = ({
         <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages || loading}
-          className={`px-3 py-2 text-sm font-medium rounded-md flex items-center transition-colors ${
+          className={`px-3 py-2  font-medium rounded-md flex items-center transition-colors ${
             currentPage === totalPages || loading
               ? "text-gray-400 cursor-not-allowed"
               : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
@@ -611,45 +612,62 @@ const ViewAllTable = () => {
   });
 
   return (
-    <div className="container mx-auto px-4 py-6">
-    <SocketHandler otherSetters={[{ setFn: setConsultants, isBookingList: false,consultantType:consultantType },{ setFn: setFilteredConsultants, isBookingList: false,consultantType:consultantType },{ setFn: setCrms, isBookingList: false }]} />
-      <div className="mb-6 flex justify-between items-center">
-         <div className="flex justify-start items-center ">
-                <h4 className="text-2xl font-bold text-gray-800">Call Summary <span className="text-sm text-gray-400">{selectedStatus}</span></h4>
-                 <button
-                                                className="border border-gray-500 text-gray-500 hover:text-white px-2 py-1 rounded hover:bg-gray-500 text-sm ml-3  "
-                                                 onClick={handleReload}
-                                              >
-                                                <RefreshCcw size={15} />
-                                              </button>
-                                              </div>
+    <div className="">
+      <SocketHandler
+        otherSetters={[
+          {
+            setFn: setConsultants,
+            isBookingList: false,
+            consultantType: consultantType,
+          },
+          {
+            setFn: setFilteredConsultants,
+            isBookingList: false,
+            consultantType: consultantType,
+          },
+          { setFn: setCrms, isBookingList: false },
+        ]}
+      />
+      <div className="mb-4 flex items-center gap-3 justify-between">
+        <div className="flex justify-start items-center ">
+          <h4 className="text-[16px] font-semibold text-gray-900">
+            Call Summary{" "}
+            <span className="text-sm text-gray-400">{selectedStatus}</span>
+          </h4>
+        </div>
         <div>
-       <div className="flex justify-end gap-2">
-          <button
-                  onClick={() => navigate(-1)}
-                  className="bg-none hover:bg-gray-600  text-black text-[11px] the_tcn rounded-sm flex items-center space-x-2 transition-colors hover:text-white
+          <div className="flex justify-end gap-2">
+            <button
+              onClick={() => navigate(-1)}
+              className="bg-none hover:bg-gray-300  text-black text-[11px] px-2  rounded-sm flex items-center space-x-2 transition-colors hover:text-gray-700
 "
-                >
-                  <ArrowLeft className="mr-1" size={12} />
-                  <span>Back</span>
-                </button>
-          <button
-            className="ml-2 bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600 transition-colors"
-            onClick={() => {
-              setShowFilters(!showFilters);
-              if (showFilters) fetchConsultantsAndCrms();
-            }}
-          >
-            {showFilters ? "Hide Filters" : "Show Filters"}
-          </button>
-       </div>
+            >
+              <ArrowLeft className="mr-1" size={12} />
+              <span>Back</span>
+            </button>
+            <button
+              className="border border-gray-500 text-gray-500 hover:text-white px-2 py-1 rounded hover:bg-gray-500 text-sm  cursor-pointer "
+              onClick={handleReload}
+            >
+              <RefreshCcw size={13} />
+            </button>
+            <button
+              className="bg-blue-500 text-white px-2 py-1 rounded text-[11px]"
+              onClick={() => {
+                setShowFilters(!showFilters);
+                if (showFilters) fetchConsultantsAndCrms();
+              }}
+            >
+              {showFilters ? "Hide Filters" : "Show Filters"}
+            </button>
+          </div>
         </div>
       </div>
 
       <AnimatePresence>
         {showFilters && (
           <motion.div
-            className="bg-white p-4 rounded-lg shadow mb-6 border"
+            className="bg-white p-4 rounded-lg shadow mb-6 border border-gray-300"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
@@ -657,11 +675,11 @@ const ViewAllTable = () => {
           >
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm mb-1 font-medium">
+                <label className="block mb-1">
                   Call Type
                 </label>
                 <select
-                  className="w-full border px-3 py-2 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
                   value={filters.sale_type}
                   onChange={(e) =>
                     setFilters((f) => ({ ...f, sale_type: e.target.value }))
@@ -674,11 +692,11 @@ const ViewAllTable = () => {
               </div>
 
               <div>
-                <label className="block text-sm mb-1 font-medium">
+                <label className="block mb-1">
                   Recording Status
                 </label>
                 <select
-                  className="w-full border px-3 py-2 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
                   value={filters.call_rcrd_status}
                   onChange={(e) =>
                     setFilters((f) => ({
@@ -694,7 +712,7 @@ const ViewAllTable = () => {
               </div>
 
               <div>
-                <label className="block text-sm mb-1 font-medium">
+                <label className="block mb-1">
                   Select CRM
                 </label>
                 <Select
@@ -724,11 +742,11 @@ const ViewAllTable = () => {
               </div>
 
               <div>
-                <label className="block text-sm mb-1 font-medium">
+                <label className="block mb-1">
                   Consultant Type
                 </label>
                 <select
-                  className="w-full border px-3 py-2 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
                   value={filters.consultant_type}
                   onChange={(e) => {
                     handleConsultantTypeChange(e.target.value);
@@ -745,7 +763,7 @@ const ViewAllTable = () => {
               </div>
 
               <div>
-                <label className="block text-sm mb-1 font-medium">
+                <label className="block mb-1">
                   Select Consultant
                 </label>
                 <Select
@@ -776,12 +794,12 @@ const ViewAllTable = () => {
               </div>
 
               <div>
-                <label className="block text-sm mb-1 font-medium">
+                <label className="block mb-1">
                   Keyword Search
                 </label>
                 <input
                   type="text"
-                  className="w-full border px-3 py-2 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
                   placeholder="Search Name or Email"
                   value={filters.keyword_search}
                   onChange={(e) =>
@@ -794,11 +812,11 @@ const ViewAllTable = () => {
               </div>
 
               <div>
-                <label className="block text-sm mb-1 font-medium">
+                <label className="block mb-1">
                   Filter Type
                 </label>
                 <select
-                  className="w-full border px-3 py-2 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
                   value={filters.filter_type}
                   onChange={(e) =>
                     setFilters((f) => ({ ...f, filter_type: e.target.value }))
@@ -810,11 +828,11 @@ const ViewAllTable = () => {
               </div>
 
               <div>
-                <label className="block text-sm mb-1 font-medium">
+                <label className="block mb-1">
                   Date Range
                 </label>
                 <DatePicker
-                  className="w-full border px-3 py-2 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
                   selectsRange
                   startDate={filters.date_range[0]}
                   endDate={filters.date_range[1]}
@@ -827,15 +845,15 @@ const ViewAllTable = () => {
               </div>
             </div>
 
-            <div className="mt-4 flex gap-2 justify-end">
+            <div className="flex gap-2 justify-end">
               <button
-                className="bg-gray-500 text-white px-4 py-2 rounded text-sm hover:bg-gray-600 transition-colors"
+                className="bg-gray-500 text-white px-2 py-1 rounded text-sm hover:bg-gray-600 transition-colors"
                 onClick={handleClearFilters}
               >
                 <RefreshCcw size={15} />
               </button>
               <button
-                className="bg-green-600 text-white px-4 py-2 rounded text-sm hover:bg-green-700 transition-colors"
+                className="bg-green-600 text-white px-2 py-1 rounded text-[11px] hover:bg-green-700 transition-colors"
                 onClick={handleApplyFilters}
                 disabled={loading}
               >
@@ -845,21 +863,30 @@ const ViewAllTable = () => {
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Search Bar */}
-      {allData.length > 0 && (
-        <div className="mb-4 flex justify-end items-center">
-          <input
-            type="text"
-            className="w-full max-w-md w-1/2 border px-4 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Search in current page results..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+        <div className="px-3 py-2 bg-[#d7efff7d]">
+            <div className="flex justify-between items-center">
+              <h2 className="text-[16px] font-semibold text-gray-900">
+                {" "} {selectedStatus}
+              </h2>
+              <div>
+                {/* Search Bar */}
+                {allData.length > 0 && (
+                  <div className="flex justify-end items-center">
+                    <input
+                      type="text"
+                      className="w-full  border px-3 py-1 bg-white rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
+                      placeholder="Search in current page results..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
         </div>
-      )}
-
-      {/* Loading State */}
+        <div className="p-4"> 
+            {/* Loading State */}
       {loading ? (
         <SkeletonLoader
           rows={6}
@@ -875,9 +902,9 @@ const ViewAllTable = () => {
       ) : (
         <>
           {/* Table */}
-          <div className="bg-white rounded-lg shadow overflow-hidden">
+          <div className="bg-white rounded shadow overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="min-w-full border border-gray-200 bg-white n-table-set">
                 <thead className="sticky top-0 bg-gray-100 shadow text-gray-700">
                   <tr>
                     {[
@@ -890,7 +917,7 @@ const ViewAllTable = () => {
                     ].map((col) => (
                       <th
                         key={col}
-                        className="px-4 py-3 border-b font-medium text-left"
+                        className="px-4 py-2 text-left text-sm font-semibold border-b"
                       >
                         {col}
                       </th>
@@ -911,66 +938,68 @@ const ViewAllTable = () => {
                       return (
                         <React.Fragment key={row.id}>
                           <tr
-                            className={`group ${
+                            className={`group border-b border-gray-300 ${
                               index % 2 === 0 ? "bg-white" : "bg-gray-50"
                             } hover:bg-blue-50 transition-colors`}
                           >
                             <td
-                              className={`px-4 py-3 border-b ${deletedClass}`}
+                              className={`px-4 py-2 text-gray-600 border-r border-gray-300 ${deletedClass}`}
                             >
                               <span
-                  onClick={() => handleNavigate(row.id)}
-                  className="hover:underline text-blue-600 font-medium cursor-pointer"
-                >
-                  {row.user_name} - {row.fld_client_id}
-                </span>
+                                onClick={() => handleNavigate(row.id)}
+                                className="hover:underline text-blue-600 font-medium cursor-pointer"
+                              >
+                                {row.user_name} - {row.fld_client_id}
+                              </span>
                             </td>
                             <td
-                              className={`px-4 py-3 border-b ${deletedClass}`}
+                              className={`px-4 py-2 text-gray-600 border-r border-gray-300 ${deletedClass}`}
                             >
                               <div className="font-medium">
                                 {row.admin_name}
                               </div>
                             </td>
                             <td
-                              className={`px-4 py-3 border-b ${deletedClass}`}
+                              className={`px-4 py-2 text-gray-600 border-r border-gray-300 ${deletedClass}`}
                             >
                               <div className="font-medium">{row.crm_name}</div>
                             </td>
                             <td
-                              className={`px-4 py-3 border-b ${deletedClass}`}
+                              className={`px-4 py-2 text-gray-600 border-r border-gray-300 ${deletedClass}`}
                             >
-                              <div className="font-medium">
-                                {formatBookingDateTime(
-                                  row.fld_booking_date,
-                                  row.fld_booking_slot
-                                )}
+                              <div className="flex justify-between">
+                                <span className="font-medium">
+                                  {formatBookingDateTime(
+                                    row.fld_booking_date,
+                                    row.fld_booking_slot
+                                  )}
+                                </span>
+                                <button
+                                  className="ml-2 text-gray-500 hover:text-blue-600 transition-colors"
+                                  onClick={async () => {
+                                    if (isExpanded) {
+                                      setExpandedRow(null);
+                                    } else {
+                                      setExpandedRow(row.id);
+                                      await fetchBookingHistory(row.id);
+                                    }
+                                  }}
+                                  title="View booking history"
+                                >
+                                  <EyeIcon className="bg-green-600 hover:bg-green-700 cursor-pointer text-white p-1 rounded" size={20} />
+                                </button>
                               </div>
-                              <button
-                                className="ml-2 text-gray-500 hover:text-blue-600 transition-colors"
-                                onClick={async () => {
-                                  if (isExpanded) {
-                                    setExpandedRow(null);
-                                  } else {
-                                    setExpandedRow(row.id);
-                                    await fetchBookingHistory(row.id);
-                                  }
-                                }}
-                                title="View booking history"
-                              >
-                                ⏳
-                              </button>
                             </td>
                             <td
-                              className={`px-4 py-3 border-b ${deletedClass}`}
+                              className={`px-4 py-2 text-gray-600 border-r border-gray-300 ${deletedClass}`}
                             >
                               <span className="font-medium">
                                 {row.fld_sale_type}
                               </span>
                             </td>
-                            <td className="px-4 py-3 border-b">
+                            <td className="px-4 py-2 text-gray-600 border-r border-gray-300">
                               <div
-                                className={`px-2 py-1 inline-flex items-center gap-1 rounded text-xs font-medium ${badge.bg} ${badge.text} ${deletedClass}`}
+                                className={`px-2 py-1 inline-flex items-center gap-1 rounded text-[10px] font-medium ${badge.bg} ${badge.text} ${deletedClass}`}
                               >
                                 {badge.icon}
                                 {row.fld_call_request_sts}
@@ -979,15 +1008,15 @@ const ViewAllTable = () => {
                                 <>
                                   {row.fld_call_confirmation_status ===
                                     "Call Confirmation Pending at Client End" && (
-                                    <span className="inline-flex items-center gap-1 py-[1px] px-[6px] ml-1 rounded text-xs bg-blue-100 text-blue-800">
-                                      <Clock size={12} />{" "}
+                                    <span className="inline-flex items-center gap-1 py-[1px] px-[6px] ml-1 rounded text-[10px] bg-blue-100 text-blue-800">
+                                      <Clock size={10} />{" "}
                                       {row.fld_call_confirmation_status}
                                     </span>
                                   )}
                                   {row.fld_call_confirmation_status ===
                                     "Call Confirmed by Client" && (
-                                    <span className="inline-flex items-center gap-1 py-[1px] px-[6px] ml-1 rounded text-xs bg-green-100 text-green-800">
-                                      <CheckCircle size={12} />{" "}
+                                    <span className="inline-flex items-center gap-1 py-[1px] px-[6px] ml-1 rounded text-[10px] bg-green-100 text-green-800">
+                                      <CheckCircle size={8} />{" "}
                                       {row.fld_call_confirmation_status}
                                     </span>
                                   )}
@@ -1025,6 +1054,11 @@ const ViewAllTable = () => {
           </div>
         </>
       )}
+        </div>
+        </div>
+      
+
+      
     </div>
   );
 };

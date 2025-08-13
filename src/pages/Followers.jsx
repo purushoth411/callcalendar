@@ -134,22 +134,33 @@ export default function Followers() {
     }
 
     return `
-    <div class="history-timeline-container relative  py-3">
+    <div class="history-timeline-container relative pl-8">
+      <!-- Vertical Line -->
+      <div class="absolute left-2 top-0 h-full border-l-2 border-blue-400"></div>
+    
       ${history
         .map(
           (item) => `
-        <div class="history-timeline-item mb-4 last:mb-0 relative">
-          <div class="history-timeline-dot absolute -left-1.5 top-1.5 w-3 h-3 bg-blue-500 rounded-full border-2 border-white z-10"></div>
-          <div class="bg-white p-3 border border-gray-200 rounded-lg shadow-sm ml-4">
-            <div class="text-gray-700 text-sm font-medium">${
-              item.fld_comment
-            }</div>
-            <div class="text-gray-400 text-xs mt-1">🕒 ${formatDate(
-              item.fld_addedon
-            )}</div>
+          <div class="relative mb-2">
+            
+            <!-- Timeline Dot -->
+            <div class="absolute -left-[10px] top-1.5 w-4 h-4 bg-white border-2 border-blue-500 rounded-full flex items-center justify-center shadow-md">
+              <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+            </div>
+    
+            <!-- Timeline Card -->
+            <div class="bg-white shadow-sm rounded-lg py-2 px-4 border border-gray-100">
+              <p class="text-gray-800 text-[12px] leading-snug">
+                ${item.fld_comment}
+              </p>
+              <div class="flex items-center text-gray-500 text-[10px] mt-1 leading-snug">
+                <i class="fa fa-clock-o mr-1"></i>
+                ${formatDate(item.fld_addedon)}
+              </div>
+            </div>
+    
           </div>
-        </div>
-      `
+        `
         )
         .join("")}
     </div>
@@ -370,7 +381,7 @@ export default function Followers() {
       <div className="">
         <div className="">
           <div className="mb-4 flex items-center gap-3 justify-between">
-            <h2 className="text-[18px] font-semibold text-gray-900">
+            <h2 className="text-[16px] font-semibold text-gray-900">
               Follower Management
             </h2>
           </div>
@@ -406,72 +417,7 @@ export default function Followers() {
         </div>
       </div>
       
-      <style jsx>{`
-        /* DataTables child row styling */
-        .history-row {
-          border-left: 4px solid #3b82f6;
-        }
 
-        .history-toggle-btn:disabled {
-          opacity: 0.6;
-          cursor: not-allowed;
-        }
-
-        /* Timeline Specific Styles */
-        .history-timeline-container {
-          /* This creates the vertical line of the timeline */
-          border-left: 2px solid #cbd5e1; /* gray-300 */
-        }
-
-        .history-timeline-item {
-          /* Ensures proper positioning for each item relative to the line */
-        }
-
-        /* Dot for each timeline item - already defined in HTML for simplicity */
-        /* .history-timeline-dot {
-    position: absolute;
-    left: -6px; /* Adjust based on border-left width / 2 */
-        /* top: 6px; */
-        /* width: 12px; */
-        /* height: 12px; */
-        /* background-color: #3b82f6; */
-        /* border-radius: 50%; */
-        /* border: 2px solid white; */
-        /* z-index: 10; */
-        /* } */
-
-        /* General DataTables styling improvements */
-        .dataTables_wrapper .dataTables_filter input {
-          width: 250px; /* Adjust search input width */
-        }
-
-        /* Styling for selected DataTables rows (if you implement selection) */
-        table.dataTable tbody tr.selected {
-          background-color: #e0f2fe; /* Light blue background for selected rows */
-        }
-
-        /* Hover effect for DataTables rows */
-        table.dataTable tbody tr:hover {
-          background-color: #f3f4f6; /* Light gray on hover */
-        }
-
-        /* Zebra striping for readability */
-        table.dataTable tbody tr:nth-child(odd) {
-          background-color: #f9fafb; /* Very light gray for odd rows */
-        }
-
-        .animate-spin {
-          animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-          from {
-            transform: rotate(0deg);
-          }
-          to {
-            transform: rotate(360deg);
-          }
-        }
-      `}</style>
     </div>
   );
 }

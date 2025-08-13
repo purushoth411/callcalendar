@@ -468,7 +468,7 @@ export default function Users() {
         <div className="">
           {/* Header */}
           <div className="mb-4 flex items-center gap-3 justify-between">
-            <h4 className="text-[18px] font-semibold text-gray-900">
+            <h4 className="text-[16px] font-semibold text-gray-900">
               User Management
             </h4>
             {/* Navigation Tabs */}

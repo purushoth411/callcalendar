@@ -381,22 +381,33 @@ export default function Bookings() {
     }
 
     return `
-    <div class="history-timeline-container relative  py-3">
+    <div class="history-timeline-container relative pl-8">
+      <!-- Vertical Line -->
+      <div class="absolute left-2 top-0 h-full border-l-2 border-blue-400"></div>
+    
       ${history
         .map(
           (item) => `
-        <div class="history-timeline-item mb-4 last:mb-0 relative">
-          <div class="history-timeline-dot absolute -left-1.5 top-1.5 w-3 h-3 bg-blue-500 rounded-full border-2 border-white z-10"></div>
-          <div class="bg-white p-3 border border-gray-200 rounded-lg shadow-sm ml-4">
-            <div class="text-gray-700 text-sm font-medium">${
-              item.fld_comment
-            }</div>
-            <div class="text-gray-400 text-xs mt-1">🕒 ${formatDate(
-              item.fld_addedon
-            )}</div>
+          <div class="relative mb-2">
+            
+            <!-- Timeline Dot -->
+            <div class="absolute -left-[10px] top-1.5 w-4 h-4 bg-white border-2 border-blue-500 rounded-full flex items-center justify-center shadow-md">
+              <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+            </div>
+    
+            <!-- Timeline Card -->
+            <div class="bg-white shadow-sm rounded-lg py-2 px-4 border border-gray-100">
+              <p class="text-gray-800 text-[12px] leading-snug">
+                ${item.fld_comment}
+              </p>
+              <div class="flex items-center text-gray-500 text-[10px] mt-1 leading-snug">
+                <i class="fa fa-clock-o mr-1"></i>
+                ${formatDate(item.fld_addedon)}
+              </div>
+            </div>
+    
           </div>
-        </div>
-      `
+        `
         )
         .join("")}
     </div>
@@ -631,15 +642,15 @@ export default function Bookings() {
       <div className="">
         <div className="">
           <div className="mb-4 flex items-center gap-3 justify-between">
-            <div className="flex justify-start items-center">
-              <h2 className="text-[18px] font-semibold text-gray-900">
+            <div className="flex justify-between items-center flex-1">
+              <h2 className="text-[16px] font-semibold text-gray-900">
                 Booking Management
               </h2>
               <button
-                className="border border-gray-500 text-gray-500 hover:text-white px-2 py-1 rounded hover:bg-gray-500 text-sm ml-3  "
+                className="border border-gray-500 text-gray-500 hover:text-white px-2 py-1 rounded hover:bg-gray-500 text-sm ml-3  cursor-pointer"
                 onClick={handleReload}
               >
-                <RefreshCcw size={15} />
+                <RefreshCcw size={13} />
               </button>
             </div>
             {user.fld_admin_type == "EXECUTIVE" && (
@@ -683,11 +694,7 @@ export default function Bookings() {
 
             <AnimatePresence>
               {showFilters && (
-                <div className="flex justify-end">
-                  {/* Green Arrow Shape */}
-                  <div className="w-3 h-10 bg-gray-300 clip-left-arrow"></div>
-
-                  {/* Filter Box */}
+                
                   <motion.div
                     className="bg-white p-4 rounded-lg shadow mb-6 border the_filter"
                     initial={{ opacity: 0, y: -20 }}
@@ -701,7 +708,7 @@ export default function Bookings() {
                           Call Type
                         </label>
                         <select
-                          className="w-full border border-gray-300 rounded px-3 py-2 text-sm text-gray-700"
+                          className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
                           value={filters.sale_type}
                           onChange={(e) =>
                             setFilters({
@@ -749,7 +756,7 @@ export default function Bookings() {
                           onChange={(e) =>
                             handleConsultantTypeChange(e.target.value)
                           }
-                          className="w-full border px-2 py-2 rounded text-sm text-gray-700 border-gray-300"
+                          className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
                         >
                           <option value="ACTIVE">Active</option>
                           <option value="INACTIVE">Inactive</option>
@@ -788,7 +795,7 @@ export default function Bookings() {
                           Call Recording Status
                         </label>
                         <select
-                          className="w-full border border-gray-300 rounded px-3 py-2 text-sm text-gray-700"
+                          className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
                           value={filters.call_rcrd_status}
                           onChange={(e) =>
                             setFilters({
@@ -853,7 +860,7 @@ export default function Bookings() {
                         </label>
                         <input
                           type="text"
-                          className="w-full border border-gray-300 rounded px-3 py-2 text-sm text-gray-700"
+                          className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
                           placeholder="Search Name or Email"
                           value={filters.keyword_search}
                           onChange={(e) =>
@@ -870,7 +877,7 @@ export default function Bookings() {
                           Filter Type
                         </label>
                         <select
-                          className="w-full border border-gray-300 rounded px-3 py-2 text-sm text-gray-700"
+                          className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
                           value={filters.filter_type}
                           onChange={(e) =>
                             setFilters({
@@ -889,7 +896,7 @@ export default function Bookings() {
                           Date Range
                         </label>
                         <DatePicker
-                          className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
+                          className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
                           selectsRange
                           startDate={filters.date_range[0]}
                           endDate={filters.date_range[1]}
@@ -902,12 +909,12 @@ export default function Bookings() {
                       </div>
                     </div>
 
-                    <div className="mt-4 text-right">
+                    <div className="mt-4 text-right flex justify-end gap-2 ">
                       <button
-                        className="bg-gray-500 text-white px-4 py-2 rounded text-sm hover:bg-gray-600 transition-colors"
+                        className="bg-gray-500 text-white px-2 py-1 rounded text-sm hover:bg-gray-600 transition-colors"
                         onClick={handleClearFilters}
                       >
-                        <RefreshCcw size={15} />
+                        <RefreshCcw size={13} />
                       </button>
                       <button
                         className="bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700 transition-colors text-[11px]"
@@ -917,7 +924,7 @@ export default function Bookings() {
                       </button>
                     </div>
                   </motion.div>
-                </div>
+                
               )}
             </AnimatePresence>
 
@@ -972,72 +979,7 @@ export default function Bookings() {
           </div>
         )}
       </AnimatePresence>
-      <style jsx>{`
-        /* DataTables child row styling */
-        .history-row {
-          border-left: 4px solid #3b82f6;
-        }
 
-        .history-toggle-btn:disabled {
-          opacity: 0.6;
-          cursor: not-allowed;
-        }
-
-        /* Timeline Specific Styles */
-        .history-timeline-container {
-          /* This creates the vertical line of the timeline */
-          border-left: 2px solid #cbd5e1; /* gray-300 */
-        }
-
-        .history-timeline-item {
-          /* Ensures proper positioning for each item relative to the line */
-        }
-
-        /* Dot for each timeline item - already defined in HTML for simplicity */
-        /* .history-timeline-dot {
-    position: absolute;
-    left: -6px; /* Adjust based on border-left width / 2 */
-        /* top: 6px; */
-        /* width: 12px; */
-        /* height: 12px; */
-        /* background-color: #3b82f6; */
-        /* border-radius: 50%; */
-        /* border: 2px solid white; */
-        /* z-index: 10; */
-        /* } */
-
-        /* General DataTables styling improvements */
-        .dataTables_wrapper .dataTables_filter input {
-          width: 250px; /* Adjust search input width */
-        }
-
-        /* Styling for selected DataTables rows (if you implement selection) */
-        table.dataTable tbody tr.selected {
-          background-color: #e0f2fe; /* Light blue background for selected rows */
-        }
-
-        /* Hover effect for DataTables rows */
-        table.dataTable tbody tr:hover {
-          background-color: #f3f4f6; /* Light gray on hover */
-        }
-
-        /* Zebra striping for readability */
-        table.dataTable tbody tr:nth-child(odd) {
-          background-color: #f9fafb; /* Very light gray for odd rows */
-        }
-
-        .animate-spin {
-          animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-          from {
-            transform: rotate(0deg);
-          }
-          to {
-            transform: rotate(360deg);
-          }
-        }
-      `}</style>
     </div>
   );
 }

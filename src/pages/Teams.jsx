@@ -321,7 +321,7 @@ export default function Teams() {
       <div className="">
         <div className="">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-[18px] font-semibold text-gray-900">Team Management</h2>
+            <h2 className="text-[16px] font-semibold text-gray-900">Team Management</h2>
             <button
               onClick={openAddForm}
               className="bg-green-600 leading-none text-white px-2 py-1.5 rounded hover:bg-green-700 text-[11px] flex items-center gap-1"
