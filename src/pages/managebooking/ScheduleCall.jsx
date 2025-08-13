@@ -89,12 +89,7 @@ const ScheduleCall = () => {
     sat: "fld_sat_time_block",
   };
 
-  const normalizeTime = (time) =>
-    time
-      .replace(/^0+/, "") // Remove leading 0s
-      .replace(/\u202F|\u00A0/g, " ") // Normalize non-breaking spaces
-      .trim()
-      .toUpperCase();
+ const normalizeTime = (time) => moment(time, ["h:mm A"]).format("h:mm A");
 
   const timeData = consultantSettings[dayFieldMap[dayKey]];
   const blockData = consultantSettings[blockFieldMap[dayKey]] || "";
@@ -116,11 +111,10 @@ const ScheduleCall = () => {
     const [startHour, startMinute] = start.split(":").map(Number);
     const [endHour, endMinute] = end.split(":").map(Number);
 
-    let current = new Date();
-    current.setHours(startHour, startMinute, 0, 0);
+    let current = moment().set({ hour: startHour, minute: startMinute, second: 0, millisecond: 0 });
 
-    const endTime = new Date();
-    endTime.setHours(endHour, endMinute, 0, 0);
+let endTime = moment().set({ hour: endHour, minute: endMinute, second: 0, millisecond: 0 });
+
 
     while (current <= endTime) {
       const slot = current.toLocaleTimeString([], {
