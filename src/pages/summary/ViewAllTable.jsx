@@ -632,7 +632,7 @@ const ViewAllTable = () => {
         <div className="flex justify-start items-center ">
           <h4 className="text-[16px] font-semibold text-gray-900">
             Call Summary{" "}
-            <span className="text-sm text-gray-400">{selectedStatus}</span>
+            {/* <span className="text-sm text-gray-400">{selectedStatus}</span> */}
           </h4>
         </div>
         <div>

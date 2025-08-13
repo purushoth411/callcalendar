@@ -333,7 +333,7 @@ export default function ExternalCalls() {
               </div>
             </div>
 
-            <div className="p-6">
+            <div className="p-4">
               {isLoading ? (
                 <SkeletonLoader
                   rows={6}
@@ -352,7 +352,7 @@ export default function ExternalCalls() {
                     ref={tableRef}
                     data={bookings}
                     columns={columns}
-                    className="display table table-auto w-full text-[13px] border border-gray-300 the_extra"
+                    className="display table table-auto w-full text-[12px] border border-gray-300 the_extra"
                     options={tableOptions}
                   />
                 </div>

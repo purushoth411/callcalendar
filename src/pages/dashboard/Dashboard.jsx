@@ -66,16 +66,14 @@ function Dashboard() {
   return (
     <div className="">
 
-    <ConsultantTimings />
-    <hr className="my-3 text-gray-200"/>
 
       {(user?.fld_admin_type === "SUPERADMIN" || user?.fld_admin_type === "EXECUTIVE") && (
         <div className="w-full">
-          <div className="flex items-center  mb-4">
-            <h4 className="text-lg font-semibold">Call Status Summary</h4>
+          <div className="flex justify-between items-center flex-1 mb-4">
+            <h4 className="text-[16px] font-semibold text-gray-900">Call Status Summary</h4>
             <button
               onClick={fetchAllStatuses}
-              className="bg-blue-600 text-white px-2 py-0.5 rounded hover:bg-blue-700 text-sm ml-2"
+              className="bg-blue-600 text-white px-2 py-0.5 rounded hover:bg-blue-700 text-[12px] ml-2"
               disabled={loading}
             >
               {loading ? "Refreshing..." : "Refresh"}
@@ -83,11 +81,11 @@ function Dashboard() {
           </div>
 
           
-            <div className="flex flex-wrap gap-2 justify-center">
+            <div className="grid grid-cols-5 gap-2 justify-center">
               {statuses.map((status) => (
                 <div
                   key={status}
-                  className="bg-blue-50 hover:bg-blue-100 border border-blue-200 cursor-pointer text-center p-3 rounded shadow w-[15%] "
+                  className="bg-blue-50 hover:bg-blue-100 border border-blue-200 cursor-pointer text-center p-7 rounded shadow"
                   onClick={() => submitAndRedirect(status)}
                 >
                   <div className="font-semibold text-blue-700">{status}</div>
@@ -103,6 +101,11 @@ function Dashboard() {
       {(user?.fld_admin_type === "SUBADMIN" || user?.fld_admin_type === "CONSULTANT") && (
         <BlockSlot user={user} />
       )}
+
+      <div className="bg-white p-4 mt-5 rounded">
+        <ConsultantTimings />
+      </div>
+
     </div>
   );
 }
