@@ -23,7 +23,6 @@ import EditSubjectArea from "./EditSubjectArea.jsx";
 import SocketHandler from "../../hooks/SocketHandler.jsx";
 import { getSocket } from "../../utils/Socket.jsx";
 
-
 export default function Bookings() {
   const { user } = useAuth();
 
@@ -49,59 +48,57 @@ export default function Bookings() {
 
   const { bookingid } = useParams();
 
+  ///socket ////////
 
-    ///socket ////////
-  
-    useEffect(() => {
-        const socket = getSocket();
-     const handleBookingAdded = (newBooking) => {
-  const mappedBooking = {
-    ...newBooking,
-    client_name: newBooking.user_name,
-    client_email: newBooking.user_email,
-    client_phone: newBooking.user_phone
-  };
-
-  console.log(mappedBooking);
-  console.log("Socket Called - Booking Added");
-
-  setBookings((prev) => {
-    const list = Array.isArray(prev) ? prev : [];
-    if (list.some((booking) => booking.id == mappedBooking.id)) {
-      return list;
-    }
-    return [...list, mappedBooking];
-  });
-};
-
-  
-      const handleBookingUpdated = (updatedBooking) => {
-        console.log("Socket Called - Booking Updated");
-        setBookings((prev) => {
-          const list = Array.isArray(prev) ? prev : [];
-          return list.map((booking) =>
-            booking.id == updatedBooking.id ? updatedBooking : booking
-          );
-        });
+  useEffect(() => {
+    const socket = getSocket();
+    const handleBookingAdded = (newBooking) => {
+      const mappedBooking = {
+        ...newBooking,
+        client_name: newBooking.user_name,
+        client_email: newBooking.user_email,
+        client_phone: newBooking.user_phone,
       };
 
-      const handleBookingDeleted = ({ bookingId }) => {
+      console.log(mappedBooking);
+      console.log("Socket Called - Booking Added");
+
+      setBookings((prev) => {
+        const list = Array.isArray(prev) ? prev : [];
+        if (list.some((booking) => booking.id == mappedBooking.id)) {
+          return list;
+        }
+        return [...list, mappedBooking];
+      });
+    };
+
+    const handleBookingUpdated = (updatedBooking) => {
+      console.log("Socket Called - Booking Updated");
+      setBookings((prev) => {
+        const list = Array.isArray(prev) ? prev : [];
+        return list.map((booking) =>
+          booking.id == updatedBooking.id ? updatedBooking : booking
+        );
+      });
+    };
+
+    const handleBookingDeleted = ({ bookingId }) => {
       console.log("Socket Called - Booking Deleted");
       setBookings((prev) => prev.filter((booking) => booking.id != bookingId));
     };
-  
-      socket.on("bookingAdded", handleBookingAdded);
-      socket.on("bookingUpdated", handleBookingUpdated);
-      socket.on("bookingDeleted", handleBookingDeleted);
-  
-      return () => {
-        socket.off("bookingAdded", handleBookingAdded);
-        socket.off("bookingUpdated", handleBookingUpdated);
-        socket.off("bookingDeleted", handleBookingDeleted);
-      };
-    }, [user.id]);
-  
-    ////////socket////////
+
+    socket.on("bookingAdded", handleBookingAdded);
+    socket.on("bookingUpdated", handleBookingUpdated);
+    socket.on("bookingDeleted", handleBookingDeleted);
+
+    return () => {
+      socket.off("bookingAdded", handleBookingAdded);
+      socket.off("bookingUpdated", handleBookingUpdated);
+      socket.off("bookingDeleted", handleBookingDeleted);
+    };
+  }, [user.id]);
+
+  ////////socket////////
 
   useEffect(() => {
     if (bookingid) {
@@ -132,7 +129,7 @@ export default function Bookings() {
     try {
       // Fetch consultants first
       const consultantRes = await fetch(
-        "https://callback-2suo.onrender.com/api/helpers/getUsersByRole",
+        "http://localhost:5000/api/helpers/getUsersByRole",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -143,7 +140,7 @@ export default function Bookings() {
 
       // Then fetch CRMs
       const crmRes = await fetch(
-        "https://callback-2suo.onrender.com/api/helpers/getUsersByRole",
+        "http://localhost:5000/api/helpers/getUsersByRole",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -166,7 +163,7 @@ export default function Bookings() {
 
     try {
       const res = await fetch(
-        "https://callback-2suo.onrender.com/api/helpers/getUsersByRole",
+        "http://localhost:5000/api/helpers/getUsersByRole",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -210,7 +207,7 @@ export default function Bookings() {
       };
 
       const response = await fetch(
-        "https://callback-2suo.onrender.com/api/bookings/fetchBooking",
+        "http://localhost:5000/api/bookings/fetchBooking",
         {
           method: "POST",
           headers: {
@@ -309,7 +306,7 @@ export default function Bookings() {
       };
 
       const response = await fetch(
-        "https://callback-2suo.onrender.com/api/bookings/fetchBooking",
+        "http://localhost:5000/api/bookings/fetchBooking",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -347,7 +344,7 @@ export default function Bookings() {
 
     try {
       const res = await fetch(
-        `https://callback-2suo.onrender.com/api/bookings/history/${bookingId}`
+        `http://localhost:5000/api/bookings/history/${bookingId}`
       );
       const result = await res.json();
 
@@ -422,7 +419,7 @@ export default function Bookings() {
 
     try {
       const response = await fetch(
-        `https://callback-2suo.onrender.com/api/bookings/updateStatusByCrm`,
+        `http://localhost:5000/api/bookings/updateStatusByCrm`,
         {
           method: "POST",
           headers: {
@@ -638,7 +635,21 @@ export default function Bookings() {
   };
   return (
     <div className="">
-     <SocketHandler otherSetters={[{ setFn: setConsultants, isBookingList: false,consultantType:consultantType },{ setFn: setFilteredConsultants, isBookingList: false,consultantType:consultantType },{ setFn: setCrms, isBookingList: false }]} />
+      <SocketHandler
+        otherSetters={[
+          {
+            setFn: setConsultants,
+            isBookingList: false,
+            consultantType: consultantType,
+          },
+          {
+            setFn: setFilteredConsultants,
+            isBookingList: false,
+            consultantType: consultantType,
+          },
+          { setFn: setCrms, isBookingList: false },
+        ]}
+      />
       <div className="">
         <div className="">
           <div className="mb-4 flex items-center gap-3 justify-between">
@@ -694,237 +705,235 @@ export default function Bookings() {
 
             <AnimatePresence>
               {showFilters && (
-                
-                  <motion.div
-                    className="bg-white p-4 rounded-lg shadow mb-6 border the_filter"
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    transition={{ duration: 0.5, ease: "easeInOut" }}
-                  >
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Call Type
-                        </label>
-                        <select
-                          className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
-                          value={filters.sale_type}
-                          onChange={(e) =>
-                            setFilters({
-                              ...filters,
-                              sale_type: e.target.value,
-                            })
-                          }
-                        >
-                          <option value="">Select Call Type</option>
-                          <option value="Presales">Presales</option>
-                          <option value="Postsales">Postsales</option>
-                        </select>
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Select CRM
-                        </label>
-                        <Select
-                          options={crms.map((c) => ({
-                            value: c.id,
-                            label: c.fld_name,
-                          }))}
-                          value={
-                            crms.find((c) => c.id === selectedCRM)
-                              ? {
-                                  value: selectedCRM,
-                                  label: crms.find((c) => c.id === selectedCRM)
-                                    .fld_name,
-                                }
-                              : null
-                          }
-                          onChange={(opt) => setSelectedCRM(opt.value)}
-                          placeholder="Select CRM"
-                        />
-                      </div>
-
-                      {/* Consultant Type */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Consultant Type
-                        </label>
-                        <select
-                          value={consultantType}
-                          onChange={(e) =>
-                            handleConsultantTypeChange(e.target.value)
-                          }
-                          className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
-                        >
-                          <option value="ACTIVE">Active</option>
-                          <option value="INACTIVE">Inactive</option>
-                        </select>
-                      </div>
-
-                      {/* Consultant Dropdown */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Select Consultant
-                        </label>
-                        <Select
-                          options={filteredConsultants.map((c) => ({
-                            value: c.id,
-                            label: c.fld_name,
-                          }))}
-                          value={
-                            filteredConsultants.find(
-                              (c) => c.id === selectedConsultant
-                            )
-                              ? {
-                                  value: selectedConsultant,
-                                  label: filteredConsultants.find(
-                                    (c) => c.id === selectedConsultant
-                                  ).fld_name,
-                                }
-                              : null
-                          }
-                          onChange={(opt) => setSelectedConsultant(opt.value)}
-                          placeholder="Select Consultant"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Call Recording Status
-                        </label>
-                        <select
-                          className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
-                          value={filters.call_rcrd_status}
-                          onChange={(e) =>
-                            setFilters({
-                              ...filters,
-                              call_rcrd_status: e.target.value,
-                            })
-                          }
-                        >
-                          <option value="">Select Call Recording Status</option>
-                          <option value="Call Recording Updated">
-                            Call Recording Updated
-                          </option>
-                          <option value="Call Recording Pending">
-                            Call Recording Pending
-                          </option>
-                        </select>
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Booking Status
-                        </label>
-                        <Select
-                          isMulti
-                          options={[
-                            "Pending",
-                            "Call Scheduled",
-                            "Call Rescheduled",
-                            "Consultant Assigned",
-                            "Accept",
-                            "Reject",
-                            "Completed",
-                            "Rescheduled",
-                            "Converted",
-                            "Cancelled",
-                            "Client did not join",
-                            "Postponed",
-                          ].map((status) => ({
-                            value: status,
-                            label: status,
-                          }))}
-                          value={filters.booking_status.map((status) => ({
-                            value: status,
-                            label: status,
-                          }))}
-                          onChange={(selected) =>
-                            setFilters({
-                              ...filters,
-                              booking_status: selected.map(
-                                (option) => option.value
-                              ),
-                            })
-                          }
-                          placeholder="Select booking statuses"
-                          className="text-sm"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Keyword Search
-                        </label>
-                        <input
-                          type="text"
-                          className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
-                          placeholder="Search Name or Email"
-                          value={filters.keyword_search}
-                          onChange={(e) =>
-                            setFilters({
-                              ...filters,
-                              keyword_search: e.target.value,
-                            })
-                          }
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Filter Type
-                        </label>
-                        <select
-                          className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
-                          value={filters.filter_type}
-                          onChange={(e) =>
-                            setFilters({
-                              ...filters,
-                              filter_type: e.target.value,
-                            })
-                          }
-                        >
-                          <option value="Booking">Booking Date</option>
-                          <option value="Created">Created Date</option>
-                        </select>
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Date Range
-                        </label>
-                        <DatePicker
-                          className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
-                          selectsRange
-                          startDate={filters.date_range[0]}
-                          endDate={filters.date_range[1]}
-                          onChange={(update) =>
-                            setFilters({ ...filters, date_range: update })
-                          }
-                          isClearable
-                          placeholderText="Select date range"
-                        />
-                      </div>
+                <motion.div
+                  className="bg-white p-4 rounded-lg shadow mb-6 border the_filter"
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.5, ease: "easeInOut" }}
+                >
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Call Type
+                      </label>
+                      <select
+                        className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
+                        value={filters.sale_type}
+                        onChange={(e) =>
+                          setFilters({
+                            ...filters,
+                            sale_type: e.target.value,
+                          })
+                        }
+                      >
+                        <option value="">Select Call Type</option>
+                        <option value="Presales">Presales</option>
+                        <option value="Postsales">Postsales</option>
+                      </select>
                     </div>
 
-                    <div className="mt-4 text-right flex justify-end gap-2 ">
-                      <button
-                        className="bg-gray-500 text-white px-2 py-1 rounded text-sm hover:bg-gray-600 transition-colors"
-                        onClick={handleClearFilters}
-                      >
-                        <RefreshCcw size={13} />
-                      </button>
-                      <button
-                        className="bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700 transition-colors text-[11px]"
-                        onClick={handleApplyFilters}
-                      >
-                        Apply Filters
-                      </button>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Select CRM
+                      </label>
+                      <Select
+                        options={crms.map((c) => ({
+                          value: c.id,
+                          label: c.fld_name,
+                        }))}
+                        value={
+                          crms.find((c) => c.id === selectedCRM)
+                            ? {
+                                value: selectedCRM,
+                                label: crms.find((c) => c.id === selectedCRM)
+                                  .fld_name,
+                              }
+                            : null
+                        }
+                        onChange={(opt) => setSelectedCRM(opt.value)}
+                        placeholder="Select CRM"
+                      />
                     </div>
-                  </motion.div>
-                
+
+                    {/* Consultant Type */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Consultant Type
+                      </label>
+                      <select
+                        value={consultantType}
+                        onChange={(e) =>
+                          handleConsultantTypeChange(e.target.value)
+                        }
+                        className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
+                      >
+                        <option value="ACTIVE">Active</option>
+                        <option value="INACTIVE">Inactive</option>
+                      </select>
+                    </div>
+
+                    {/* Consultant Dropdown */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Select Consultant
+                      </label>
+                      <Select
+                        options={filteredConsultants.map((c) => ({
+                          value: c.id,
+                          label: c.fld_name,
+                        }))}
+                        value={
+                          filteredConsultants.find(
+                            (c) => c.id === selectedConsultant
+                          )
+                            ? {
+                                value: selectedConsultant,
+                                label: filteredConsultants.find(
+                                  (c) => c.id === selectedConsultant
+                                ).fld_name,
+                              }
+                            : null
+                        }
+                        onChange={(opt) => setSelectedConsultant(opt.value)}
+                        placeholder="Select Consultant"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Call Recording Status
+                      </label>
+                      <select
+                        className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
+                        value={filters.call_rcrd_status}
+                        onChange={(e) =>
+                          setFilters({
+                            ...filters,
+                            call_rcrd_status: e.target.value,
+                          })
+                        }
+                      >
+                        <option value="">Select Call Recording Status</option>
+                        <option value="Call Recording Updated">
+                          Call Recording Updated
+                        </option>
+                        <option value="Call Recording Pending">
+                          Call Recording Pending
+                        </option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Booking Status
+                      </label>
+                      <Select
+                        isMulti
+                        options={[
+                          "Pending",
+                          "Call Scheduled",
+                          "Call Rescheduled",
+                          "Consultant Assigned",
+                          "Accept",
+                          "Reject",
+                          "Completed",
+                          "Rescheduled",
+                          "Converted",
+                          "Cancelled",
+                          "Client did not join",
+                          "Postponed",
+                        ].map((status) => ({
+                          value: status,
+                          label: status,
+                        }))}
+                        value={filters.booking_status.map((status) => ({
+                          value: status,
+                          label: status,
+                        }))}
+                        onChange={(selected) =>
+                          setFilters({
+                            ...filters,
+                            booking_status: selected.map(
+                              (option) => option.value
+                            ),
+                          })
+                        }
+                        placeholder="Select booking statuses"
+                        className="text-sm"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Keyword Search
+                      </label>
+                      <input
+                        type="text"
+                        className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
+                        placeholder="Search Name or Email"
+                        value={filters.keyword_search}
+                        onChange={(e) =>
+                          setFilters({
+                            ...filters,
+                            keyword_search: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Filter Type
+                      </label>
+                      <select
+                        className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
+                        value={filters.filter_type}
+                        onChange={(e) =>
+                          setFilters({
+                            ...filters,
+                            filter_type: e.target.value,
+                          })
+                        }
+                      >
+                        <option value="Booking">Booking Date</option>
+                        <option value="Created">Created Date</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Date Range
+                      </label>
+                      <DatePicker
+                        className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
+                        selectsRange
+                        startDate={filters.date_range[0]}
+                        endDate={filters.date_range[1]}
+                        onChange={(update) =>
+                          setFilters({ ...filters, date_range: update })
+                        }
+                        isClearable
+                        placeholderText="Select date range"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="mt-4 text-right flex justify-end gap-2 ">
+                    <button
+                      className="bg-gray-500 text-white px-2 py-1 rounded text-sm hover:bg-gray-600 transition-colors"
+                      onClick={handleClearFilters}
+                    >
+                      <RefreshCcw size={13} />
+                    </button>
+                    <button
+                      className="bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700 transition-colors text-[11px]"
+                      onClick={handleApplyFilters}
+                    >
+                      Apply Filters
+                    </button>
+                  </div>
+                </motion.div>
               )}
             </AnimatePresence>
 
@@ -979,7 +988,6 @@ export default function Bookings() {
           </div>
         )}
       </AnimatePresence>
-
     </div>
   );
 }

@@ -6,8 +6,12 @@ import CalendarLoader from "./CalendarLoader.jsx";
 import toast from "react-hot-toast";
 import { TimeZones } from "../../helpers/TimeZones";
 import { formatDateTimeStr } from "../../helpers/CommonHelper.jsx";
+import moment from "moment";
+import { getSocket } from "../../utils/Socket.jsx";
+import { useAuth } from "../../utils/idb.jsx";
 
 const EditBooking = () => {
+  const {user} =useAuth();
   const [loading, setLoading] = useState(true);
   const [timezoneList, setTimezoneList] = useState(TimeZones);
   const [selectedTimezone, setSelectedTimezone] = useState("Asia/Kolkata");
@@ -28,7 +32,7 @@ const EditBooking = () => {
   const fetchBookingDetailsWithRc = async () => {
     try {
       const response = await fetch(
-        `https://callback-2suo.onrender.com/api/helpers/getBookingDetailsWithRc?id=${bookingId}`
+        `http://localhost:5000/api/helpers/getBookingDetailsWithRc?id=${bookingId}`
       );
       const data = await response.json();
 
@@ -60,6 +64,36 @@ const EditBooking = () => {
       setLoading(false);
     }
   };
+
+  ///socket ////////
+  
+    useEffect(() => {
+      const socket = getSocket();
+  
+      const handleBookingConfirmed = (consultantId, date, slot) => {
+        console.log("Socket Called - Booking Confirmed");
+  
+        const selectedDateFormatted = selectedDate.format("YYYY-MM-DD");
+        const eventDateFormatted = moment(date, "YYYY-MM-DD").format(
+          "YYYY-MM-DD"
+        );
+  
+        if (bookingDetails?.fld_consultantid == consultantId) {
+          console.log(
+            "Refreshing booking details due to matching bookingConfirmed event"
+          );
+          fetchBookingDetailsWithRc();
+        }
+      };
+  
+      socket.on("bookingConfirmed", handleBookingConfirmed);
+  
+      return () => {
+        socket.off("bookingConfirmed", handleBookingConfirmed);
+      };
+    }, [user.id, bookingDetails?.fld_consultantid]);
+  
+    ////////socket////////
 
   useEffect(() => {
     fetchBookingDetailsWithRc();
@@ -114,12 +148,7 @@ const EditBooking = () => {
     sat: "fld_sat_time_block",
   };
 
-  const normalizeTime = (time) =>
-    time
-      .replace(/^0+/, "") // Remove leading 0s
-      .replace(/\u202F|\u00A0/g, " ") // Normalize non-breaking spaces
-      .trim()
-      .toUpperCase();
+ const normalizeTime = (time) => moment(time, ["h:mm A"]).format("h:mm A");
 
   const timeData = consultantSettings[dayFieldMap[dayKey]];
   const blockData = consultantSettings[blockFieldMap[dayKey]] || "";
@@ -141,31 +170,28 @@ const EditBooking = () => {
     const [startHour, startMinute] = start.split(":").map(Number);
     const [endHour, endMinute] = end.split(":").map(Number);
 
-    let current = new Date();
-    current.setHours(startHour, startMinute, 0, 0);
+     let current = moment().set({ hour: startHour, minute: startMinute, second: 0, millisecond: 0 });
+   
+   let endTime = moment().set({ hour: endHour, minute: endMinute, second: 0, millisecond: 0 });
+   
+   
+      while (current <= endTime) {
+     const slot = current.format("h:mm A"); // format with Moment directly
+   
+     const normalizedSlot = normalizeTime(slot);
+     if (!blockedSlots.includes(normalizedSlot)) {
+       generatedSlots.push(normalizedSlot);
+     }
+   
+     current = current.clone().add(30, "minutes"); // add 30 min in Moment
+   }
+   
+     });
 
-    const endTime = new Date();
-    endTime.setHours(endHour, endMinute, 0, 0);
-
-    while (current <= endTime) {
-      const slot = current.toLocaleTimeString([], {
-        hour: "numeric",
-        minute: "2-digit",
-        hour12: true,
-      });
-
-      const normalizedSlot = normalizeTime(slot);
-      if (!blockedSlots.includes(normalizedSlot)) {
-        generatedSlots.push(normalizedSlot);
-      }
-
-      current = new Date(current.getTime() + 30 * 60 * 1000); // 30 min
-    }
-  });
 
   try {
     const res1 = await fetch(
-      "https://callback-2suo.onrender.com/api/helpers/getBookingData",
+      "http://localhost:5000/api/helpers/getBookingData",
       {
         method: "POST",
         headers: {
@@ -186,7 +212,7 @@ const EditBooking = () => {
     const data1 = await res1.json();
 
     const res2 = await fetch(
-      "https://callback-2suo.onrender.com/api/helpers/getRcCallBookingRequest",
+      "http://localhost:5000/api/helpers/getRcCallBookingRequest",
       {
         method: "POST",
         headers: {
@@ -250,35 +276,22 @@ const EditBooking = () => {
     );
 
   
-    const selectedDateObj = new Date(dateStr);
-    const today = new Date();
-    
+   const selectedDate = moment(dateStr, "YYYY-MM-DD");
+const today = moment();
+
+// If the booking date is today
+if (selectedDate.isSame(today, "day")) {
   
-    if (selectedDateObj.toDateString() === today.toDateString()) {
-      const currentTime = new Date();
-      
-     
-      const timeBuffer = bookingDetails.fld_sale_type === "Postsales" ? 4 * 60 : 30; // 4 hours or 30 minutes in minutes
-      const minTime = new Date(currentTime.getTime() + timeBuffer * 60 * 1000);
-      
-      finalAvailableSlots = finalAvailableSlots.filter((slot) => {
-      
-        const [time, period] = slot.split(' ');
-        const [hour, minute] = time.split(':').map(Number);
-        
-        let slotHour = hour;
-        if (period === 'PM' && hour !== 12) {
-          slotHour += 12;
-        } else if (period === 'AM' && hour === 12) {
-          slotHour = 0;
-        }
-        
-        const slotTime = new Date();
-        slotTime.setHours(slotHour, minute, 0, 0);
-        
-        return slotTime >= minTime;
-      });
-    }
+  const timeBufferMinutes = bookingDetails.fld_sale_type === "Postsales" ? 4 * 60 : 30;
+  const minTime = moment().add(timeBufferMinutes, "minutes");
+
+  finalAvailableSlots = finalAvailableSlots.filter(slot => {
+    const slotMoment = moment(slot, "hh:mm A"); // e.g., "02:30 PM"
+
+    return slotMoment.isSameOrAfter(minTime);
+  });
+}
+
 
     console.log("Generated:", generatedSlots);
     console.log("Blocked:", blockedSlots);
@@ -312,7 +325,7 @@ const EditBooking = () => {
     try {
       setIsSubmitting(true);
       const response = await fetch(
-        "https://callback-2suo.onrender.com/api/bookings/updateCallScheduling",
+        "http://localhost:5000/api/bookings/updateCallScheduling",
         {
           method: "POST",
           headers: {
@@ -338,7 +351,7 @@ const EditBooking = () => {
         setSelectedSlot("");
 
         setTimeout(() => {
-          window.location.href = "https://callback-2suo.onrender.com/bookings";
+          window.location.href = "http://localhost:5000/bookings";
         }, 1500); 
       } else {
         toast.errro("Failed to submit booking.");

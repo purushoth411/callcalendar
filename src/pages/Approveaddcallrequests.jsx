@@ -28,7 +28,7 @@ export default function Approveaddcallrequests() {
     try {
       setIsLoading(true);
       const response = await fetch(
-        "https://callback-2suo.onrender.com/api/approveaddcallrequests/getAllApproveaddcallrequests"
+        "http://localhost:5000/api/approveaddcallrequests/getAllApproveaddcallrequests"
       );
       const result = await response.json();
       
@@ -48,7 +48,7 @@ export default function Approveaddcallrequests() {
   const updateApproveaddcallrequestStatus = async (approveData, approveaddcallrequestId, status) => {
     try {
       const res = await fetch(
-        `https://callback-2suo.onrender.com/api/approveaddcallrequests/update-approveaddcallrequest-status/${approveaddcallrequestId}`,
+        `http://localhost:5000/api/approveaddcallrequests/update-approveaddcallrequest-status/${approveaddcallrequestId}`,
         {
           method: "PUT",
           headers: {

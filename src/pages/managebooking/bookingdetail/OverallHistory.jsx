@@ -1,6 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { Clock, User, Calendar, Phone, FileText, Info, ChevronDown, ChevronUp } from 'lucide-react';
-
+import React, { useEffect, useState } from "react";
+import {
+  Clock,
+  User,
+  Calendar,
+  Phone,
+  FileText,
+  Info,
+  ChevronDown,
+  ChevronUp,
+} from "lucide-react";
 
 const OverallHistory = ({ bookingData }) => {
   const [overallHistory, setOverallHistory] = useState([]);
@@ -15,7 +23,9 @@ const OverallHistory = ({ bookingData }) => {
 
   const fetchOverallHistory = async (bookingId) => {
     try {
-      const res = await fetch(`https://callback-2suo.onrender.com/api/bookings/history/${bookingId}`);
+      const res = await fetch(
+        `http://localhost:5000/api/bookings/history/${bookingId}`
+      );
       const data = await res.json();
       setOverallHistory(data.data);
 
@@ -24,10 +34,13 @@ const OverallHistory = ({ bookingData }) => {
         const status = extractStatus(commentText);
         if (status) {
           const statusRes = await fetch(
-            `https://callback-2suo.onrender.com/api/bookings/statusHistory?bookingId=${bookingId}&status=${status}`
+            `http://localhost:5000/api/bookings/statusHistory?bookingId=${bookingId}&status=${status}`
           );
           const statusData = await statusRes.json();
-          setStatusHistories((prev) => ({ ...prev, [status]: statusData.data }));
+          setStatusHistories((prev) => ({
+            ...prev,
+            [status]: statusData.data,
+          }));
         }
       });
     } catch (err) {
@@ -37,29 +50,39 @@ const OverallHistory = ({ bookingData }) => {
 
   const extractStatus = (text) => {
     const possibleStatuses = [
-      "Pending", "Consultant Assigned", "Call Scheduled", "Call Rescheduled",
-      "Completed", "Rescheduled", "Accept", "Reject", "Converted",
-      "External", "Cancelled", "Client did not join", "Reassign Request"
+      "Pending",
+      "Consultant Assigned",
+      "Call Scheduled",
+      "Call Rescheduled",
+      "Completed",
+      "Rescheduled",
+      "Accept",
+      "Reject",
+      "Converted",
+      "External",
+      "Cancelled",
+      "Client did not join",
+      "Reassign Request",
     ];
     return possibleStatuses.find((status) => text.includes(status));
   };
 
   const getStatusColor = (status) => {
     const colors = {
-      "Completed": "bg-green-500",
-      "Pending": "bg-yellow-500",
-      "Cancelled": "bg-red-500",
-      "Rescheduled": "bg-blue-500",
+      Completed: "bg-green-500",
+      Pending: "bg-yellow-500",
+      Cancelled: "bg-red-500",
+      Rescheduled: "bg-blue-500",
       "Call Scheduled": "bg-purple-500",
-      "Consultant Assigned": "bg-indigo-500"
+      "Consultant Assigned": "bg-indigo-500",
     };
     return colors[status] || "bg-gray-500";
   };
 
   const toggleExpand = (index) => {
-    setExpandedItems(prev => ({
+    setExpandedItems((prev) => ({
       ...prev,
-      [index]: !prev[index]
+      [index]: !prev[index],
     }));
   };
 
@@ -67,7 +90,9 @@ const OverallHistory = ({ bookingData }) => {
     <div className="bg-white rounded-lg border border-gray-200   p-4 mt-6">
       <div className="flex items-center gap-3 mb-4">
         <Clock className="w-5 h-5 text-gray-800" />
-        <h5 className="text-[18px] font-semibold text-gray-800">Overall History</h5>
+        <h5 className="text-[18px] font-semibold text-gray-800">
+          Overall History
+        </h5>
       </div>
 
       <div className="space-y-4 pr-3 overflow-y-auto h-[17.3rem] text-[13px]">
@@ -85,10 +110,14 @@ const OverallHistory = ({ bookingData }) => {
               {idx < overallHistory.length - 1 && (
                 <div className="absolute left-4 top-10 w-0.5 h-full bg-gray-200 -z-10 the_line"></div>
               )}
-              
+
               <div className="flex gap-2">
                 {/* Timeline dot */}
-                <div className={`w-6 h-6 rounded-full the_line1  ${getStatusColor(status)} flex items-center justify-center flex-shrink-0 mt-1`}>
+                <div
+                  className={`w-6 h-6 rounded-full the_line1  ${getStatusColor(
+                    status
+                  )} flex items-center justify-center flex-shrink-0 mt-1`}
+                >
                   <div className="w-3 h-3 bg-white rounded-full the_line2"></div>
                 </div>
 
@@ -96,8 +125,10 @@ const OverallHistory = ({ bookingData }) => {
                 <div className="flex-1 bg-gray-50 rounded-lg p-2 border border-gray-200 hover:shadow-md transition-shadow">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <p className="text-gray-800 font-medium mb-2">{commentMain}</p>
-                      
+                      <p className="text-gray-800 font-medium mb-2">
+                        {commentMain}
+                      </p>
+
                       {entry.fld_rescheduled_date_time && (
                         <div className="flex items-center gap-2 mb-2">
                           <Calendar className="w-4 h-4 text-orange-500" />
@@ -106,7 +137,7 @@ const OverallHistory = ({ bookingData }) => {
                           </span>
                         </div>
                       )}
-                      
+
                       <div className="flex items-center gap-2  text-gray-500">
                         <Clock className="w-4 h-4" />
                         <span>{dateInfo}</span>
@@ -120,7 +151,11 @@ const OverallHistory = ({ bookingData }) => {
                       >
                         <Info className="w-4 h-4" />
                         Details
-                        {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                        {isExpanded ? (
+                          <ChevronUp className="w-4 h-4" />
+                        ) : (
+                          <ChevronDown className="w-4 h-4" />
+                        )}
                       </button>
                     )}
                   </div>
@@ -130,13 +165,22 @@ const OverallHistory = ({ bookingData }) => {
                     <div className="mt-2 border-t pt-2">
                       <div className="space-y-4">
                         {historyList.map((row, i) => (
-                          <div key={i} className="bg-white rounded-lg p-2 border border-gray-100 text-[13px] mb-2">
+                          <div
+                            key={i}
+                            className="bg-white rounded-lg p-2 border border-gray-100 text-[13px] mb-2"
+                          >
                             <div className="flex items-center justify-between mb-3">
-                              <span className={`px-3 py-1 rounded-full font-medium ${getStatusColor(row.status)} text-white`}>
+                              <span
+                                className={`px-3 py-1 rounded-full font-medium ${getStatusColor(
+                                  row.status
+                                )} text-white`}
+                              >
                                 {row.status}
                               </span>
                               <span className=" text-gray-500">
-                                {new Date(row.fld_call_completed_date).toLocaleDateString()}
+                                {new Date(
+                                  row.fld_call_completed_date
+                                ).toLocaleDateString()}
                               </span>
                             </div>
 
@@ -144,22 +188,39 @@ const OverallHistory = ({ bookingData }) => {
                               {row.status === "Completed" ? (
                                 <>
                                   {row.fld_specific_commnets_for_the_call && (
-                                    <p><strong>Comments:</strong> {row.fld_specific_commnets_for_the_call}</p>
+                                    <p>
+                                      <strong>Comments:</strong>{" "}
+                                      {row.fld_specific_commnets_for_the_call}
+                                    </p>
                                   )}
                                   {row.fld_comment && (
-                                    <p><strong>Additional Notes:</strong> {row.fld_comment}</p>
+                                    <p>
+                                      <strong>Additional Notes:</strong>{" "}
+                                      {row.fld_comment}
+                                    </p>
                                   )}
                                 </>
                               ) : (
                                 <>
                                   {row.fld_status_options && (
-                                    <p><strong>Status Options:</strong> {row.fld_status_options}</p>
+                                    <p>
+                                      <strong>Status Options:</strong>{" "}
+                                      {row.fld_status_options}
+                                    </p>
                                   )}
                                   {row.fld_status_options_rescheduled_others && (
-                                    <p><strong>Reschedule Details:</strong> {row.fld_status_options_rescheduled_others}</p>
+                                    <p>
+                                      <strong>Reschedule Details:</strong>{" "}
+                                      {
+                                        row.fld_status_options_rescheduled_others
+                                      }
+                                    </p>
                                   )}
                                   {row.fld_comment && (
-                                    <p><strong>Comments:</strong> {row.fld_comment}</p>
+                                    <p>
+                                      <strong>Comments:</strong>{" "}
+                                      {row.fld_comment}
+                                    </p>
                                   )}
                                 </>
                               )}
@@ -168,7 +229,16 @@ const OverallHistory = ({ bookingData }) => {
                                 <div className="flex items-center gap-2 mt-2">
                                   <FileText className="w-4 h-4 text-blue-500" />
                                   <a
-                                    href={`https://callback-2suo.onrender.com/assets/upload_doc/${row.fld_booking_call_file}`}
+                                    href={
+                                      row.fld_booking_call_file.startsWith(
+                                        "http://"
+                                      ) ||
+                                      row.fld_booking_call_file.startsWith(
+                                        "https://"
+                                      )
+                                        ? row.fld_booking_call_file
+                                        : `https://www.rapidcollaborate.com/call_calendar/assets/upload_doc/${row.fld_booking_call_file}`
+                                    }
                                     target="_blank"
                                     rel="noreferrer"
                                     className="text-blue-600 hover:text-blue-800 underline"
@@ -179,16 +249,30 @@ const OverallHistory = ({ bookingData }) => {
                               )}
                             </div>
 
-                            {row.status === "Completed" && row.fld_question1 && (
-                              <div className="mt-4 p-3 bg-green-50 rounded-md border border-green-200 text-[13px]">
-                                <h6 className="font-semibold text-green-800 mb-2">Call Quality Assessment</h6>
-                                <div className="space-y-1 ">
-                                  <p><strong>Was the CRM able to bridge the call?</strong> {row.fld_question1}</p>
-                                  <p><strong>Was the voice clear?</strong> {row.fld_question2}</p>
-                                  <p><strong>Was the client informed?</strong> {row.fld_question3}</p>
+                            {row.status === "Completed" &&
+                              row.fld_question1 && (
+                                <div className="mt-4 p-3 bg-green-50 rounded-md border border-green-200 text-[13px]">
+                                  <h6 className="font-semibold text-green-800 mb-2">
+                                    Call Quality Assessment
+                                  </h6>
+                                  <div className="space-y-1 ">
+                                    <p>
+                                      <strong>
+                                        Was the CRM able to bridge the call?
+                                      </strong>{" "}
+                                      {row.fld_question1}
+                                    </p>
+                                    <p>
+                                      <strong>Was the voice clear?</strong>{" "}
+                                      {row.fld_question2}
+                                    </p>
+                                    <p>
+                                      <strong>Was the client informed?</strong>{" "}
+                                      {row.fld_question3}
+                                    </p>
+                                  </div>
                                 </div>
-                              </div>
-                            )}
+                              )}
                           </div>
                         ))}
                       </div>

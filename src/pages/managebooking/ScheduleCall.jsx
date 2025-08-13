@@ -5,11 +5,15 @@ import Calendar from "./Calendar";
 import CalendarLoader from "./CalendarLoader.jsx";
 import toast from "react-hot-toast";
 import { TimeZones } from "../../helpers/TimeZones";
+import moment from "moment";
+import { getSocket } from "../../utils/Socket.jsx";
+import { useAuth } from "../../utils/idb.jsx";
 
 const ScheduleCall = () => {
+  const {user}=useAuth();
   const [loading, setLoading] = useState(true);
   const [timezoneList, setTimezoneList] = useState(TimeZones);
-  const [selectedTimezone, setSelectedTimezone] = useState("");
+  const [selectedTimezone, setSelectedTimezone] = useState("Asia/Kolkata");
   const [questionData, setQuestionData] = useState({ count: 0, questions: "" });
   const [consultantName, setConsultantName] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
@@ -22,14 +26,12 @@ const ScheduleCall = () => {
   const [submitMessage, setSubmitMessage] = useState("");
   const [loadingSlots, setLoadingSlots] = useState(false);
   const { bookingId } = useParams();
-  const [isSubmitting,setIsSubmitting]=useState(false);
-
-   
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const fetchBookingDetailsWithRc = async () => {
     try {
       const response = await fetch(
-        `https://callback-2suo.onrender.com/api/helpers/getBookingDetailsWithRc?id=${bookingId}`
+        `http://localhost:5000/api/helpers/getBookingDetailsWithRc?id=${bookingId}`
       );
       const data = await response.json();
 
@@ -49,239 +51,257 @@ const ScheduleCall = () => {
     }
   };
 
-  
-
   useEffect(() => {
     fetchBookingDetailsWithRc();
   }, []);
 
+  ///socket ////////
+
+  useEffect(() => {
+    const socket = getSocket();
+
+    const handleBookingConfirmed = (consultantId, date, slot) => {
+      console.log("Socket Called - Booking Confirmed");
+
+      const selectedDateFormatted = selectedDate.format("YYYY-MM-DD");
+      const eventDateFormatted = moment(date, "YYYY-MM-DD").format(
+        "YYYY-MM-DD"
+      );
+
+      if (bookingDetails?.fld_consultantid == consultantId) {
+        console.log(
+          "Refreshing booking details due to matching bookingConfirmed event"
+        );
+        fetchBookingDetailsWithRc();
+      }
+    };
+
+    socket.on("bookingConfirmed", handleBookingConfirmed);
+
+    return () => {
+      socket.off("bookingConfirmed", handleBookingConfirmed);
+    };
+  }, [user.id, bookingDetails?.fld_consultantid]);
+
+  ////////socket////////
 
   const handleTimezoneChange = (e) => {
     setSelectedTimezone(e.target.value);
   };
 
   const handleDateSelect = async (dateStr, dayKey, emptySlot = true) => {
-  setLoadingSlots(true);
-  setSelectedDate(dateStr);
-  if(emptySlot){
-    setSelectedSlot(""); 
-  }
+    setLoadingSlots(true);
+    setSelectedDate(dateStr);
+    if (emptySlot) {
+      setSelectedSlot("");
+    }
 
-  if (!consultantSettings) return;
+    if (!consultantSettings) return;
 
-  const dayFieldMap = {
-    sun: "fld_sun_time_data",
-    mon: "fld_mon_time_data",
-    tue: "fld_tue_time_data",
-    wed: "fld_wed_time_data",
-    thu: "fld_thu_time_data",
-    fri: "fld_fri_time_data",
-    sat: "fld_sat_time_data",
+    const dayFieldMap = {
+      sun: "fld_sun_time_data",
+      mon: "fld_mon_time_data",
+      tue: "fld_tue_time_data",
+      wed: "fld_wed_time_data",
+      thu: "fld_thu_time_data",
+      fri: "fld_fri_time_data",
+      sat: "fld_sat_time_data",
+    };
+
+    const blockFieldMap = {
+      sun: "fld_sun_time_block",
+      mon: "fld_mon_time_block",
+      tue: "fld_tue_time_block",
+      wed: "fld_wed_time_block",
+      thu: "fld_thu_time_block",
+      fri: "fld_fri_time_block",
+      sat: "fld_sat_time_block",
+    };
+
+    const normalizeTime = (time) => moment(time, ["h:mm A"]).format("h:mm A");
+
+    const timeData = consultantSettings[dayFieldMap[dayKey]];
+    const blockData = consultantSettings[blockFieldMap[dayKey]] || "";
+
+    if (!timeData) return setAvailableSlots([]);
+
+    const blockedSlots = blockData
+      .split("-")
+      .map((s) => normalizeTime(s))
+      .filter((s) => s !== "");
+
+    const slotRanges = timeData.split("~");
+    let generatedSlots = [];
+
+    slotRanges.forEach((range) => {
+      const [start, end] = range.split("||");
+      if (!start || !end) return;
+
+      const [startHour, startMinute] = start.split(":").map(Number);
+      const [endHour, endMinute] = end.split(":").map(Number);
+
+      let current = moment().set({
+        hour: startHour,
+        minute: startMinute,
+        second: 0,
+        millisecond: 0,
+      });
+
+      let endTime = moment().set({
+        hour: endHour,
+        minute: endMinute,
+        second: 0,
+        millisecond: 0,
+      });
+
+      while (current <= endTime) {
+        const slot = current.format("h:mm A"); // format with Moment directly
+
+        const normalizedSlot = normalizeTime(slot);
+        if (!blockedSlots.includes(normalizedSlot)) {
+          generatedSlots.push(normalizedSlot);
+        }
+
+        current = current.clone().add(30, "minutes"); // add 30 min in Moment
+      }
+    });
+
+    try {
+      const res1 = await fetch(
+        "http://localhost:5000/api/helpers/getBookingData",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            consultantId: bookingDetails.fld_consultantid,
+            selectedDate: dateStr,
+            status: "Reject",
+            hideSubOption: "HIDE_SUB_OPT",
+            callExternalAssign: "No",
+            showAcceptedCall: "Yes",
+            checkType: "CHECK_BOTH",
+          }),
+        }
+      );
+
+      const data1 = await res1.json();
+
+      const res2 = await fetch(
+        "http://localhost:5000/api/helpers/getRcCallBookingRequest",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            consultantId: 143,
+            selectedDate: dateStr,
+          }),
+        }
+      );
+
+      const data2 = await res2.json();
+
+      const bookedSlots = [];
+
+      if (data1?.data?.length) {
+        data1.data.forEach((item) => {
+          if (!item.fld_booking_slot) return;
+
+          const normalizedSlot = normalizeTime(item.fld_booking_slot);
+          bookedSlots.push(normalizedSlot);
+
+          if (
+            item.fld_sale_type === "Postsales" &&
+            item.fld_call_confirmation_status === "Call Confirmed by Client" &&
+            item.fld_consultation_sts === "Accept"
+          ) {
+            const slotTime = new Date(`1970-01-01 ${normalizedSlot}`);
+            const prev = new Date(slotTime.getTime() - 30 * 60 * 1000);
+            const next = new Date(slotTime.getTime() + 30 * 60 * 1000);
+
+            const prevSlot = prev.toLocaleTimeString([], {
+              hour: "numeric",
+              minute: "2-digit",
+              hour12: true,
+            });
+
+            const nextSlot = next.toLocaleTimeString([], {
+              hour: "numeric",
+              minute: "2-digit",
+              hour12: true,
+            });
+
+            bookedSlots.push(normalizeTime(prevSlot));
+            bookedSlots.push(normalizeTime(nextSlot));
+          }
+        });
+      }
+
+      if (data2?.data?.length) {
+        data2.data.forEach((item) => {
+          if (item.slot_time) {
+            bookedSlots.push(normalizeTime(item.slot_time));
+          }
+        });
+      }
+
+      let finalAvailableSlots = generatedSlots.filter(
+        (slot) => !bookedSlots.includes(slot)
+      );
+
+      const selectedDate = moment(dateStr, "YYYY-MM-DD");
+      const today = moment();
+
+      if (selectedDate.isSame(today, "day")) {
+        const timeBufferMinutes =
+          bookingDetails.fld_sale_type === "Postsales" ? 4 * 60 : 30;
+
+        const minTime = moment().add(timeBufferMinutes, "minutes");
+
+        finalAvailableSlots = finalAvailableSlots.filter((slot) => {
+          const slotMoment = moment(slot, "h:mm A");
+
+          slotMoment.year(today.year()).month(today.month()).date(today.date());
+
+          return slotMoment.isSameOrAfter(minTime);
+        });
+      }
+
+      console.log("Generated:", generatedSlots);
+      console.log("Blocked:", blockedSlots);
+      console.log("Booked:", bookedSlots);
+      console.log("Available:", finalAvailableSlots);
+
+      setAvailableSlots(finalAvailableSlots);
+    } catch (error) {
+      console.error("Error fetching booking data:", error);
+      setAvailableSlots([]);
+    } finally {
+      setLoadingSlots(false);
+    }
   };
-
-  const blockFieldMap = {
-    sun: "fld_sun_time_block",
-    mon: "fld_mon_time_block",
-    tue: "fld_tue_time_block",
-    wed: "fld_wed_time_block",
-    thu: "fld_thu_time_block",
-    fri: "fld_fri_time_block",
-    sat: "fld_sat_time_block",
-  };
-
- const normalizeTime = (time) => moment(time, ["h:mm A"]).format("h:mm A");
-
-  const timeData = consultantSettings[dayFieldMap[dayKey]];
-  const blockData = consultantSettings[blockFieldMap[dayKey]] || "";
-
-  if (!timeData) return setAvailableSlots([]);
-
-  const blockedSlots = blockData
-    .split("-")
-    .map((s) => normalizeTime(s))
-    .filter((s) => s !== "");
-
-  const slotRanges = timeData.split("~");
-  let generatedSlots = [];
-
-  slotRanges.forEach((range) => {
-    const [start, end] = range.split("||");
-    if (!start || !end) return;
-
-    const [startHour, startMinute] = start.split(":").map(Number);
-    const [endHour, endMinute] = end.split(":").map(Number);
-
-    let current = moment().set({ hour: startHour, minute: startMinute, second: 0, millisecond: 0 });
-
-let endTime = moment().set({ hour: endHour, minute: endMinute, second: 0, millisecond: 0 });
-
-
-    while (current <= endTime) {
-      const slot = current.toLocaleTimeString([], {
-        hour: "numeric",
-        minute: "2-digit",
-        hour12: true,
-      });
-
-      const normalizedSlot = normalizeTime(slot);
-      if (!blockedSlots.includes(normalizedSlot)) {
-        generatedSlots.push(normalizedSlot);
-      }
-
-      current = new Date(current.getTime() + 30 * 60 * 1000); // 30 min
-    }
-  });
-
-  try {
-    const res1 = await fetch(
-      "https://callback-2suo.onrender.com/api/helpers/getBookingData",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          consultantId: bookingDetails.fld_consultantid,
-          selectedDate: dateStr,
-          status: "Reject",
-          hideSubOption: "HIDE_SUB_OPT",
-          callExternalAssign: "No",
-          showAcceptedCall: "Yes",
-          checkType: "CHECK_BOTH",
-        }),
-      }
-    );
-
-    const data1 = await res1.json();
-
-    const res2 = await fetch(
-      "https://callback-2suo.onrender.com/api/helpers/getRcCallBookingRequest",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          consultantId: 143,
-          selectedDate: dateStr,
-        }),
-      }
-    );
-
-    const data2 = await res2.json();
-
-    const bookedSlots = [];
-
-    if (data1?.data?.length) {
-      data1.data.forEach((item) => {
-        if (!item.fld_booking_slot) return;
-
-        const normalizedSlot = normalizeTime(item.fld_booking_slot);
-        bookedSlots.push(normalizedSlot);
-
-        if (
-          item.fld_sale_type === "Postsales" &&
-          item.fld_call_confirmation_status === "Call Confirmed by Client" &&
-          item.fld_consultation_sts === "Accept"
-        ) {
-          const slotTime = new Date(`1970-01-01 ${normalizedSlot}`);
-          const prev = new Date(slotTime.getTime() - 30 * 60 * 1000);
-          const next = new Date(slotTime.getTime() + 30 * 60 * 1000);
-
-          const prevSlot = prev.toLocaleTimeString([], {
-            hour: "numeric",
-            minute: "2-digit",
-            hour12: true,
-          });
-
-          const nextSlot = next.toLocaleTimeString([], {
-            hour: "numeric",
-            minute: "2-digit",
-            hour12: true,
-          });
-
-          bookedSlots.push(normalizeTime(prevSlot));
-          bookedSlots.push(normalizeTime(nextSlot));
-        }
-      });
-    }
-
-    if (data2?.data?.length) {
-      data2.data.forEach((item) => {
-        if (item.slot_time) {
-          bookedSlots.push(normalizeTime(item.slot_time));
-        }
-      });
-    }
-
-    let finalAvailableSlots = generatedSlots.filter(
-      (slot) => !bookedSlots.includes(slot)
-    );
-
-  
-    const selectedDateObj = new Date(dateStr);
-    const today = new Date();
-    
-  
-    if (selectedDateObj.toDateString() === today.toDateString()) {
-      const currentTime = new Date();
-      
-     
-      const timeBuffer = bookingDetails.fld_sale_type === "Postsales" ? 4 * 60 : 30; // 4 hours or 30 minutes in minutes
-      const minTime = new Date(currentTime.getTime() + timeBuffer * 60 * 1000);
-      
-      finalAvailableSlots = finalAvailableSlots.filter((slot) => {
-      
-        const [time, period] = slot.split(' ');
-        const [hour, minute] = time.split(':').map(Number);
-        
-        let slotHour = hour;
-        if (period === 'PM' && hour !== 12) {
-          slotHour += 12;
-        } else if (period === 'AM' && hour === 12) {
-          slotHour = 0;
-        }
-        
-        const slotTime = new Date();
-        slotTime.setHours(slotHour, minute, 0, 0);
-        
-        return slotTime >= minTime;
-      });
-    }
-
-    console.log("Generated:", generatedSlots);
-    console.log("Blocked:", blockedSlots);
-    console.log("Booked:", bookedSlots);
-    console.log("Available:", finalAvailableSlots);
-
-    setAvailableSlots(finalAvailableSlots);
-  } catch (error) {
-    console.error("Error fetching booking data:", error);
-    setAvailableSlots([]);
-  } finally {
-    setLoadingSlots(false);
-  }
-};
 
   const handleSubmit = async () => {
     if (!selectedDate) {
       toast.error("Please select a date");
       return;
     }
-      if ( !selectedSlot ) {
+    if (!selectedSlot) {
       toast.error("Please select a slot");
       return;
     }
-      if (!callLink) {
+    if (!callLink) {
       toast.error("Please enter link");
       return;
     }
-  
 
     try {
-        setIsSubmitting(true);
+      setIsSubmitting(true);
       const response = await fetch(
-        "https://callback-2suo.onrender.com/api/bookings/saveCallScheduling",
+        "http://localhost:5000/api/bookings/saveCallScheduling",
         {
           method: "POST",
           headers: {
@@ -307,7 +327,7 @@ let endTime = moment().set({ hour: endHour, minute: endMinute, second: 0, millis
         setSelectedSlot("");
 
         setTimeout(() => {
-          window.location.href = "https://callback-2suo.onrender.com/bookings";
+          window.location.href = "http://localhost:5000/bookings";
         }, 1500); // optional delay to let toast show
       } else {
         toast.errro("Failed to submit booking.");
@@ -315,7 +335,7 @@ let endTime = moment().set({ hour: endHour, minute: endMinute, second: 0, millis
     } catch (err) {
       console.error("Submission error:", err);
       toast.error("An error occurred during submission.");
-    }finally{
+    } finally {
       setIsSubmitting(false);
     }
   };
@@ -381,7 +401,7 @@ let endTime = moment().set({ hour: endHour, minute: endMinute, second: 0, millis
                     onChange={handleTimezoneChange}
                   >
                     {timezoneList.map((value, index) => (
-                      <option key={index} value={value.value}>
+                      <option key={index} value={value.timezone}>
                         {value.timezone}
                       </option>
                     ))}
@@ -452,10 +472,10 @@ let endTime = moment().set({ hour: endHour, minute: endMinute, second: 0, millis
                     <button
                       type="button"
                       onClick={handleSubmit}
-                       disabled={isSubmitting}
+                      disabled={isSubmitting}
                       className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
                     >
-                       {isSubmitting ? "Submit...":"Submitting"}
+                      {isSubmitting ? "Submit..." : "Submitting"}
                     </button>
 
                     {submitMessage && (

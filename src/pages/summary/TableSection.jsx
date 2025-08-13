@@ -107,7 +107,7 @@ const TableSection = ({
 
     try {
       const res = await fetch(
-        `https://callback-2suo.onrender.com/api/bookings/history/${bookingId}`
+        `http://localhost:5000/api/bookings/history/${bookingId}`
       );
       const result = await res.json();
       const data = result.status ? result.data : [];

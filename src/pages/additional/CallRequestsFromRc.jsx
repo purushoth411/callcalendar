@@ -9,6 +9,7 @@ import $ from "jquery";
 import SkeletonLoader from "../../components/SkeletonLoader";
 import moment from "moment/moment";
 import { RefreshCcw } from "lucide-react";
+import { getSocket } from "../../utils/Socket";
 function CallRequestsFromRc() {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
@@ -19,6 +20,32 @@ function CallRequestsFromRc() {
 
   const tableRef = useRef(null);
 
+  ///socket ////////
+
+  useEffect(() => {
+    const socket = getSocket();
+
+    const handleRcBookingUpdated = (rcBookingRow) => {
+      console.log("Socket Called - RC Booking Updated");
+      setCalls((prev) => {
+        const list = Array.isArray(prev) ? prev : [];
+        return list.map((booking) =>
+          booking.fld_call_request_id == rcBookingRow.id
+            ? rcBookingRow
+            : booking
+        );
+      });
+    };
+
+    socket.on("rcBookingUpdated", handleRcBookingUpdated);
+
+    return () => {
+      socket.off("rcBookingUpdated", handleRcBookingUpdated);
+    };
+  }, [user.id]);
+
+  ////////socket////////
+
   const fetchDatas = async () => {
     let crmId;
     if (user?.fld_admin_type == "EXECUTIVE") {
@@ -27,7 +54,7 @@ function CallRequestsFromRc() {
     try {
       setLoading(true);
       const response = await fetch(
-        "https://callback-2suo.onrender.com/api/additional/callrequestrc",
+        "http://localhost:5000/api/additional/callrequestrc",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -62,7 +89,7 @@ function CallRequestsFromRc() {
     {
       title: "Project ID",
       data: "project_id",
-      render: (data) => `<div class="text-gray-800">${data || "-"}</div>`,
+      render: (data) => `<div class="text-gray-800">${"123"+data || "-"}</div>`,
     },
     {
       title: "Milestone Name",
@@ -94,15 +121,13 @@ function CallRequestsFromRc() {
     {
       title: "Call Regarding",
       data: "call_regarding",
-      render: (data) =>
-        `<div class="text-gray-700 ">${data || "-"}</div>`,
+      render: (data) => `<div class="text-gray-700 ">${data || "-"}</div>`,
     },
     {
       title: "Message",
       data: "points_for_discussion",
       width: "200px",
-      render: (data) =>
-        `<div class="text-gray-700 ">${data || "-"}</div>`,
+      render: (data) => `<div class="text-gray-700 ">${data || "-"}</div>`,
     },
     {
       title: "Booking Info.",
