@@ -711,8 +711,8 @@ useEffect(()=>{
         toast.error("Please select a Consultant");
         return;
       } else if (!formData.secondary_consultant_id) {
-        toast.error("Please select a Secondary Consultant")
-        return;
+        //toast.error("Please select a Secondary Consultant")
+      //  return;
       } else if (!formData.projectid) {
         toast.error("Please select a Project ID");
         return;
@@ -749,15 +749,15 @@ useEffect(()=>{
         result.message === "Add Call Request Already Sent!"
       ) {
         toast.error(result.message);
-        fetchAllBookings();
-        setShowForm(false);
+       // fetchAllBookings();
+       // setShowForm(false);
       } else if (
         !result.status &&
         result.message === "Booking already exists"
       ) {
         toast.error(result.message);
-        fetchAllBookings();
-        setShowForm(false);
+       // fetchAllBookings();
+       // setShowForm(false);
       } else {
         toast.error("Something went wrong.");
       }
@@ -1166,7 +1166,7 @@ useEffect(()=>{
 
             {showReassignOptions &&
               formData.sale_type === "Presales" &&
-              formData.call_related_to === "direct_call" && (
+              (formData.call_related_to === "direct_call" || formData.call_related_to === "subject_area_related") && (
                 <div className="mb-4">
                   <label className="block mb-1">Sub Option</label>
                   <select

@@ -158,83 +158,85 @@ export default function ExternalCalls() {
   `;
   };
 
-  const columns = [
-    {
-      title: "Client",
-      data: "user_name",
-      render: (data, type, row) => {
-        const bookingId = row.bookingid || row.fld_booking_id || "";
-        return `
-        
-    <button class="details-btn font-medium text-blue-600 hover:underline cursor-pointer" data-id="${bookingId}">
-        ${data || "N/A"} - ${row.fld_booking_id}
-      </button>
+ let columns = [
+  {
+    title: "Client",
+    data: "user_name",
+    render: (data, type, row) => {
+      const bookingId = row.bookingid || row.fld_booking_id || "";
+      return `
+        <button class="details-btn font-medium text-blue-600 hover:underline cursor-pointer" data-id="${bookingId}">
+          ${data || "N/A"} - ${row.fld_booking_id}
+        </button>
       `;
-      },
     },
-    user.fld_admin_type == "SUPERADMIN" ||
-    user.fld_admin_type == "SUBADMIN" ||
-    user.fld_admin_type == "EXECUTIVE"
-      ? {
-          title: "Consultant",
-          data: "fld_consultant_name",
-          render: (data) => `<div class="text-gray-700">${data || "—"}</div>`,
-        }
-      : false,
-    user.fld_admin_type !== "EXECUTIVE"
-      ? {
-          title: "Added By",
-          data: "crm_name",
-          render: (data) => `<div class="text-gray-700">${data || "—"}</div>`,
-        }
-      : false,
-    {
-      title: "Booking Information",
-      data: null,
-      render: (data, type, row) => {
-        const hasBookingInfo = row.fld_booking_date && row.fld_booking_slot;
-        const formatted = hasBookingInfo
-          ? formatBookingDateTime(row.fld_booking_date, row.fld_booking_slot)
-          : "—";
+  },
+  user.fld_admin_type == "SUPERADMIN" ||
+  user.fld_admin_type == "SUBADMIN" ||
+  user.fld_admin_type == "EXECUTIVE"
+    ? {
+        title: "Consultant",
+        data: "fld_consultant_name",
+        render: (data) => `<div class="text-gray-700">${data || "—"}</div>`,
+      }
+    : null,
+  user.fld_admin_type !== "EXECUTIVE"
+    ? {
+        title: "Added By",
+        data: "crm_name",
+        render: (data) => `<div class="text-gray-700">${data || "—"}</div>`,
+      }
+    : null,
+  {
+    title: "Booking Information",
+    data: null,
+    render: (data, type, row) => {
+      const hasBookingInfo =
+        row.fld_booking_date &&
+        row.fld_booking_slot &&
+        row.fld_booking_date != null &&
+        row.fld_booking_slot != null;
 
-        const historyButton = hasBookingInfo
-          ? `<button class="show-history-btn text-xs px-2 py-1 rounded" 
-                  data-booking-id="${row.bookingid}">
-            ⏳ 
-         </button>`
-          : "";
+      const formatted = hasBookingInfo
+        ? formatBookingDateTime(row.fld_booking_date, row.fld_booking_slot)
+        : "—";
 
-        return `
-      <div class="flex items-center gap-2">
-        <div class="text-gray-600">${formatted}</div>
-        ${historyButton}
-      </div>
-    `;
-      },
-    },
+      const historyButton = hasBookingInfo
+        ? `<button class="show-history-btn text-xs px-2 py-1 rounded" 
+                data-booking-id="${row.bookingid}">
+              ⏳ 
+           </button>`
+        : "";
 
-    {
-      title: "Sale Type",
-      data: "fld_sale_type",
-      render: (data) =>
-        `<div class="text-indigo-700 font-medium text-sm">${data || "—"}</div>`,
+      return `
+        <div class="flex items-center gap-2">
+          <div class="text-gray-600">${formatted}</div>
+          ${historyButton}
+        </div>
+      `;
     },
-    {
-      title: "Status",
-      data: "fld_consultation_sts",
-      render: (data) => {
-        const statusColor =
-          data === "Completed"
-            ? "text-green-600"
-            : data === "Pending"
-            ? "text-orange-600"
-            : "text-gray-600";
-        return `<span class="${statusColor} font-semibold">${
-          data || "—"
-        }</span>`;
-      },
+  },
+  {
+    title: "Sale Type",
+    data: "fld_sale_type",
+    render: (data) =>
+      `<div class="text-indigo-700 font-medium text-sm">${data || "—"}</div>`,
+  },
+  {
+    title: "Status",
+    data: "fld_consultation_sts",
+    render: (data) => {
+      const statusColor =
+        data === "Completed"
+          ? "text-green-600"
+          : data === "Pending"
+          ? "text-orange-600"
+          : "text-gray-600";
+      return `<span class="${statusColor} font-semibold">${data || "—"}</span>`;
     },
-  ];
+  },
+].filter(Boolean); // <-- removes null/false entries
+
 
   const tableOptions = {
     responsive: true,
