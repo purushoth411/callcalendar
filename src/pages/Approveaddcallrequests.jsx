@@ -24,11 +24,38 @@ export default function Approveaddcallrequests() {
     getAllApproveaddcallrequests();
   }, []);
 
+  ///socket ////////
+
+useEffect(() => {
+  const socket = getSocket();
+
+  const handleUpdatedCallRequestStatus = ({ id, status }) => {
+    console.log("Socket Called - Approved Call Request");
+    setApproveaddcallrequests((prev) => {
+      if (!Array.isArray(prev)) return prev;
+      return prev.map((call) =>
+        String(call.id) === String(id)
+          ? { ...call, followstatus: status }
+          : call
+      );
+    });
+  };
+
+  socket.on("updatedCallRequestStatus", handleUpdatedCallRequestStatus);
+
+  return () => {
+    socket.off("updatedCallRequestStatus", handleUpdatedCallRequestStatus);
+  };
+}, [user.id]);
+
+
+  ///socket
+
   const getAllApproveaddcallrequests = async () => {
     try {
       setIsLoading(true);
       const response = await fetch(
-        "http://localhost:5000/api/approveaddcallrequests/getAllApproveaddcallrequests"
+        "https://callback-2suo.onrender.com/api/approveaddcallrequests/getAllApproveaddcallrequests"
       );
       const result = await response.json();
       
@@ -48,7 +75,7 @@ export default function Approveaddcallrequests() {
   const updateApproveaddcallrequestStatus = async (approveData, approveaddcallrequestId, status) => {
     try {
       const res = await fetch(
-        `http://localhost:5000/api/approveaddcallrequests/update-approveaddcallrequest-status/${approveaddcallrequestId}`,
+        `https://callback-2suo.onrender.com/api/approveaddcallrequests/update-approveaddcallrequest-status/${approveaddcallrequestId}`,
         {
           method: "PUT",
           headers: {

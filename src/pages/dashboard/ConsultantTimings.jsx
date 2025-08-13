@@ -63,7 +63,7 @@ function ConsultantTimings() {
   const fetchAdmins = async (type, status, setter) => {
     try {
       const response = await fetch(
-        "http://localhost:5000/api/helpers/getAdmin",
+        "https://callback-2suo.onrender.com/api/helpers/getAdmin",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -92,7 +92,7 @@ function ConsultantTimings() {
     setConsultantSettings(null);
     try {
       const response = await fetch(
-        "http://localhost:5000/api/dashboard/getconsultantsettings",
+        "https://callback-2suo.onrender.com/api/dashboard/getconsultantsettings",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -261,7 +261,7 @@ function ConsultantTimings() {
 
       // Submit to API
       const response = await fetch(
-        "http://localhost:5000/api/dashboard/saveconsultantsettings",
+        "https://callback-2suo.onrender.com/api/dashboard/saveconsultantsettings",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

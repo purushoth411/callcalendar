@@ -55,7 +55,7 @@ export default function ExternalCalls() {
       setIsLoading(true);
 
       const response = await fetch(
-        "http://localhost:5000/api/additional/getexternalcalls",
+        "https://callback-2suo.onrender.com/api/additional/getexternalcalls",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -90,7 +90,7 @@ export default function ExternalCalls() {
 
     try {
       const res = await fetch(
-        `http://localhost:5000/api/bookings/history/${bookingId}`
+        `https://callback-2suo.onrender.com/api/bookings/history/${bookingId}`
       );
       const result = await res.json();
 
