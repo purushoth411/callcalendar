@@ -99,7 +99,7 @@ export default function Users() {
       };
 
       const response = await fetch(
-        "https://callback-2suo.onrender.com/api/users/getallusers",
+        "http://localhost:5000/api/users/getallusers",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -124,7 +124,7 @@ export default function Users() {
   const getAllTeams = async () => {
     try {
       const response = await fetch(
-        "https://callback-2suo.onrender.com/api/helpers/getAllActiveTeams",
+        "http://localhost:5000/api/helpers/getAllActiveTeams",
         {
           method: "GET",
           headers: { "Content-Type": "application/json" },
@@ -189,7 +189,7 @@ export default function Users() {
 
     try {
       setIsSubmitting(true);
-      const response = await fetch("https://callback-2suo.onrender.com/api/users/addUser", {
+      const response = await fetch("http://localhost:5000/api/users/addUser", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -216,7 +216,7 @@ export default function Users() {
   const getUserCount = async () => {
     try {
       const response = await fetch(
-        "https://callback-2suo.onrender.com/api/users/getusercount",
+        "http://localhost:5000/api/users/getusercount",
         {
           method: "GET",
           headers: { "Content-Type": "application/json" },
@@ -237,7 +237,7 @@ export default function Users() {
   const updateUserStatus = async (userId, status) => {
     try {
       const res = await fetch(
-        `https://callback-2suo.onrender.com/api/users/update-status/${userId}`,
+        `http://localhost:5000/api/users/update-status/${userId}`,
         {
           method: "PUT",
           headers: {
@@ -262,7 +262,7 @@ export default function Users() {
   const updateUserAttendance = async (userId, attendance) => {
     try {
       const res = await fetch(
-        `https://callback-2suo.onrender.com/api/users/updateAttendance/${userId}`,
+        `http://localhost:5000/api/users/updateAttendance/${userId}`,
         {
           method: "PUT",
           headers: {
@@ -304,6 +304,12 @@ export default function Users() {
       title: "Username",
       data: "fld_username",
       orderable: true,
+      render: (data) => `<div class="text-gray-600">${data || ""}</div>`,
+    },
+    {
+      title: "Password",
+      data: "fld_decrypt_password",
+      orderable: false,
       render: (data) => `<div class="text-gray-600">${data || ""}</div>`,
     },
     {

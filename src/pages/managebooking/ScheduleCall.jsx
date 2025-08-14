@@ -8,6 +8,7 @@ import { TimeZones } from "../../helpers/TimeZones";
 import moment from "moment";
 import { getSocket } from "../../utils/Socket.jsx";
 import { useAuth } from "../../utils/idb.jsx";
+import { formatDate } from "../../helpers/CommonHelper.jsx";
 
 const ScheduleCall = () => {
   const {user}=useAuth();
@@ -31,7 +32,7 @@ const ScheduleCall = () => {
   const fetchBookingDetailsWithRc = async () => {
     try {
       const response = await fetch(
-        `https://callback-2suo.onrender.com/api/helpers/getBookingDetailsWithRc?id=${bookingId}`
+        `http://localhost:5000/api/helpers/getBookingDetailsWithRc?id=${bookingId}`
       );
       const data = await response.json();
 
@@ -168,7 +169,7 @@ const ScheduleCall = () => {
 
     try {
       const res1 = await fetch(
-        "https://callback-2suo.onrender.com/api/helpers/getBookingData",
+        "http://localhost:5000/api/helpers/getBookingData",
         {
           method: "POST",
           headers: {
@@ -189,7 +190,7 @@ const ScheduleCall = () => {
       const data1 = await res1.json();
 
       const res2 = await fetch(
-        "https://callback-2suo.onrender.com/api/helpers/getRcCallBookingRequest",
+        "http://localhost:5000/api/helpers/getRcCallBookingRequest",
         {
           method: "POST",
           headers: {
@@ -301,7 +302,7 @@ const ScheduleCall = () => {
     try {
       setIsSubmitting(true);
       const response = await fetch(
-        "https://callback-2suo.onrender.com/api/bookings/saveCallScheduling",
+        "http://localhost:5000/api/bookings/saveCallScheduling",
         {
           method: "POST",
           headers: {
@@ -315,6 +316,7 @@ const ScheduleCall = () => {
             slot: selectedSlot,
             callLink,
             timezone: selectedTimezone,
+            user:user,
           }),
         }
       );
@@ -327,8 +329,8 @@ const ScheduleCall = () => {
         setSelectedSlot("");
 
         setTimeout(() => {
-          window.location.href = "https://callback-2suo.onrender.com/bookings";
-        }, 1500); // optional delay to let toast show
+          window.location.href = "http://localhost:5173/bookings";
+        }, 1500); 
       } else {
         toast.errro("Failed to submit booking.");
       }
@@ -412,7 +414,7 @@ const ScheduleCall = () => {
                 <div>
                   <h5 className="text-gray-800 font-semibold mb-2">
                     {selectedDate
-                      ? `Available Slots for ${selectedDate}`
+                      ? `Available Slots for ${formatDate(selectedDate)}`
                       : "Select a date to view slots"}
                   </h5>
 
@@ -475,7 +477,7 @@ const ScheduleCall = () => {
                       disabled={isSubmitting}
                       className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
                     >
-                      {isSubmitting ? "Submit..." : "Submitting"}
+                      {isSubmitting ? "Submitting..." : "Submit"}
                     </button>
 
                     {submitMessage && (
