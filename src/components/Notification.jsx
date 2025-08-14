@@ -138,8 +138,8 @@ const handleNotificationClick = async (notif) => {
       </button>
 
       {showDropdown && (
-        <div className="origin-top-right absolute right-0 mt-2 w-72 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
-          <div className="p-2 max-h-60 overflow-y-auto">
+        <div className="origin-top-right absolute right-0 mt-2 w-72 rounded shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+          <div className="p-0.5 max-h-60 overflow-y-auto">
             {loading ? (
               <>
                 {[...Array(5)].map((_, index) => (
@@ -160,10 +160,10 @@ const handleNotificationClick = async (notif) => {
               notifications.map((notif, idx) => (
                 <div  onClick={()=>handleNotificationClick(notif)}
                   key={idx}
-                  className="border-b last:border-b-0 border-gray-200 px-3 py-2 hover:bg-gray-100 cursor-pointer rounded"
+                  className="border-b last:border-b-0 border-gray-200 px-2 py-1 hover:bg-gray-100 cursor-pointer rounded"
                 >
-                  <p className="text-sm text-gray-700">{notif.fld_message}</p>
-                  <p className="text-xs text-gray-400">
+                  <p className="text-[12px] text-gray-700">{notif.fld_message}</p>
+                  <p className="text-[10px] text-gray-400">
                     {new Date(notif.fld_addedon).toLocaleDateString("en-GB", {
                       day: "2-digit",
                       month: "short",

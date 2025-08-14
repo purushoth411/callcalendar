@@ -15,7 +15,7 @@ const ConsultantInformation = ({ bookingData, user, bgColor }) => {
           className="p-4 rounded-lg bg-[#f1efff] border border-[#c1b9ff]"
           // style={{ backgroundColor: bgColor }}
         >
-          <h5 className="text-[15px] font-semibold mb-4 text-gray-800">
+          <h5 className="text-[14px] font-semibold mb-4 text-gray-800">
             Consultant Information
           </h5>
 
@@ -23,7 +23,7 @@ const ConsultantInformation = ({ bookingData, user, bgColor }) => {
             <div className="flex items-start gap-2">
               <User size={14} className="mt-0.5" />
               <div>
-                <div className="text-sm font-medium text-gray-700 !mb-2">
+                <div className="text-[12px] font-semibold text-gray-700 !mb-2">
                   Consultant Id
                 </div>
                 <p className="text-gray-900">
@@ -34,7 +34,7 @@ const ConsultantInformation = ({ bookingData, user, bgColor }) => {
             <div className="flex items-start gap-2">
               <User size={14} className="mt-0.5" />
               <div>
-                <div className="text-sm font-medium text-gray-700 !mb-2">
+                <div className="text-[12px] font-semibold text-gray-700 !mb-2">
                   Name
                 </div>
                 <p className="text-gray-900">
@@ -45,7 +45,7 @@ const ConsultantInformation = ({ bookingData, user, bgColor }) => {
             <div className="flex items-start gap-2">
               <Mail size={14} className="mt-0.5" />
               <div>
-                <div className="text-sm font-medium text-gray-700 !mb-2">
+                <div className="text-[12px] font-semibold text-gray-700 !mb-2">
                   Email
                 </div>
                 <p className="text-gray-900">
@@ -64,14 +64,14 @@ const ConsultantInformation = ({ bookingData, user, bgColor }) => {
             className="p-4 rounded-lg mb-4 bg-[#f1efff] border border-[#c1b9ff]"
             // style={{ backgroundColor: bgColor }}
           >
-            <h5 className="text-[15px] font-semibold mb-4 text-gray-800">
+            <h5 className="text-[14px] font-semibold mb-4 text-gray-800">
               Secondary Consultant Information
             </h5>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="flex items-start gap-2">
                 <User size={14} className="mt-0.5" />
                 <div>
-                  <div className="text-sm font-medium text-gray-700 !mb-2">
+                  <div className="text-[12px] font-semibold text-gray-700 !mb-2">
                     Consultant Id
                   </div>
                   <p className="text-gray-900">
@@ -82,7 +82,7 @@ const ConsultantInformation = ({ bookingData, user, bgColor }) => {
               <div className="flex items-start gap-2">
                 <User size={14} className="mt-0.5" />
                 <div>
-                  <div className="text-sm font-medium text-gray-700 !mb-2">
+                  <div className="text-[12px] font-semibold text-gray-700 !mb-2">
                     Name
                   </div>
                   <p className="text-gray-900">
@@ -93,7 +93,7 @@ const ConsultantInformation = ({ bookingData, user, bgColor }) => {
               <div className="flex items-start gap-2">
                 <Mail size={14} className="mt-0.5" />
                 <div>
-                  <div className="text-sm font-medium text-gray-700 !mb-2">
+                  <div className="text-[12px] font-semibold text-gray-700 !mb-2">
                     Email
                   </div>
                   <p className="text-gray-900">

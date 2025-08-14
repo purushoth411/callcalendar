@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MessageCircle, Send } from "lucide-react";
+import { MessageCircle, Send, SendIcon } from "lucide-react";
 import toast from "react-hot-toast";
 
 const ChatBox = ({ bookingId, user, messageData, onSend,isMsgSending }) => {
@@ -42,15 +42,16 @@ const ChatBox = ({ bookingId, user, messageData, onSend,isMsgSending }) => {
     user?.fld_admin_type === "EXECUTIVE";
 
   return (
-    <div className="bg-white  border border-gray-200  rounded-md p-4 w-[50%] mt-6">
-      <div className="flex items-center gap-2 mb-3 pb-2">
-        <MessageCircle className="text-gray-700" />
-        <h5 className="font-semibold text-gray-700 text-lg">Chat</h5>
-      </div>
+    <div className="bg-white  border border-gray-200  rounded-md p-3 ">
+      
+      <h2 className="text-[14px] font-semibold text-gray-900 mb-4 flex items-center border-b border-gray-300 pb-3 mb-3">
+          <MessageCircle size={16} className="mr-2" />
+          Chat
+        </h2>
 
-      <div className="max-h-64 overflow-y-auto space-y-4 p-1 px-2 bg-white border border-gray-200 rounded-sm" id="messagebox">
+      <div className="max-h-64 overflow-y-auto space-y-4 bg-white" id="messagebox">
         {messageData.length === 0 ? (
-          <p className="text-gray-500 text-sm">No messages yet.</p>
+          <p className="text-red-700 text-[12px] bg-red-50 p-2 rounded">No messages yet.</p>
         ) : (
           messageData.map((msg, idx) => {
             const isSender = msg.fld_sender_id === user.id;
@@ -61,19 +62,19 @@ const ChatBox = ({ bookingId, user, messageData, onSend,isMsgSending }) => {
                 className={`flex ${isSender ? "justify-end" : "justify-start"}`}
               >
                 <div
-                  className={`max-w-md px-4 py-3 rounded-lg text-sm shadow ${
+                  className={`max-w-md px-2 py-2 rounded-lg text-sm  ${
                     isSender
                       ? "bg-blue-600 text-white rounded-br-none"
-                      : "bg-white border text-gray-800 rounded-bl-none"
+                      : "bg-white border border-gray-500 text-gray-800 rounded-bl-none"
                   }`}
                 >
                   {!isSender && (
-                    <div className="text-xs font-semibold text-gray-500 mb-1">
+                    <div className="text-[12px] font-semibold text-orange-500 mb-1">
                       {msg.sender_name}
                     </div>
                   )}
-                  <div className="whitespace-pre-wrap">{msg.fld_message}</div>
-                  <div className="text-[11px] text-right mt-1 text-gray-300">
+                  <div className="whitespace-pre-wrap text-[13px]">{msg.fld_message}</div>
+                  <div className="text-[10px] text-right mt-1 text-gray-400">
                     {formatDateTime(msg.fld_addedon)}
                     {msg.fld_read_time && (
                       <div className="italic mt-1 text-right">
@@ -97,14 +98,14 @@ const ChatBox = ({ bookingId, user, messageData, onSend,isMsgSending }) => {
                 value={newMsg}
                 onChange={(e) => setNewMsg(e.target.value)}
                 placeholder="Type your message..."
-                className="flex-1 border border-gray-300 rounded p-1 px-2 text-[13px] resize-none "
+                className="flex-1 border border-gray-300 rounded p-1 px-2 text-[12px] resize-none "
               />
               <button
                 onClick={handleSend}
                 disabled={isMsgSending}
-                className={`${isMsgSending? "bg-[#ff6800]" : "bg-[#ff6800]"} text-white px-3 py-1  rounded flex`}
+                className={`${isMsgSending? "bg-[#ff6800]" : "bg-[#ff6800]"} text-white px-3 py-1  rounded flex flex gap-1 items-center text-[12px]`}
               >
-                {isMsgSending ?"Sending...":"Send"}<Send size={15}/>
+                {isMsgSending ?"Sending...":"Send"} <SendIcon size={11}/>
               </button>
             </div>
           ) : (

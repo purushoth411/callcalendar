@@ -413,9 +413,9 @@ table.dataTable.display tbody tr td:last-child a:hover {
   background-color: var(--color-green-800);
 }
 
-table.dataTable tbody tr:nth-child(odd) {
+/* table.dataTable tbody tr:nth-child(odd) {
   background-color: transparent;
-}
+} */
 
 .show-history-btn {
   padding: 2px 4px;

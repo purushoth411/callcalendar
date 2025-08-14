@@ -1,3 +1,4 @@
+import { User } from "lucide-react";
 import React from "react";
 
 const UserInformation = ({ data, user, bgColor,externalCallInfo}) => {
@@ -9,195 +10,296 @@ const UserInformation = ({ data, user, bgColor,externalCallInfo}) => {
   return (
     <>
     <div className="p-4 rounded-lg mb-6 shadow bg-[#f1efff] border border-[#c1b9ff] " >
-      <h5 className="text-[15px] font-semibold mb-4 text-gray-800">User Information</h5>
+      <h5 className="text-[14px] font-semibold mb-4 text-gray-800">User Information</h5>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 the_left">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Client Code / Ref Id */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            <i className="fa fa-user mr-1" aria-hidden="true"></i>
-            {data.fld_sale_type === "Presales" ? "Instacrm Ref Id" : "Client Code"}
-          </label>
-          <p className="text-gray-900">{data.fld_client_id}</p>
+        <div className="flex items-start gap-2">
+          <i className="fa fa-user mt-1" aria-hidden="true"></i>
+          <div>
+            <div className="text-[12px] font-semibold text-gray-700 !mb-2">
+              {data.fld_sale_type === "Presales" ? "Instacrm Ref Id" : "Client Code"}
+            </div>
+            <p className="text-gray-900">
+              {data.fld_client_id}
+            </p>
+          </div>
         </div>
+        
 
         {/* Name */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            <i className="fa fa-user mr-1" aria-hidden="true"></i> Name
-          </label>
-          <p className="text-gray-900">{data.user_name}</p>
+        <div className="flex items-start gap-2">
+          <i className="fa fa-user mt-1" aria-hidden="true"></i>
+          <div>
+            <div className="text-[12px] font-semibold text-gray-700 !mb-2">
+              Name
+            </div>
+            <p className="text-gray-900">
+              {data.user_name}
+            </p>
+          </div>
         </div>
+        
 
         {/* Email & Phone - only for non-consultants */}
         {!isConsultant && (
           <>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                <i className="fa fa-envelope-o mr-1" aria-hidden="true"></i> Email
-              </label>
-              <p className="text-gray-900">{data.user_email}</p>
+            
+            <div className="flex items-start gap-2">
+              <i className="fa fa-envelope-o mt-1" aria-hidden="true"></i>
+              <div>
+                <div className="text-[12px] font-semibold text-gray-700 !mb-2">
+                  Email
+                </div>
+                <p className="text-gray-900">
+                  {data.user_email}
+                </p>
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                <i className="fa fa-phone mr-1" aria-hidden="true"></i> Phone
-              </label>
-              <p className="text-gray-900">{data.user_phone}</p>
+            <div className="flex items-start gap-2">
+              <i className="fa fa-phone mt-1" aria-hidden="true"></i>
+              <div>
+                <div className="text-[12px] font-semibold text-gray-700 !mb-2">
+                  Phone
+                </div>
+                <p className="text-gray-900">
+                  {data.user_phone}
+                </p>
+              </div>
             </div>
+            
+
           </>
         )}
 
         {/* Sale Type */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            <i className="fa fa-key mr-1" aria-hidden="true"></i> Call Type
-          </label>
-          <p className="text-gray-900">{data.fld_sale_type}</p>
+        <div className="flex items-start gap-2">
+          <i className="fa fa-key mt-1" aria-hidden="true"></i>
+          <div>
+            <div className="text-[12px] font-semibold text-gray-700 !mb-2">
+              Call Type
+            </div>
+            <p className="text-gray-900">
+              {data.fld_sale_type}
+            </p>
+          </div>
         </div>
+        
 
         {/* Topic of Research */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            <i className="fa fa-key mr-1" aria-hidden="true"></i> Topic of Research
-          </label>
-          <p className="text-gray-900">{data.fld_topic_of_research}</p>
+        <div className="flex items-start gap-2">
+          <i className="fa fa-key mt-1" aria-hidden="true"></i>
+          <div>
+            <div className="text-[12px] font-semibold text-gray-700 !mb-2">
+              Topic of Research
+            </div>
+            <p className="text-gray-900">
+              {data.fld_topic_of_research}
+            </p>
+          </div>
         </div>
+        
 
         {/* Call Regarding */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            <i className="fa fa-key mr-1" aria-hidden="true"></i> Call Regarding
-          </label>
-          <p className="text-gray-900">{data.fld_call_regarding}</p>
+        <div className="flex items-start gap-2">
+          <i className="fa fa-key mt-1" aria-hidden="true"></i>
+          <div>
+            <div className="text-[12px] font-semibold text-gray-700 !mb-2">
+              Call Regarding
+            </div>
+            <p className="text-gray-900">
+              {data.fld_call_regarding}
+            </p>
+          </div>
         </div>
-
+        
         {/* Call Joining Link */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            <i className="fa fa-key mr-1" aria-hidden="true"></i> Call Joining Link
-          </label>
-          <p className="text-gray-900">
-            {["NA", "na"].includes(data.fld_call_joining_link) ? (
-              data.fld_call_joining_link
-            ) : (
-              <a href={data.fld_call_joining_link} target="_blank" rel="noreferrer" className="text-blue-600 underline">
-                {data.fld_call_joining_link}
-              </a>
-            )}
-          </p>
+        <div className="flex items-start gap-2">
+          <i className="fa fa-key mt-1" aria-hidden="true"></i>
+          <div className="truncate ">
+            <div className="text-[12px] font-semibold text-gray-700 !mb-2">
+              Call Joining Link
+            </div>
+            <p className="text-gray-900 truncate w-full">
+              {["NA", "na"].includes(data.fld_call_joining_link) ? (
+                data.fld_call_joining_link
+              ) : (
+                <a title={data.fld_call_joining_link} href={data.fld_call_joining_link} target="_blank" rel="noreferrer" className="text-blue-600 underline ">
+                  {data.fld_call_joining_link}
+                </a>
+              )}
+            </p>
+          </div>
         </div>
+        
 
         {/* Duration */}
         {data.fld_durations && (
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              <i className="fa fa-clock-o mr-1" aria-hidden="true"></i> Duration
-            </label>
-            <p className="text-gray-900">{data.fld_durations}</p>
+          <div className="flex items-start gap-2">
+            <i className="fa fa-clock-o mt-1" aria-hidden="true"></i>
+            <div>
+              <div className="text-[12px] font-semibold text-gray-700 !mb-2">
+                Duration
+              </div>
+              <p className="text-gray-900">
+                {data.fld_durations}
+              </p>
+            </div>
           </div>
         )}
 
         {/* Call Type */}
         {data.fld_call_type && (
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              <i className="fa fa-key mr-1" aria-hidden="true"></i> Call Type
-            </label>
-            <p className="text-gray-900">{data.fld_call_type}</p>
+          <div className="flex items-start gap-2">
+            <i className="fa fa-key mt-1" aria-hidden="true"></i>
+            <div>
+              <div className="text-[12px] font-semibold text-gray-700 !mb-2">
+                Call Type
+              </div>
+              <p className="text-gray-900">
+                {data.fld_call_type}
+              </p>
+            </div>
           </div>
+          
         )}
 
         {/* Call Related To */}
         {data.fld_call_related_to && (
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              <i className="fa fa-key mr-1" aria-hidden="true"></i> Call Related To
-            </label>
-            <p className="text-gray-900">{formatText(data.fld_call_related_to)}</p>
+          <div className="flex items-start gap-2">
+            <i className="fa fa-key mt-1" aria-hidden="true"></i>
+            <div>
+              <div className="text-[12px] font-semibold text-gray-700 !mb-2">
+                Call Related To
+              </div>
+              <p className="text-gray-900">
+                {data.fld_call_related_to}
+              </p>
+            </div>
           </div>
+          
         )}
 
         {/* Consultant Sub Option */}
         {data.fld_consultant_another_option && (
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              <i className="fa fa-key mr-1" aria-hidden="true"></i> Consultant Sub Option
-            </label>
-            <p className="text-gray-900">
-              {data.fld_consultant_another_option === "TEAM"
+          <div className="flex items-start gap-2">
+            <i className="fa fa-key mt-1" aria-hidden="true"></i>
+            <div>
+              <div className="text-[12px] font-semibold text-gray-700 !mb-2">
+                Consultant Sub Option
+              </div>
+              <p className="text-gray-900">
+                {data.fld_consultant_another_option === "TEAM"
                 ? "Assign Call to Team Member"
                 : `Assign Call to ${data.admin_name}`}
-            </p>
+              </p>
+            </div>
           </div>
+          
         )}
 
         {/* Asana Link */}
         {data.fld_asana_link && (
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              <i className="fa fa-link mr-1" aria-hidden="true"></i> Asana Link / Quote Id
-            </label>
-            <p className="text-gray-900 the_break">{data.fld_asana_link}</p>
+          <div className="flex items-start gap-2">
+            <i className="fa fa-link mt-1" aria-hidden="true"></i>
+            <div>
+              <div className="text-[12px] font-semibold text-gray-700 !mb-2">
+                Asana Link / Quote Id
+              </div>
+              <p className="text-gray-900">
+                {data.fld_asana_link}
+              </p>
+            </div>
           </div>
+          
         )}
 
         {/* Subject Area */}
         {data.fld_subject_area && (
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              <i className="fa fa-book mr-1" aria-hidden="true"></i> Subject Area
-            </label>
-            <p className="text-gray-900">{data.fld_subject_area}</p>
+          <div className="flex items-start gap-2">
+            <i className="fa fa-book mt-1" aria-hidden="true"></i>
+            <div>
+              <div className="text-[12px] font-semibold text-gray-700 !mb-2">
+                Subject Area
+              </div>
+              <p className="text-gray-900">
+                {data.fld_subject_area}
+              </p>
+            </div>
           </div>
+          
+          
         )}
 
         {/* RC Project Id */}
         {data.fld_rc_projectid && (
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              <i className="fa fa-key mr-1" aria-hidden="true"></i> RC Project Id
-            </label>
-            <p className="text-gray-900">{data.fld_rc_projectid}</p>
+          <div className="flex items-start gap-2">
+            <i className="fa fa-key mt-1" aria-hidden="true"></i>
+            <div>
+              <div className="text-[12px] font-semibold text-gray-700 !mb-2">
+                RC Project Id
+              </div>
+              <p className="text-gray-900">
+                {data.fld_rc_projectid}
+              </p>
+            </div>
           </div>
+          
         )}
 
         {/* RC Milestone Name */}
         {data.fld_rc_milestone_name && (
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              <i className="fa fa-flag mr-1" aria-hidden="true"></i> RC Milestone Name
-            </label>
-            <p className="text-gray-900">{data.fld_rc_milestone_name}</p>
+          <div className="flex items-start gap-2">
+            <i className="fa fa-flag mt-1" aria-hidden="true"></i>
+            <div>
+              <div className="text-[12px] font-semibold text-gray-700 !mb-2">
+                RC Milestone Name
+              </div>
+              <p className="text-gray-900">
+                {data.fld_rc_milestone_name}
+              </p>
+            </div>
           </div>
+          
         )}
       </div>
 
       {/* Internal Comments */}
       {data.fld_internal_comments && (
-        <div className="mt-6">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            <i className="fa fa-comment mr-1" aria-hidden="true"></i> Internal Comments
-          </label>
-          <p className="text-gray-900">{data.fld_internal_comments}</p>
+        <div className="flex items-start gap-2">
+          <i className="fa fa-comment mt-1" aria-hidden="true"></i>
+          <div>
+            <div className="text-[12px] font-semibold text-gray-700 !mb-2">
+              Internal Comments
+            </div>
+            <p className="text-gray-900">
+              {data.fld_internal_comments}
+            </p>
+          </div>
         </div>
+        
       )}
     </div>
-    {/* Booking Information */}
+
+
+
 {/* Booking Information */}
 {data.fld_booking_date && data.fld_booking_slot && (
   <div className={`p-4 rounded-lg mb-6 shadow mt-8 bg-[#f1efff] border border-[#c1b9ff]`} 
 
   >
-    <h5 className="text-[15px] font-semibold mb-4 text-gray-800">Booking Information</h5>
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 the_left">
+    <h5 className="text-[14px] font-semibold mb-4 text-gray-800">Booking Information</h5>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
       {/* Booking Date & Slot */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          <i className="fa fa-calendar mr-1" aria-hidden="true"></i> Booking Date & Time
-        </label>
-        <p className="text-gray-900">
-          {new Date(`${data.fld_booking_date} ${data.fld_booking_slot}`).toLocaleString("en-GB", {
+      <div className="flex items-start gap-2">
+          <i className="fa fa-calendar mt-1" aria-hidden="true"></i>
+          <div>
+            <div className="text-[12px] font-semibold text-gray-700 !mb-2">
+              Booking Date & Time
+            </div>
+            <p className="text-gray-900">
+              {new Date(`${data.fld_booking_date} ${data.fld_booking_slot}`).toLocaleString("en-GB", {
             weekday: "short",
             day: "2-digit",
             month: "short",
@@ -206,65 +308,100 @@ const UserInformation = ({ data, user, bgColor,externalCallInfo}) => {
             minute: "2-digit",
             hour12: true,
           })}
-        </p>
-      </div>
+            </p>
+          </div>
+        </div>
+     
 
       {/* No. of Hours for Call */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          <i className="fa fa-clock-o mr-1" aria-hidden="true"></i> No. of Hours for Call
-        </label>
-        <p className="text-gray-900">{data.fld_no_of_hours_for_call}</p>
+      <div className="flex items-start gap-2">
+        <i className="fa fa-clock-o mt-1" aria-hidden="true"></i>
+        <div>
+          <div className="text-[12px] font-semibold text-gray-700 !mb-2">
+            No. of Hours for Call
+          </div>
+          <p className="text-gray-900">
+            {data.fld_no_of_hours_for_call}
+          </p>
+        </div>
       </div>
+      
 
       {/* Timezone */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          <i className="fa fa-clock-o mr-1" aria-hidden="true"></i> Timezone
-        </label>
-        <p className="text-gray-900">{data.fld_timezone}</p>
+      <div className="flex items-start gap-2">
+        <i className="fa fa-clock-o mt-1" aria-hidden="true"></i>
+        <div>
+          <div className="text-[12px] font-semibold text-gray-700 !mb-2">
+            Timezone
+          </div>
+          <p className="text-gray-900">
+            {data.fld_timezone}
+          </p>
+        </div>
       </div>
+      
 
       {/* Booking ID */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          <i className="fa fa-list mr-1" aria-hidden="true"></i> Booking ID
-        </label>
-        <p className="text-gray-900">{data.fld_bookingcode}</p>
+      <div className="flex items-start gap-2">
+        <i className="fa fa-list mt-1" aria-hidden="true"></i>
+        <div>
+          <div className="text-[12px] font-semibold text-gray-700 !mb-2">
+            Booking ID
+          </div>
+          <p className="text-gray-900">
+            {data.fld_bookingcode}
+          </p>
+        </div>
       </div>
+      
 
       {/* Current Status */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          <i className="fa fa-list mr-1" aria-hidden="true"></i> Current Status
-        </label>
-        <p className="text-gray-900">
-          {data.fld_call_request_sts === "Accept"
+      <div className="flex items-start gap-2">
+        <i className="fa fa-list mt-1" aria-hidden="true"></i>
+        <div>
+          <div className="text-[12px] font-semibold text-gray-700 !mb-2">
+            Current Status
+          </div>
+          <p className="text-gray-900">
+            {data.fld_call_request_sts === "Accept"
             ? "Accepted"
             : data.fld_call_request_sts === "Reject"
             ? "Rejected"
             : data.fld_call_request_sts}
-        </p>
+          </p>
+        </div>
       </div>
+      
 
       {/* Client Status Details */}
       {data.fld_call_confirmation_status && (
+        <div className="flex items-start gap-2">
+        <i className="fa fa-key mt-1" aria-hidden="true"></i>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            <i className="fa fa-key mr-1" aria-hidden="true"></i> Client Status Details
-          </label>
-          <p className="text-gray-900">{data.fld_call_confirmation_status}</p>
+          <div className="text-[12px] font-semibold text-gray-700 !mb-2">
+            Client Status Details
+          </div>
+          <p className="text-gray-900">
+            {data.fld_call_confirmation_status}
+          </p>
         </div>
+      </div>
+        
       )}
 
       {/* Consultant Name */}
       {externalCallInfo?.fld_consultant_name && (
+        <div className="flex items-start gap-2">
+        <i className="fa fa-user mt-1" aria-hidden="true"></i>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            <i className="fa fa-user mr-1" aria-hidden="true"></i> Consultant Name
-          </label>
-          <p className="text-gray-900">{externalCallInfo.fld_consultant_name}</p>
+          <div className="text-[12px] font-semibold text-gray-700 !mb-2">
+            Consultant Name
+          </div>
+          <p className="text-gray-900">
+            {externalCallInfo.fld_consultant_name}
+          </p>
         </div>
+      </div>
       )}
     </div>
   </div>
