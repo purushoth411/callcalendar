@@ -116,7 +116,7 @@ const EditUser = ({
     try {
       setisUpdating(true);
       const res = await fetch(
-        `http://localhost:5000/api/users/update/${user_id}`,
+        `https://callback-2suo.onrender.com/api/users/update/${user_id}`,
         {
           method: "PUT",
           headers: {

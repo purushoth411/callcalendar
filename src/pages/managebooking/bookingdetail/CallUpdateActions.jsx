@@ -59,7 +59,7 @@ const CallUpdateActions = ({
   const fetchExternalCallCount = async (bookingId) => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/bookings/getExternalCallCount?bookingId=${bookingId}`
+        `https://callback-2suo.onrender.com/api/bookings/getExternalCallCount?bookingId=${bookingId}`
       );
       const data = await response.json();
 
@@ -272,21 +272,8 @@ const CallUpdateActions = ({
       return;
 
     try {
-<<<<<<< HEAD
-      const response = await fetch(`http://localhost:5000/api/bookings/checkCompletedCall`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: new URLSearchParams({
-          primaryconsultantid: consultantId,
-          clientemail: bookingData.fld_email,
-          saletype: bookingData.fld_sale_type,
-        }),
-      });
-=======
       const response = await fetch(
-        `http://localhost:5000/api/bookings/checkCompletedCall`,
+        `https://callback-2suo.onrender.com/api/bookings/checkCompletedCall`,
         {
           method: "POST",
           headers: {
@@ -299,7 +286,6 @@ const CallUpdateActions = ({
           }),
         }
       );
->>>>>>> 123d78c8eff5342a797f4d2ef0e10287e1534769
 
       const resultText = await response.text();
 
