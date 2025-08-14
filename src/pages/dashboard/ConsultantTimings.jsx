@@ -364,7 +364,12 @@ function ConsultantTimings() {
 
   return (
     <div className="">
-      <SocketHandler otherSetters={[{ setFn: setAllConsultants, isBookingList: false }]} />
+      <h4 className="text-[16px] font-semibold text-gray-900">
+        Change Consultant Timings
+      </h4>
+      <SocketHandler
+        otherSetters={[{ setFn: setAllConsultants, isBookingList: false }]}
+      />
       <div className="">
         <label className="block mb-2 text-sm font-medium text-gray-700">
           Select Consultant
@@ -485,7 +490,10 @@ function ConsultantTimings() {
                         key={index}
                         className="flex items-center justify-between p-2 bg-gray-50 rounded border border-gray-200"
                       >
-                        <span className="text-sm">{exclusion}</span>
+                        <span className="text-sm">
+                          {new Date(exclusion).toLocaleDateString("en-GB")}
+                        </span>
+
                         <button
                           type="button"
                           onClick={() => removeExclusion(index)}

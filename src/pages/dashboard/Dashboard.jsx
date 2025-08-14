@@ -17,17 +17,28 @@ function Dashboard() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const statuses = ["Accept", "Reject", "Cancelled", "Rescheduled", "Completed"];
+  const statuses = [
+    "Accept",
+    "Reject",
+    "Cancelled",
+    "Rescheduled",
+    "Completed",
+  ];
 
   const fetchParticularStatus = async (crmId, status) => {
     try {
-      const response = await fetch("http://localhost:5000/api/dashboard/getparticularstatuscalls", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ crm_id: crmId, status }),
-      });
+      const response = await fetch(
+        "http://localhost:5000/api/dashboard/getparticularstatuscalls",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ crm_id: crmId, status }),
+        }
+      );
       const result = await response.json();
-      return result.status && Array.isArray(result.data) ? result.data.length : 0;
+      return result.status && Array.isArray(result.data)
+        ? result.data.length
+        : 0;
     } catch (error) {
       console.error("Error fetching calls for status:", status, error);
       return 0;
@@ -52,25 +63,29 @@ function Dashboard() {
   };
 
   useEffect(() => {
-    if (user?.fld_admin_type === "SUPERADMIN" || user?.fld_admin_type === "EXECUTIVE") {
+    if (
+      user?.fld_admin_type === "SUPERADMIN" ||
+      user?.fld_admin_type === "EXECUTIVE"
+    ) {
       fetchAllStatuses();
     }
   }, [user]);
 
   const submitAndRedirect = (status) => {
     console.log("Redirect to", status);
-    
+
     navigate(`/bookings/${status}`);
   };
 
   return (
     <div className="">
-
-
-      {(user?.fld_admin_type === "SUPERADMIN" || user?.fld_admin_type === "EXECUTIVE") && (
+      {(user?.fld_admin_type === "SUPERADMIN" ||
+        user?.fld_admin_type === "EXECUTIVE") && (
         <div className="w-full">
           <div className="flex justify-between items-center flex-1 mb-4">
-            <h4 className="text-[16px] font-semibold text-gray-900">Call Status Summary</h4>
+            <h4 className="text-[16px] font-semibold text-gray-900">
+              Call Status Summary
+            </h4>
             <button
               onClick={fetchAllStatuses}
               className="bg-blue-600 text-white px-2 py-0.5 rounded hover:bg-blue-700 text-[12px] ml-2"
@@ -80,32 +95,35 @@ function Dashboard() {
             </button>
           </div>
 
-          
-            <div className="grid grid-cols-5 gap-2 justify-center">
-              {statuses.map((status) => (
-                <div
-                  key={status}
-                  className="bg-blue-50 hover:bg-blue-100 border border-blue-200 cursor-pointer text-center p-7 rounded shadow"
-                  onClick={() => submitAndRedirect(status)}
-                >
-                  <div className="font-semibold text-blue-700">{status}</div>
-                  <div className="mt-1 text-xl font-bold  flex justify-center items-center">
-                    {loading ? (<div className="w-5 h-5 animate-pulse bg-orange-500 rounded"></div>) :  <p className="bg-orange-500 text-white px-2 py-1 rounded text-sm">{callCounts[status]}</p>}
-                  </div>
+          <div className="grid grid-cols-5 gap-2 justify-center">
+            {statuses.map((status) => (
+              <div
+                key={status}
+                className="bg-blue-50 hover:bg-blue-100 border border-blue-200 cursor-pointer text-center p-7 rounded shadow"
+                onClick={() => submitAndRedirect(status)}
+              >
+                <div className="font-semibold text-blue-700">{status}</div>
+                <div className="mt-1 text-xl font-bold  flex justify-center items-center">
+                  {loading ? (
+                    <div className="w-5 h-5 animate-pulse bg-orange-500 rounded"></div>
+                  ) : (
+                    <p className="bg-orange-500 text-white px-2 py-1 rounded text-sm">
+                      {callCounts[status]}
+                    </p>
+                  )}
                 </div>
-              ))}
-            </div>
-          
+              </div>
+            ))}
+          </div>
         </div>
       )}
-      {(user?.fld_admin_type === "SUBADMIN" || user?.fld_admin_type === "CONSULTANT") && (
-        <BlockSlot user={user} />
+      {(user?.fld_admin_type === "SUBADMIN" ||
+        user?.fld_admin_type === "CONSULTANT") && <BlockSlot user={user} />}
+      {user?.fld_admin_type === "SUPERADMIN" && (
+        <div className="bg-white p-4 mt-5 rounded">
+          <ConsultantTimings />
+        </div>
       )}
-
-      <div className="bg-white p-4 mt-5 rounded">
-        <ConsultantTimings />
-      </div>
-
     </div>
   );
 }

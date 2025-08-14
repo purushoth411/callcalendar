@@ -58,19 +58,18 @@ const BookingDetail = () => {
   const [followerConsultants, setFollowerConsultants] = useState([]);
   const [hasFollowers, setHasFollowers] = useState(false);
   const [loadingFollowers, setLoadingFollowers] = useState(false);
-
-
+  const [hasPermission, setHasPermission] = useState(true);
   ///socket
   //   useEffect(() => {
   //   const socket = getSocket();
 
   //   const handleIncomingNotification = (notif) => {
-      
+
   //     toast.success("📩 New message received");
 
   //     // Add to notifications
   //     setMessageData((prev) => [notif, ...prev]);
-      
+
   //   };
 
   //   socket.on("notification", handleIncomingNotification);
@@ -81,49 +80,45 @@ const BookingDetail = () => {
   // }, []);
 
   useEffect(() => {
-  const socket = getSocket();
-  if (!socket) return;
+    const socket = getSocket();
+    if (!socket) return;
 
-  const handleBookingDeleted = ({ bookingId: deletedId }) => {
-    if (String(deletedId) == String(bookingId)) {
-      toast.error("Booking deleted by other user", { duration: 3000 });
+    const handleBookingDeleted = ({ bookingId: deletedId }) => {
+      if (String(deletedId) == String(bookingId)) {
+        toast.error("Booking deleted by other user", { duration: 3000 });
 
-      setTimeout(() => {
-        navigate("/bookings");
-      }, 2000);
-    }
-  };
+        setTimeout(() => {
+          navigate("/bookings");
+        }, 2000);
+      }
+    };
 
-  const handleBookingUpdated = (updatedBooking) => {
-    if (String(updatedBooking.id) == String(bookingId)) {
-      fetchBookingById(updatedBooking.id, false);
-    }
-  };
+    const handleBookingUpdated = (updatedBooking) => {
+      if (String(updatedBooking.id) == String(bookingId)) {
+        fetchBookingById(updatedBooking.id, false);
+      }
+    };
 
-  socket.on("bookingDeleted", handleBookingDeleted);
-  socket.on("bookingUpdated", handleBookingUpdated);
+    socket.on("bookingDeleted", handleBookingDeleted);
+    socket.on("bookingUpdated", handleBookingUpdated);
 
-  return () => {
-    socket.off("bookingDeleted", handleBookingDeleted);
-    socket.off("bookingUpdated", handleBookingUpdated);
-  };
-}, [navigate, bookingId]);
-
-
-
-
+    return () => {
+      socket.off("bookingDeleted", handleBookingDeleted);
+      socket.off("bookingUpdated", handleBookingUpdated);
+    };
+  }, [navigate, bookingId]);
 
   useEffect(() => {
     fetchBookingById(bookingId);
   }, [bookingId]);
 
-  const fetchBookingById = async (bookingId,loader=true) => {
+  const fetchBookingById = async (bookingId, loader = true) => {
     let tempBooking = null;
     try {
-      if(!loader){
+      if (!loader) {
         setIsProcessing(true);
         setLoaderMessage("Updating Booking Details...");
-      }else{
+      } else {
         setIsProcessing(true);
         setLoaderMessage("Loading...");
       }
@@ -145,6 +140,22 @@ const BookingDetail = () => {
         console.log("Booking Data:", result.data);
         setBookingData(result.data);
         tempBooking = result.data;
+
+        const isSuperOrSubAdmin =
+          user?.fld_admin_type == "SUPERADMIN" || user?.fld_admin_type == "SUBADMIN";
+        const isConsultant =
+          user?.fld_admin_type == "CONSULTANT" &&
+          (String(tempBooking.fld_consultantid) == String(user?.id) ||
+            String(tempBooking.fld_secondary_consultant_id) ==
+              String(user?.id));
+        const isExecutive =
+          user?.fld_admin_type == "EXECUTIVE" &&
+          String(tempBooking.fld_addedby) == String(user?.id);
+          if (isSuperOrSubAdmin || isConsultant || isExecutive) {
+          setHasPermission(true);
+        } else {
+          setHasPermission(false);
+        }
       } else {
         setLoaderMessage("Booking Not Found!");
         console.warn("Booking not found or error:", result.message);
@@ -319,13 +330,16 @@ const BookingDetail = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:5000/api/bookings/deleteBookingById`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ bookingId }),
-      });
+      const response = await fetch(
+        `http://localhost:5000/api/bookings/deleteBookingById`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ bookingId }),
+        }
+      );
 
       const result = await response.json();
 
@@ -733,61 +747,58 @@ const BookingDetail = () => {
       }
     }
     try {
-  setIsProcessing(true);
-  setLoaderMessage("Updating Status...");
+      setIsProcessing(true);
+      setLoaderMessage("Updating Status...");
 
-  const formData = new FormData();
+      const formData = new FormData();
 
-  // Append text fields
-  formData.append("bookingid", statusData.bookingId);
-  formData.append("comment", statusData.comment || "");
-  formData.append("consultation_sts", statusData.consultationStatus || "");
-  formData.append("status_options", statusData.statusOptions || "");
-  formData.append(
-    "status_options_rescheduled_others",
-    statusData.rescheduledOthers || ""
-  );
-  formData.append("rescheduled_date", statusData.rescheduledDate || "");
-  formData.append("rescheduled_time", statusData.rescheduledTime || "");
-  formData.append("scalequestion1", statusData.scaleQuestion1 || "");
-  formData.append("scalequestion2", statusData.scaleQuestion2 || "");
-  formData.append("scalequestion3", statusData.scaleQuestion3 || "");
-  formData.append(
-    "specific_commnets_for_the_call",
-    statusData.callSummary || ""
-  );
+      // Append text fields
+      formData.append("bookingid", statusData.bookingId);
+      formData.append("comment", statusData.comment || "");
+      formData.append("consultation_sts", statusData.consultationStatus || "");
+      formData.append("status_options", statusData.statusOptions || "");
+      formData.append(
+        "status_options_rescheduled_others",
+        statusData.rescheduledOthers || ""
+      );
+      formData.append("rescheduled_date", statusData.rescheduledDate || "");
+      formData.append("rescheduled_time", statusData.rescheduledTime || "");
+      formData.append("scalequestion1", statusData.scaleQuestion1 || "");
+      formData.append("scalequestion2", statusData.scaleQuestion2 || "");
+      formData.append("scalequestion3", statusData.scaleQuestion3 || "");
+      formData.append(
+        "specific_commnets_for_the_call",
+        statusData.callSummary || ""
+      );
 
-  formData.append("user", JSON.stringify(user)); 
+      formData.append("user", JSON.stringify(user));
 
-  
-  if (statusData.file) {
-  
-    formData.append("booking_file", statusData.file);
-  }
+      if (statusData.file) {
+        formData.append("booking_file", statusData.file);
+      }
 
-  const response = await fetch(
-    "http://localhost:5000/api/bookings/updateConsultationStatus",
-    {
-      method: "POST",
-      body: formData, // browser sets the correct multipart/form-data boundary automatically
+      const response = await fetch(
+        "http://localhost:5000/api/bookings/updateConsultationStatus",
+        {
+          method: "POST",
+          body: formData, // browser sets the correct multipart/form-data boundary automatically
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast.success("Consultation status updated successfully.");
+      } else {
+        toast.error(data.error || "Failed to update status.");
+      }
+    } catch (error) {
+      console.error("API Error:", error);
+      toast.error("Something went wrong while updating the status.");
+    } finally {
+      setIsProcessing(false);
+      setLoaderMessage("Processing...");
     }
-  );
-
-  const data = await response.json();
-
-  if (response.ok) {
-    toast.success("Consultation status updated successfully.");
-  } else {
-    toast.error(data.error || "Failed to update status.");
-  }
-} catch (error) {
-  console.error("API Error:", error);
-  toast.error("Something went wrong while updating the status.");
-} finally {
-  setIsProcessing(false);
-  setLoaderMessage("Processing...");
-}
-
   };
 
   const onAssignExternal = async (externalData) => {
@@ -1185,10 +1196,21 @@ const BookingDetail = () => {
     bookingData.fld_call_related_to !== "I_am_not_sure" &&
     bookingData.fld_call_request_sts !== "Cancelled" &&
     bookingData.fld_call_request_sts !== "Completed";
-
+  if (!hasPermission) {
+    return (
+      <div className="p-4 text-center text-red-600 font-semibold">
+        You don't have permission to view this booking.
+      </div>
+    );
+  }
   return (
     <div className="">
-       <SocketHandler otherSetters={[{ setFn: setConsultantList, isBookingList: true },{ setFn: setFollowerConsultants, isBookingList: false }]} />
+      <SocketHandler
+        otherSetters={[
+          { setFn: setConsultantList, isBookingList: true },
+          { setFn: setFollowerConsultants, isBookingList: false },
+        ]}
+      />
       <div className="">
         <div className="bg-white rounded-lg shadow-sm">
           <div className="p-6">

@@ -7,10 +7,14 @@ import $ from "jquery";
 import { PlusIcon, X, XIcon } from "lucide-react";
 import Select from "react-select";
 import SkeletonLoader from "../components/SkeletonLoader";
+import { useAuth } from "../utils/idb";
+import { getSocket } from "../utils/Socket";
+import { formatDate } from "../helpers/CommonHelper";
 
 DataTable.use(DT);
 
 export default function Approveaddcallrequests() {
+  const {user} =useAuth();
   const [approveaddcallrequests, setApproveaddcallrequests] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -23,6 +27,33 @@ export default function Approveaddcallrequests() {
   useEffect(() => {
     getAllApproveaddcallrequests();
   }, []);
+
+  ///socket ////////
+
+useEffect(() => {
+  const socket = getSocket();
+
+  const handleUpdatedCallRequestStatus = ({ id, status }) => {
+    console.log("Socket Called - Approved Call Request");
+    setApproveaddcallrequests((prev) => {
+      if (!Array.isArray(prev)) return prev;
+      return prev.map((call) =>
+        String(call.id) === String(id)
+          ? { ...call, followstatus: status }
+          : call
+      );
+    });
+  };
+
+  socket.on("updatedCallRequestStatus", handleUpdatedCallRequestStatus);
+
+  return () => {
+    socket.off("updatedCallRequestStatus", handleUpdatedCallRequestStatus);
+  };
+}, [user.id]);
+
+
+  ///socket
 
   const getAllApproveaddcallrequests = async () => {
     try {
@@ -96,6 +127,9 @@ export default function Approveaddcallrequests() {
     {
       title: "Requested On",
       data: "addedon",
+      render: function (data) {
+    return formatDate(data);
+  }
     },
     {
       title: "Action",
@@ -182,8 +216,14 @@ export default function Approveaddcallrequests() {
     <div className="">
       <div className="">
         <div className="">
-          <div className="flex justify-between items-center mb-4">
+          <div className="flex gap-2 items-center mb-4">
             <h2 className="text-[16px] font-semibold text-gray-900">Manage Approve Add Call Request</h2>
+            <div>
+                   
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                      {isLoading ? "..." : approveaddcallrequests.length}
+                    </span>
+                  </div>
           </div>
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
           {isLoading ? (
