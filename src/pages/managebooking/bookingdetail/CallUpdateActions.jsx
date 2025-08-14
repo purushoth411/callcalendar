@@ -59,7 +59,7 @@ const CallUpdateActions = ({
   const fetchExternalCallCount = async (bookingId) => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/bookings/getExternalCallCount?bookingId=${bookingId}`
+        `https://callback-2suo.onrender.com/api/bookings/getExternalCallCount?bookingId=${bookingId}`
       );
       const data = await response.json();
 

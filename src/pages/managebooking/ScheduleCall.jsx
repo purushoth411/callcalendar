@@ -31,7 +31,7 @@ const ScheduleCall = () => {
   const fetchBookingDetailsWithRc = async () => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/helpers/getBookingDetailsWithRc?id=${bookingId}`
+        `https://callback-2suo.onrender.com/api/helpers/getBookingDetailsWithRc?id=${bookingId}`
       );
       const data = await response.json();
 
@@ -168,7 +168,7 @@ const ScheduleCall = () => {
 
     try {
       const res1 = await fetch(
-        "http://localhost:5000/api/helpers/getBookingData",
+        "https://callback-2suo.onrender.com/api/helpers/getBookingData",
         {
           method: "POST",
           headers: {
@@ -189,7 +189,7 @@ const ScheduleCall = () => {
       const data1 = await res1.json();
 
       const res2 = await fetch(
-        "http://localhost:5000/api/helpers/getRcCallBookingRequest",
+        "https://callback-2suo.onrender.com/api/helpers/getRcCallBookingRequest",
         {
           method: "POST",
           headers: {
@@ -301,7 +301,7 @@ const ScheduleCall = () => {
     try {
       setIsSubmitting(true);
       const response = await fetch(
-        "http://localhost:5000/api/bookings/saveCallScheduling",
+        "https://callback-2suo.onrender.com/api/bookings/saveCallScheduling",
         {
           method: "POST",
           headers: {
@@ -327,7 +327,7 @@ const ScheduleCall = () => {
         setSelectedSlot("");
 
         setTimeout(() => {
-          window.location.href = "http://localhost:5000/bookings";
+          window.location.href = "https://callback-2suo.onrender.com/bookings";
         }, 1500); // optional delay to let toast show
       } else {
         toast.errro("Failed to submit booking.");
