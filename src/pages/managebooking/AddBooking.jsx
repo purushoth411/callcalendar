@@ -102,7 +102,7 @@ export default function AddBooking({
         try {
           setPageLoading(true);
           const response = await fetch(
-            "http://localhost:5000/api/additional/callrequestrc",
+            "https://callback-2suo.onrender.com/api/additional/callrequestrc",
             {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -154,7 +154,7 @@ useEffect(()=>{
         try {
           setPageLoading(true);
           const response = await fetch(
-            "http://localhost:5000/api/additional/getwritersemail",
+            "https://callback-2suo.onrender.com/api/additional/getwritersemail",
             {
               method: "POST",
               headers: {
@@ -216,7 +216,7 @@ useEffect(()=>{
       if (formData.sale_type === "Presales" && clientId.length > 3) {
         try {
           const res = await fetch(
-            `http://localhost:5000/api/bookings/getPresaleClientDetails/${clientId}`
+            `https://callback-2suo.onrender.com/api/bookings/getPresaleClientDetails/${clientId}`
           );
           const data = await res.json();
 
@@ -236,7 +236,7 @@ useEffect(()=>{
             }));
 
             const recordingRes = await fetch(
-              `http://localhost:5000/api/bookings/checkCallrecording`,
+              `https://callback-2suo.onrender.com/api/bookings/checkCallrecording`,
               {
                 method: "POST",
                 headers: {
@@ -277,7 +277,7 @@ useEffect(()=>{
       if (formData.sale_type === "Postsales" && clientId.length > 3) {
         try {
           const res = await fetch(
-            `http://localhost:5000/api/bookings/getPostsaleClientDetails/${clientId}`
+            `https://callback-2suo.onrender.com/api/bookings/getPostsaleClientDetails/${clientId}`
           );
           const data = await res.json();
 
@@ -315,7 +315,7 @@ useEffect(()=>{
             setProjects(data.data.projects || []);
 
             const recordingRes = await fetch(
-              `http://localhost:5000/api/bookings/checkCallrecording`,
+              `https://callback-2suo.onrender.com/api/bookings/checkCallrecording`,
               {
                 method: "POST",
                 headers: {
@@ -367,7 +367,7 @@ useEffect(()=>{
   const checkConsultantWebsiteCondition = (consultantId, consultantName) => {
     try {
       fetch(
-        `http://localhost:5000/api/bookings/checkConsultantWebsiteCondition`,
+        `https://callback-2suo.onrender.com/api/bookings/checkConsultantWebsiteCondition`,
         {
           method: "POST",
           headers: {
@@ -408,7 +408,7 @@ useEffect(()=>{
 
   const checkConsultantTeamCondition = (consultantId, consultantName) => {
     try {
-      fetch(`http://localhost:5000/api/bookings/checkConsultantTeamCondition`, {
+      fetch(`https://callback-2suo.onrender.com/api/bookings/checkConsultantTeamCondition`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -455,7 +455,7 @@ useEffect(()=>{
   };
 
   const checkPresalesCall = (consultantId, consultantName) => {
-    fetch("http://localhost:5000/api/bookings/checkPresalesCall", {
+    fetch("https://callback-2suo.onrender.com/api/bookings/checkPresalesCall", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -540,7 +540,7 @@ useEffect(()=>{
 
     try {
       const res = await fetch(
-        "http://localhost:5000/api/helpers/getConsultantsBySubjectArea",
+        "https://callback-2suo.onrender.com/api/helpers/getConsultantsBySubjectArea",
         {
           method: "POST",
           headers: {
@@ -567,7 +567,7 @@ useEffect(()=>{
     // const allowedCalls=formData.allowedCalls;
     try {
       const response = await fetch(
-        `http://localhost:5000/api/bookings/checkPostsaleCompletedCalls`,
+        `https://callback-2suo.onrender.com/api/bookings/checkPostsaleCompletedCalls`,
         {
           method: "POST",
           headers: {
@@ -728,7 +728,7 @@ useEffect(()=>{
 
     try {
       const response = await fetch(
-        "http://localhost:5000/api/bookings/addBooking",
+        "https://callback-2suo.onrender.com/api/bookings/addBooking",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -784,7 +784,7 @@ useEffect(()=>{
       }
       try {
         const res = await fetch(
-          `http://localhost:5000/api/bookings/getProjectMilestones/${formData.projectid}`
+          `https://callback-2suo.onrender.com/api/bookings/getProjectMilestones/${formData.projectid}`
         );
         const data = await res.json();
 
