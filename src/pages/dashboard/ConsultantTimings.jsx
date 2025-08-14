@@ -63,7 +63,7 @@ function ConsultantTimings() {
   const fetchAdmins = async (type, status, setter) => {
     try {
       const response = await fetch(
-        "https://callback-2suo.onrender.com/api/helpers/getAdmin",
+        "http://localhost:5000/api/helpers/getAdmin",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -92,7 +92,7 @@ function ConsultantTimings() {
     setConsultantSettings(null);
     try {
       const response = await fetch(
-        "https://callback-2suo.onrender.com/api/dashboard/getconsultantsettings",
+        "http://localhost:5000/api/dashboard/getconsultantsettings",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -261,7 +261,7 @@ function ConsultantTimings() {
 
       // Submit to API
       const response = await fetch(
-        "https://callback-2suo.onrender.com/api/dashboard/saveconsultantsettings",
+        "http://localhost:5000/api/dashboard/saveconsultantsettings",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -364,7 +364,12 @@ function ConsultantTimings() {
 
   return (
     <div className="">
-      <SocketHandler otherSetters={[{ setFn: setAllConsultants, isBookingList: false }]} />
+      <h4 className="text-[16px] font-semibold text-gray-900">
+        Change Consultant Timings
+      </h4>
+      <SocketHandler
+        otherSetters={[{ setFn: setAllConsultants, isBookingList: false }]}
+      />
       <div className="">
         <label className="block mb-2 text-sm font-medium text-gray-700">
           Select Consultant
@@ -486,7 +491,10 @@ function ConsultantTimings() {
                         key={index}
                         className="flex items-center justify-between p-2 bg-gray-50 rounded"
                       >
-                        <span className="text-sm">{exclusion}</span>
+                        <span className="text-sm">
+                          {new Date(exclusion).toLocaleDateString("en-GB")}
+                        </span>
+
                         <button
                           type="button"
                           onClick={() => removeExclusion(index)}
