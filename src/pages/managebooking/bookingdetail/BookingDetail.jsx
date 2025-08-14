@@ -7,6 +7,10 @@ import {
   User,
   Mail,
   Trash2,
+  ProjectorIcon,
+  X,
+  PhoneMissed,
+  Handshake,
 } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../../utils/idb";
@@ -142,7 +146,8 @@ const BookingDetail = () => {
         tempBooking = result.data;
 
         const isSuperOrSubAdmin =
-          user?.fld_admin_type == "SUPERADMIN" || user?.fld_admin_type == "SUBADMIN";
+          user?.fld_admin_type == "SUPERADMIN" ||
+          user?.fld_admin_type == "SUBADMIN";
         const isConsultant =
           user?.fld_admin_type == "CONSULTANT" &&
           (String(tempBooking.fld_consultantid) == String(user?.id) ||
@@ -151,7 +156,7 @@ const BookingDetail = () => {
         const isExecutive =
           user?.fld_admin_type == "EXECUTIVE" &&
           String(tempBooking.fld_addedby) == String(user?.id);
-          if (isSuperOrSubAdmin || isConsultant || isExecutive) {
+        if (isSuperOrSubAdmin || isConsultant || isExecutive) {
           setHasPermission(true);
         } else {
           setHasPermission(false);
@@ -1190,6 +1195,7 @@ const BookingDetail = () => {
     user.fld_admin_type === "EXECUTIVE" &&
     bookingData.fld_call_related_to !== "I_am_not_sure" &&
     bookingData.fld_call_request_sts !== "Completed";
+  // const canShowReasignConsultant=true;
 
   const canCancelCall =
     user.fld_admin_type === "EXECUTIVE" &&
@@ -1203,19 +1209,34 @@ const BookingDetail = () => {
       </div>
     );
   }
+  const isSuperAdminOrExecutive =
+    user?.fld_admin_type === "SUPERADMIN" ||
+    user?.fld_admin_type === "EXECUTIVE";
+  // const canCancelCall=true;
+  const tabs = [
+    ...(isSuperAdminOrExecutive
+    ? [{ id: "consultant", label: "Consultant Information" }]
+    : []),
+    { id: "user", label: "User Information" },
+    { id: "follower", label: "Call Action" },
+    // { id: "chat", label: "Chat" },
+    // { id: "history", label: "History" },
+  ];
+  
+  const [activeTab, setActiveTab] = useState((isSuperAdminOrExecutive ? "consultant":"user"));
   return (
-    <div className="">
+    <div className="flex-1 flex flex-col">
       <SocketHandler
         otherSetters={[
           { setFn: setConsultantList, isBookingList: true },
           { setFn: setFollowerConsultants, isBookingList: false },
         ]}
       />
-      <div className="">
-        <div className="bg-white rounded-lg shadow-sm">
-          <div className="p-6">
+
+      
+          <div className="flex-1 flex flex-col">
             {/* Header */}
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex justify-between items-center mb-4">
               <h4 className="text-[16px] font-semibold text-gray-900">
                 View Booking Information
               </h4>
@@ -1225,7 +1246,7 @@ const BookingDetail = () => {
                 {canDelete && (
                   <button
                     onClick={handleDeleteCallRequest}
-                    className="bg-red-500 hover:bg-red-600 text-[12px] text-white px-2 py-1  rounded-md flex items-center space-x-1 transition-colors cursor-pointer"
+                    className="bg-red-500 hover:bg-red-600 text-[11px] text-white px-2 py-1  rounded-md flex items-center space-x-1 transition-colors cursor-pointer"
                   >
                     <Trash2 size={10} />
                     <span>Delete Call Request</span>
@@ -1395,168 +1416,199 @@ const BookingDetail = () => {
                 </div>
               </div>
             )}
-
-            <ConsultantInformation
-              bookingData={bookingData}
-              user={user}
-              bgColor={getStatusColor(bookingData?.fld_call_request_sts)}
-            />
-            <UserInformation
-              data={bookingData}
-              user={user}
-              bgColor={getStatusColor(bookingData?.fld_call_request_sts)}
-              externalCallInfo={externalCallInfo}
-            />
-
-            {/* Reassign to Consultant Form */}
-            {canShowReasignConsultant && (
-              <div className=" flex-wrap gap-4 w-[50%] ">
-                <div className="w-full ">
-                  <label className="block mb-2 font-medium">
-                    Reassign to another Consultant
-                  </label>
-                  <Select
-                    name="consultant_id"
-                    className="react-select-container"
-                    classNamePrefix="react-select"
-                    options={consultantList
-                      .filter(
-                        (consultant) =>
-                          consultant.id !== bookingData.fld_consultantid
-                      )
-                      .map((consultant) => ({
-                        value: consultant.id,
-                        label: consultant.fld_name,
-                      }))}
-                    value={
-                      consultantList
-                        .filter(
-                          (consultant) =>
-                            consultant.id !== bookingData.fld_consultantid
-                        )
-                        .map((consultant) => ({
-                          value: consultant.id,
-                          label: consultant.fld_name,
-                        }))
-                        .find(
-                          (option) => option.value === primaryConsultantId
-                        ) || null
-                    }
-                    onChange={(selectedOption) =>
-                      setPrimaryConsultantId(
-                        selectedOption ? selectedOption.value : ""
-                      )
-                    }
-                    placeholder="Select Primary Consultant"
-                    isClearable
-                  />
-                </div>
-
-                <div className="w-full  self-end mt-3 justify-end flex">
+            <div className="grid grid-cols-3 gap-3">
+            <div className="bg-white rounded    border border-gray-200 flex-1 col-span-2">
+              {/* Tabs - Horizontal */}
+              <div className="flex border-b border-gray-200">
+                {tabs.map((tab) => (
                   <button
-                    type="button"
-                    onClick={handleReassignToConsultant}
-                    className="bg-[#ff6800]  text-white px-2 py-1 rounded hover:bg-orange-600"
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`px-4 py-3 border-b-2 transition-colors ${
+                      activeTab === tab.id
+                        ? "border-orange-500 text-orange-700 font-medium"
+                        : "border-transparent hover:bg-gray-50"
+                    }`}
                   >
-                    {" "}
-                    Update Consultant{" "}
-                    <i
-                      className="fa fa-arrow-right ml-1"
-                      aria-hidden="true"
-                    ></i>
+                    {tab.label}
                   </button>
-                </div>
+                ))}
               </div>
-            )}
 
-            {/* Cancel Booking Form */}
-            {canCancelCall && (
-              <>
-                <div className=" flex-wrap gap-4 w-[50%]">
-                  <h5 className="font-semibold mb-3">Call Cancelled</h5>
-                  <div className="w-full ">
-                    <label className="block mb-2">
-                      Comments <span className="text-red-500">*</span>
-                    </label>
-                    <textarea
-                      className="w-full border border-gray-300 rounded px-4 py-2"
-                      value={cancelComment}
-                      onChange={(e) => setCancelComment(e.target.value)}
-                      placeholder="Add Comments"
+              {/* Tab Content */}
+              <div className="p-4">
+                {activeTab === "consultant" && (
+                  <ConsultantInformation
+                    bookingData={bookingData}
+                    user={user}
+                    bgColor={getStatusColor(bookingData?.fld_call_request_sts)}
+                  />
+                )}
+
+                {activeTab === "user" && (
+                  <UserInformation
+                    data={bookingData}
+                    user={user}
+                    bgColor={getStatusColor(bookingData?.fld_call_request_sts)}
+                    externalCallInfo={externalCallInfo}
+                  />
+                )}
+
+                {activeTab === "follower" && (
+                  <div className="">
+                  <div className="flex gap-4">
+                    <CallUpdateActions
+                      bookingData={bookingData}
+                      user={user}
+                      consultantList={consultantList}
+                      onUpdateStatus={onUpdateStatus}
+                      onAssignExternal={onAssignExternal}
+                      onReassignCall={onReassignCall}
+                    />
+                    <CallUpdateOtherActions
+                      bookingData={bookingData}
+                      user={user}
+                      consultantList={consultantList}
+                      externalCallInfo={externalCallInfo}
+                      onUpdateExternal={onUpdateExternal}
+                      onSubmitCompletedComment={onSubmitCompletedComment}
+                      onAddFollower={onAddFollower}
+                      onUpdateExternalBooking={onUpdateExternalBooking}
+                      followerConsultants={followerConsultants}
+                      hasFollowers={hasFollowers}
+                      getFollowerConsultant={getFollowerConsultant}
+                      loadingFollowers={loadingFollowers}
                     />
                   </div>
+                  <div className="flex gap-4 mt-4">
+                  {/* Reassign to Consultant Form */}
+                  {canShowReasignConsultant && (
+                    <div className=" flex-wrap gap-4 w-[50%] bg-white border border-gray-200 rounded p-4 ">
+                      <div className="w-full ">
+                        <h2 className="text-[14px] font-semibold text-gray-900 mb-4 flex items-center border-b border-gray-300 pb-3 mb-3">
+                          <Handshake size={16} className="mr-2" />
+                          Reassign
+                        </h2>
+                        <label className="block mb-2 font-medium">
+                          Reassign to another Consultant
+                        </label>
+                        <Select
+                          name="consultant_id"
+                          className="react-select-container"
+                          classNamePrefix="react-select"
+                          options={consultantList
+                            .filter(
+                              (consultant) =>
+                                consultant.id !== bookingData.fld_consultantid
+                            )
+                            .map((consultant) => ({
+                              value: consultant.id,
+                              label: consultant.fld_name,
+                            }))}
+                          value={
+                            consultantList
+                              .filter(
+                                (consultant) =>
+                                  consultant.id !== bookingData.fld_consultantid
+                              )
+                              .map((consultant) => ({
+                                value: consultant.id,
+                                label: consultant.fld_name,
+                              }))
+                              .find(
+                                (option) => option.value === primaryConsultantId
+                              ) || null
+                          }
+                          onChange={(selectedOption) =>
+                            setPrimaryConsultantId(
+                              selectedOption ? selectedOption.value : ""
+                            )
+                          }
+                          placeholder="Select Primary Consultant"
+                          isClearable
+                        />
+                      </div>
 
-                  <div className="w-full  self-end mt-1 justify-end flex">
-                    <button
-                      type="button"
-                      onClick={handleCancelBooking}
-                      className="bg-[#ff6800] text-white px-2 py-1 rounded hover:bg-orange-600"
-                    >
-                      {" "}
-                      Update{" "}
-                      <i
-                        className="fa fa-arrow-right ml-1"
-                        aria-hidden="true"
-                      ></i>
-                    </button>
+                      <div className="w-full  self-end mt-3 justify-end flex">
+                        <button
+                          type="button"
+                          onClick={handleReassignToConsultant}
+                          className="bg-[#ff6800]  text-white px-2 py-1 rounded hover:bg-orange-600"
+                        >
+                          {" "}
+                          Update Consultant{" "}
+                          <i
+                            className="fa fa-arrow-right ml-1"
+                            aria-hidden="true"
+                          ></i>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Cancel Booking Form */}
+                  {canCancelCall && (
+                    <>
+                      <div className=" flex-wrap gap-4 w-[50%] bg-white border border-gray-200 rounded p-4 ">
+                        <h2 className="text-[14px] font-semibold text-gray-900 mb-4 flex items-center border-b border-gray-300 pb-3 mb-3">
+                          <PhoneMissed size={16} className="mr-2" />
+                          Call Cancelled
+                        </h2>
+                        <div className="w-full ">
+                          <label className="block mb-2">
+                            Comments <span className="text-red-500">*</span>
+                          </label>
+                          <textarea
+                            className="w-full border border-gray-300 rounded px-4 py-2"
+                            value={cancelComment}
+                            onChange={(e) => setCancelComment(e.target.value)}
+                            placeholder="Add Comments"
+                          />
+                        </div>
+
+                        <div className="w-full  self-end mt-1 justify-end flex">
+                          <button
+                            type="button"
+                            onClick={handleCancelBooking}
+                            className="bg-[#ff6800] text-white px-2 py-1 rounded hover:bg-orange-600"
+                          >
+                            {" "}
+                            Update{" "}
+                            <i
+                              className="fa fa-arrow-right ml-1"
+                              aria-hidden="true"
+                            ></i>
+                          </button>
+                        </div>
+                      </div>
+                    </>
+                  )}
                   </div>
-                </div>
-              </>
-            )}
+                  </div>
+                )}
 
-            <div className="flex gap-3 mt-4">
-              <CallUpdateActions
-                bookingData={bookingData}
-                user={user}
-                consultantList={consultantList}
-                onUpdateStatus={onUpdateStatus}
-                onAssignExternal={onAssignExternal}
-                onReassignCall={onReassignCall}
-              />
-
-              <CallUpdateOtherActions
-                bookingData={bookingData}
-                user={user}
-                consultantList={consultantList}
-                externalCallInfo={externalCallInfo}
-                onUpdateExternal={onUpdateExternal}
-                onSubmitCompletedComment={onSubmitCompletedComment}
-                onAddFollower={onAddFollower}
-                onUpdateExternalBooking={onUpdateExternalBooking}
-                followerConsultants={followerConsultants}
-                hasFollowers={hasFollowers}
-                getFollowerConsultant={getFollowerConsultant}
-                loadingFollowers={loadingFollowers}
-              />
-            </div>
-
-            {/* Chat Box Placeholder */}
-            <ChatBox
-              user={user}
-              messageData={messageData}
-              onSend={(message) => {
-                sendMessage(message);
-              }}
-              isMsgSending={isMsgSending}
-            />
-            <div className="flex flex-col md:flex-row md:flex-nowrap md:gap-4">
-              {/* Overall History - 1/3 width */}
-              <div className="w-full md:basis-[35%]">
-                <OverallHistory bookingData={bookingData} />
-              </div>
-
-              {/* Other Calls - 2/3 width */}
-              <div className="w-full md:basis-[65%]">
-                <OtherCalls
-                  bookingId={bookingId}
-                  clientId={bookingData.fld_client_id}
-                  fetchBookingById={fetchBookingById}
-                />
+                
               </div>
             </div>
+            <div className="space-y-3">
+              <ChatBox
+                user={user}
+                messageData={messageData}
+                onSend={(message) => sendMessage(message)}
+                isMsgSending={isMsgSending}
+              />
+              <OtherCalls
+                bookingId={bookingId}
+                clientId={bookingData.fld_client_id}
+                fetchBookingById={fetchBookingById}
+              />
+              <OverallHistory bookingData={bookingData} />
+            </div>
+            </div>
+
+            
           </div>
-        </div>
-      </div>
+        
     </div>
   );
 };

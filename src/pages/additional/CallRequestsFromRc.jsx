@@ -225,7 +225,7 @@ function CallRequestsFromRc() {
   ].filter(Boolean);
 
   return (
-    <div className=" bg-gray-100 mx-auto">
+    <div className=" bg-gray-100">
       <div className="flex items-center rounded  pb-4 justify-between">
         <h2 className="text-[16px] font-semibold text-gray-900">
           Call Requests From RC

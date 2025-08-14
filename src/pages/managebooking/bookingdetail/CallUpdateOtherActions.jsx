@@ -129,7 +129,7 @@ const CallUpdateOtherActions = ({
   }));
 
   return (
-    <div className="space-y-6 w-[50%]">
+    <>
       {/* Call Booking Action */}
       {isSubadmin && isPendingStatus && (
         <div className="bg-white border border-gray-200 rounded-lg p-6">
@@ -343,10 +343,11 @@ const CallUpdateOtherActions = ({
 
       {/* Add Follower */}
       {showFollowerSection && (
-        <div className="bg-white border border-gray-200 rounded-lg p-4">
-          <div className="flex justify-between">
-            <h2 className="text-[15px] font-semibold text-gray-900 flex items-center">
-              <UserPlus className="w-4 h-4 mr-2" />
+        <div className="bg-white border border-gray-200 rounded p-4 w-full m-w-[40%]">
+          <div className="">
+           
+            <h2 className="text-[15px] font-semibold text-gray-900 mb-4 flex items-center border-b border-gray-300 pb-3 mb-3">
+              <UserPlus size={16} className="mr-2" />
               Add Follower
             </h2>
 
@@ -468,7 +469,7 @@ const CallUpdateOtherActions = ({
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };
 

@@ -29,7 +29,7 @@ export default function PlansDropdown() {
       </button>
 
       {open && (
-        <div className="absolute bg-[#3c7ca5] shadow-lg mt-1 rounded w-48 z-50">
+        <div className="absolute bg-[#3c7ca5] shadow-lg mt-1 rounded w-48 z-50 top-7">
           <NavLink
             to="/plans"
             className="block px-4 py-2 text-white hover:bg-[#2d6689]"

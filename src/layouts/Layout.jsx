@@ -14,7 +14,7 @@ export default function Layout() {
       >
         <div className="flex-1 flex my-4">
           <div className=" max-w-[85rem] mx-auto flex-1 px-3 flex">
-            <div className="bg-gray-100 p-4 flex-1">
+            <div className="bg-gray-100 p-4 flex-1 flex flex-col">
               <Outlet />
             </div>
           </div>

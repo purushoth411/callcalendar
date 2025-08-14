@@ -177,8 +177,8 @@ const BlockSlot = ({ user }) => {
       })
       .join(", ");
     return (
-      <div key={id} className="mb-4">
-        <label htmlFor={id} className="flex items-center space-x-2 text-sm cursor-pointer">
+      <div key={id} className="mb-2">
+        <label htmlFor={id} className="flex items-center space-x-2 text-sm cursor-pointer bg-gray-100 hover:bg-gray-200 p-2 rounded">
           <input
             type="radio"
             name="week_day"
@@ -196,23 +196,23 @@ const BlockSlot = ({ user }) => {
 
   // Final UI
   return (
-    <div className="flex flex-wrap p-4 gap-6">
+    <div className="flex flex-wrap gap-6">
       {loading ? (
         <>
-          <div className="w-full mb-6 animate-pulse">
+          <div className="w-full mb-3 animate-pulse">
             <div className="h-6 bg-gray-300 rounded w-1/2 mb-2"></div>
             <div className="h-4 bg-gray-200 rounded w-2/3"></div>
           </div>
 
-          <div className="flex flex-wrap w-full gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 w-full">
             {/* Left side (Day Selector Skeleton) */}
-            <div className="w-full md:w-1/3 space-y-4 animate-pulse">
+            <div className="border border-gray-300 rounded p-4 bg-gray-50 min-h-[200px] space-y-4 animate-pulse space-y-4 animate-pulse">
               {[...Array(7)].map((_, i) => (
                 <div key={i} className="h-10 bg-gray-200 rounded w-full"></div>
               ))}
             </div>
             {/* Right side (Slots Skeleton) */}
-            <div className="w-full md:w-2/3">
+            <div className="col-span-2">
               <div className="border border-gray-300 rounded p-4 bg-gray-50 min-h-[200px] space-y-4 animate-pulse">
                 <div className="h-5 bg-gray-300 w-3/4 rounded"></div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
@@ -229,22 +229,20 @@ const BlockSlot = ({ user }) => {
         </>
       ) : (
         <>
-          <div className="w-full mb-6">
-            <h4 className="text-2xl font-semibold text-gray-800 flex items-center space-x-2">
-              <Calendar className="w-6 h-6 text-blue-600" />
+          <div className="w-full mb-3">
+            <h4 className="text-[16px] font-semibold text-gray-800 flex items-center space-x-2">
+              <Calendar size={16} className="text-blue-600" />
               <span>Block Calendar For 2 Hours</span>
             </h4>
-            <p className="text-sm text-gray-600 mt-1 max-w-md">
+            <p className="text-sm text-gray-600 mt-2">
               Select a day to view and block available time slots (maximum 4 slots)
             </p>
           </div>
-          <div className="flex flex-wrap w-full">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 w-full">
             {/* Day Selector */}
-            <div className="w-full md:w-1/3">
-              <h5 className="font-medium text-gray-700 mb-3 flex items-center space-x-2">
-                <Calendar className="w-5 h-5 text-blue-600" />
-                <span>Select Day:</span>
-              </h5>
+            <div className="bg-white p-4 rounded shadow-md border border-gray-200">
+              <h4 class="text-base font-semibold mb-3 border-b border-gray-100 pb-2 flex gap-2 items-center"><Calendar size={16} className="text-blue-600" /> Select Day :</h4>
+              
               {renderTimeOption("Sunday", consultSettingData?.fld_sun_time_data, 1, "sun_bx")}
               {renderTimeOption("Monday", consultSettingData?.fld_mon_time_data, 2, "mon_bx")}
               {renderTimeOption("Tuesday", consultSettingData?.fld_tue_time_data, 3, "tue_bx")}
@@ -254,11 +252,11 @@ const BlockSlot = ({ user }) => {
               {renderTimeOption("Saturday", consultSettingData?.fld_sat_time_data, 7, "sat_bx")}
             </div>
             {/* Slots & Save Section */}
-            <div className="w-full md:w-2/3">
+            <div className="col-span-2 flex w-full">
               {selectedDay ? (
-                <div className="border border-gray-300 rounded p-4 bg-gray-50 min-h-[200px] flex flex-col">
+                <div className="border border-gray-300 rounded p-4 bg-gray-50 min-h-[200px] flex flex-col w-full">
                   <div className="flex justify-between items-center mb-3">
-                    <p className="font-medium text-gray-700 flex items-center space-x-2">
+                    <p className="font-semibold  flex items-center space-x-2 text-[16px]">
                       <Clock className="w-5 h-5 text-blue-600" />
                       <span>Available Time Slots (30 minutes each):</span>
                     </p>
@@ -269,7 +267,7 @@ const BlockSlot = ({ user }) => {
                   {availableSlots.length === 0 ? (
                     <p className="text-gray-500 text-sm">No slots available for the selected day.</p>
                   ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4 overflow-y-auto max-h-[240px]">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4 overflow-y-auto max-h-[260px]">
                       {availableSlots.map((slot, index) => {
                         const slotStart = slot.split(" - ")[0].replace(/\s+/g, " ").toUpperCase().trim();
                         const isSelected = selectedSlots.includes(slotStart);
@@ -310,18 +308,18 @@ const BlockSlot = ({ user }) => {
                     <button
                     onClick={handleSaveBlockedSlots}
                     disabled={submitting}
-                    className={`bg-blue-600 text-white px-5 py-2 rounded text-sm flex items-center space-x-2 focus:outline-none focus:ring-2 focus:ring-blue-400 ${
-                      submitting ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-700 transition-colors"
+                    className={`bg-blue-600 text-white px-2 py-1 rounded text-[12px] flex items-center space-x-2 focus:outline-none focus:ring-2 focus:ring-blue-400 ${
+                      submitting ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-700 transition-colors cursor-pointer"
                     }`}
                   >
-                    <Save className="w-4 h-4" />
+                    <Save className="" size={15} />
                     <span>{submitting ? "Saving..." : "Save Blocked Slots"}</span>
                   </button>
 
                   </div>
                 </div>
               ) : (
-                <div className="border border-gray-200 rounded p-8 bg-gray-50 text-center text-gray-500 text-sm">
+                <div className="border border-red-200 rounded p-4 bg-red-50 text-center text-red-600 text-sm w-full flex items-center justify-center">
                   Please select a day to view available time slots
                 </div>
               )}

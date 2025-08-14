@@ -87,15 +87,14 @@ const OverallHistory = ({ bookingData }) => {
   };
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200   p-4 mt-6">
-      <div className="flex items-center gap-3 mb-4">
-        <Clock className="w-5 h-5 text-gray-800" />
-        <h5 className="text-[18px] font-semibold text-gray-800">
+    <div className="bg-white rounded-lg border border-gray-200 p-3">
+      
+      <h2 className="text-[14px] font-semibold text-gray-900 mb-4 flex items-center border-b border-gray-300 pb-3 mb-3">
+          <Clock size={16} className="mr-2" />
           Overall History
-        </h5>
-      </div>
+        </h2>
 
-      <div className="space-y-4 pr-3 overflow-y-auto h-[17.3rem] text-[13px]">
+      <div className="space-y-2 pr-3 overflow-y-auto h-[15.3rem] text-[13px]">
         {overallHistory.map((entry, idx) => {
           const arrComment = entry.fld_comment?.split(" on ");
           const commentMain = arrComment[0];
@@ -108,22 +107,22 @@ const OverallHistory = ({ bookingData }) => {
             <div key={idx} className="relative">
               {/* Timeline line */}
               {idx < overallHistory.length - 1 && (
-                <div className="absolute left-4 top-10 w-0.5 h-full bg-gray-200 -z-10 the_line"></div>
+                <div className="absolute bg-[#6a7282] z-0 absolute top-4 left-[5.6px] w-[2px] h-[108%]"></div>
               )}
 
               <div className="flex gap-2">
                 {/* Timeline dot */}
                 <div
-                  className={`w-6 h-6 rounded-full the_line1  ${getStatusColor(
+                  className={`w-3 h-3 rounded-full  ${getStatusColor(
                     status
                   )} flex items-center justify-center flex-shrink-0 mt-1`}
                 >
-                  <div className="w-3 h-3 bg-white rounded-full the_line2"></div>
+                  <div className="w-1 h-1 bg-white rounded-full "></div>
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 bg-gray-50 rounded-lg p-2 border border-gray-200 hover:shadow-md transition-shadow">
-                  <div className="flex items-start justify-between">
+                <div className="flex-1 bg-gray-50 rounded p-2 border border-gray-200 hover:shadow-md transition-shadow text-[11px]">
+                  <div className="flex items-start justify-between gap-1">
                     <div className="flex-1">
                       <p className="text-gray-800 font-medium mb-2">
                         {commentMain}
@@ -138,8 +137,8 @@ const OverallHistory = ({ bookingData }) => {
                         </div>
                       )}
 
-                      <div className="flex items-center gap-2  text-gray-500">
-                        <Clock className="w-4 h-4" />
+                      <div className="flex items-center gap-2 text-[10px] text-gray-500">
+                        <Clock className="" size={11} />
                         <span>{dateInfo}</span>
                       </div>
                     </div>
@@ -147,14 +146,14 @@ const OverallHistory = ({ bookingData }) => {
                     {historyList.length > 0 && (
                       <button
                         onClick={() => toggleExpand(idx)}
-                        className="flex items-center gap-1 px-3 py-1 bg-blue-50 text-blue-600 rounded-full hover:bg-blue-100 transition-colors text-sm"
+                        className="flex items-center gap-1 px-2 py-0.5 bg-blue-50 text-blue-600 rounded hover:bg-blue-100 transition-colors text-[10px] border border-blue-400 cursor-pointer"
                       >
-                        <Info className="w-4 h-4" />
+                        <Info className="" size={9} />
                         Details
                         {isExpanded ? (
-                          <ChevronUp className="w-4 h-4" />
+                          <ChevronUp className="" size={9} />
                         ) : (
-                          <ChevronDown className="w-4 h-4" />
+                          <ChevronDown className="" size={9} />
                         )}
                       </button>
                     )}
@@ -167,11 +166,11 @@ const OverallHistory = ({ bookingData }) => {
                         {historyList.map((row, i) => (
                           <div
                             key={i}
-                            className="bg-white rounded-lg p-2 border border-gray-100 text-[13px] mb-2"
+                            className="bg-white rounded p-2 border border-gray-100 text-[11px] mb-2"
                           >
                             <div className="flex items-center justify-between mb-3">
                               <span
-                                className={`px-3 py-1 rounded-full font-medium ${getStatusColor(
+                                className={`px-2 py-1 text-[10px] rounded-full font-medium ${getStatusColor(
                                   row.status
                                 )} text-white`}
                               >
