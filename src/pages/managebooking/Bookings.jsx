@@ -129,7 +129,7 @@ export default function Bookings() {
     try {
       // Fetch consultants first
       const consultantRes = await fetch(
-        "https://callback-2suo.onrender.com/api/helpers/getUsersByRole",
+        "http://localhost:5000/api/helpers/getUsersByRole",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -140,7 +140,7 @@ export default function Bookings() {
 
       // Then fetch CRMs
       const crmRes = await fetch(
-        "https://callback-2suo.onrender.com/api/helpers/getUsersByRole",
+        "http://localhost:5000/api/helpers/getUsersByRole",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -163,7 +163,7 @@ export default function Bookings() {
 
     try {
       const res = await fetch(
-        "https://callback-2suo.onrender.com/api/helpers/getUsersByRole",
+        "http://localhost:5000/api/helpers/getUsersByRole",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -207,7 +207,7 @@ export default function Bookings() {
       };
 
       const response = await fetch(
-        "https://callback-2suo.onrender.com/api/bookings/fetchBooking",
+        "http://localhost:5000/api/bookings/fetchBooking",
         {
           method: "POST",
           headers: {
@@ -306,7 +306,7 @@ export default function Bookings() {
       };
 
       const response = await fetch(
-        "https://callback-2suo.onrender.com/api/bookings/fetchBooking",
+        "http://localhost:5000/api/bookings/fetchBooking",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -344,7 +344,7 @@ export default function Bookings() {
 
     try {
       const res = await fetch(
-        `https://callback-2suo.onrender.com/api/bookings/history/${bookingId}`
+        `http://localhost:5000/api/bookings/history/${bookingId}`
       );
       const result = await res.json();
 
@@ -419,7 +419,7 @@ export default function Bookings() {
 
     try {
       const response = await fetch(
-        `https://callback-2suo.onrender.com/api/bookings/updateStatusByCrm`,
+        `http://localhost:5000/api/bookings/updateStatusByCrm`,
         {
           method: "POST",
           headers: {

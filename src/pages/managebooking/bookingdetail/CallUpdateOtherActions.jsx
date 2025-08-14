@@ -56,15 +56,16 @@ const CallUpdateOtherActions = ({
   const bookingTime = new Date(
     `${bookingData.fld_booking_date}T${bookingData.fld_booking_slot}`
   );
-  const isBeforeBookingTime = now < bookingTime;
+const isBeforeBookingTime = now < bookingTime;
+const hasNoFollowers = hasFollowers === false;
 
   const showFollowerSection =
-    bookingData.fld_consultant_another_option !== "TEAM";
   bookingData.fld_call_confirmation_status === "Call Confirmed by Client" &&
-    isBeforeBookingTime && isSubadmin && isConsultant
-    bookingData.fld_call_request_sts !== "Completed" &&
-    bookingData.fld_call_related_to !== "I_am_not_sure" &&
-    hasFollowers === false;
+  (isConsultant || isSubadmin) &&
+  isBeforeBookingTime &&
+  hasNoFollowers &&
+  bookingData.fld_call_request_sts !== "Completed" &&
+  bookingData.fld_call_related_to !== "I_am_not_sure";
 
   const showExecutiveExternalBooking =
     isExecutive &&

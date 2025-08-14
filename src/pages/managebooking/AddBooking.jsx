@@ -20,7 +20,7 @@ export default function AddBooking({
   bookingId,
 }) {
   const { user: loggedInUser, priceDiscoutUsernames } = useAuth();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   let decodedBookingId;
   if (bookingId) {
@@ -102,7 +102,7 @@ export default function AddBooking({
         try {
           setPageLoading(true);
           const response = await fetch(
-            "https://callback-2suo.onrender.com/api/additional/callrequestrc",
+            "http://localhost:5000/api/additional/callrequestrc",
             {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -138,23 +138,23 @@ export default function AddBooking({
           toast.error("Something went wrong while fetching call request data.");
         } finally {
           setPageLoading(false);
-          navigate('/bookings')
+          navigate("/bookings");
         }
       };
 
       fetchCallRequestData();
     }
   }, [decodedBookingId]);
-useEffect(()=>{
-  console.log(consultants);
-},[]);
+  useEffect(() => {
+    console.log(consultants);
+  }, []);
   useEffect(() => {
     const fetchWriterEmails = async () => {
       if (rcCallData?.project_id && rcCallData?.milestone_id) {
         try {
           setPageLoading(true);
           const response = await fetch(
-            "https://callback-2suo.onrender.com/api/additional/getwritersemail",
+            "https://rapidcollaborate.com/rc-main/cron/index/getwritersemail",
             {
               method: "POST",
               headers: {
@@ -181,10 +181,10 @@ useEffect(()=>{
 
             const subWriter = sub_writer_email
               ? consultants.find(
-                (c) =>
-                  c.fld_email?.toLowerCase() ==
-                  sub_writer_email?.toLowerCase()
-              )
+                  (c) =>
+                    c.fld_email?.toLowerCase() ==
+                    sub_writer_email?.toLowerCase()
+                )
               : null;
             console.log("sub writer", subWriter);
 
@@ -216,7 +216,7 @@ useEffect(()=>{
       if (formData.sale_type === "Presales" && clientId.length > 3) {
         try {
           const res = await fetch(
-            `https://callback-2suo.onrender.com/api/bookings/getPresaleClientDetails/${clientId}`
+            `http://localhost:5000/api/bookings/getPresaleClientDetails/${clientId}`
           );
           const data = await res.json();
 
@@ -236,7 +236,7 @@ useEffect(()=>{
             }));
 
             const recordingRes = await fetch(
-              `https://callback-2suo.onrender.com/api/bookings/checkCallrecording`,
+              `http://localhost:5000/api/bookings/checkCallrecording`,
               {
                 method: "POST",
                 headers: {
@@ -277,7 +277,7 @@ useEffect(()=>{
       if (formData.sale_type === "Postsales" && clientId.length > 3) {
         try {
           const res = await fetch(
-            `https://callback-2suo.onrender.com/api/bookings/getPostsaleClientDetails/${clientId}`
+            `https://rapidcollaborate.com/rc-main/cron/index/getpostsaleclientdetails?client_id=${clientId}`
           );
           const data = await res.json();
 
@@ -295,17 +295,17 @@ useEffect(()=>{
               client_plan_name: plan
                 ? plan.plan
                 : data.data.plan_type == "1"
-                  ? "Basic"
-                  : data.data.plan_type == "2"
-                    ? "Standard"
-                    : "Advanced",
+                ? "Basic"
+                : data.data.plan_type == "2"
+                ? "Standard"
+                : "Advanced",
               allowedCalls: plan
                 ? plan.allowedCalls
                 : data.data.plan_type == "1"
-                  ? "1"
-                  : data.data.plan_type == "2"
-                    ? "2"
-                    : "3",
+                ? "1"
+                : data.data.plan_type == "2"
+                ? "2"
+                : "3",
             };
             setFormData((prev) => ({
               ...prev,
@@ -315,7 +315,7 @@ useEffect(()=>{
             setProjects(data.data.projects || []);
 
             const recordingRes = await fetch(
-              `https://callback-2suo.onrender.com/api/bookings/checkCallrecording`,
+              `http://localhost:5000/api/bookings/checkCallrecording`,
               {
                 method: "POST",
                 headers: {
@@ -367,7 +367,7 @@ useEffect(()=>{
   const checkConsultantWebsiteCondition = (consultantId, consultantName) => {
     try {
       fetch(
-        `https://callback-2suo.onrender.com/api/bookings/checkConsultantWebsiteCondition`,
+        `http://localhost:5000/api/bookings/checkConsultantWebsiteCondition`,
         {
           method: "POST",
           headers: {
@@ -408,7 +408,7 @@ useEffect(()=>{
 
   const checkConsultantTeamCondition = (consultantId, consultantName) => {
     try {
-      fetch(`https://callback-2suo.onrender.com/api/bookings/checkConsultantTeamCondition`, {
+      fetch(`http://localhost:5000/api/bookings/checkConsultantTeamCondition`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -455,7 +455,7 @@ useEffect(()=>{
   };
 
   const checkPresalesCall = (consultantId, consultantName) => {
-    fetch("https://callback-2suo.onrender.com/api/bookings/checkPresalesCall", {
+    fetch("http://localhost:5000/api/bookings/checkPresalesCall", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -540,7 +540,7 @@ useEffect(()=>{
 
     try {
       const res = await fetch(
-        "https://callback-2suo.onrender.com/api/helpers/getConsultantsBySubjectArea",
+        "http://localhost:5000/api/helpers/getConsultantsBySubjectArea",
         {
           method: "POST",
           headers: {
@@ -567,7 +567,7 @@ useEffect(()=>{
     // const allowedCalls=formData.allowedCalls;
     try {
       const response = await fetch(
-        `https://callback-2suo.onrender.com/api/bookings/checkPostsaleCompletedCalls`,
+        `http://localhost:5000/api/bookings/checkPostsaleCompletedCalls`,
         {
           method: "POST",
           headers: {
@@ -695,24 +695,28 @@ useEffect(()=>{
       if (!formData.call_related_to) {
         toast.error("Please select a call related to");
         return;
-      } else if (!formData.consultant_id) {
+      } else if (
+        !formData.consultant_id &&
+        formData.call_related_to != "I_am_not_sure"
+      ) {
         toast.error("Please select a Consultant");
         return;
       } else if (showReassignOptions && !formData.consultant_another_option) {
         toast.error("Please select a Consultant SubOption");
         return;
       }
-
-
     }
 
     if (formData.sale_type == "Postsales") {
-      if (!formData.consultant_id) {
+      if (
+        !formData.consultant_id &&
+        formData.call_related_to != "I_am_not_sure"
+      ) {
         toast.error("Please select a Consultant");
         return;
       } else if (!formData.secondary_consultant_id) {
         //toast.error("Please select a Secondary Consultant")
-      //  return;
+        //  return;
       } else if (!formData.projectid) {
         toast.error("Please select a Project ID");
         return;
@@ -720,15 +724,13 @@ useEffect(()=>{
         toast.error("Please select a Project Milestone");
         return;
       }
-
-
     }
 
     setSubmitting(true);
 
     try {
       const response = await fetch(
-        "https://callback-2suo.onrender.com/api/bookings/addBooking",
+        "http://localhost:5000/api/bookings/addBooking",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -749,15 +751,15 @@ useEffect(()=>{
         result.message === "Add Call Request Already Sent!"
       ) {
         toast.error(result.message);
-       // fetchAllBookings();
-       // setShowForm(false);
+        // fetchAllBookings();
+        // setShowForm(false);
       } else if (
         !result.status &&
         result.message === "Booking already exists"
       ) {
         toast.error(result.message);
-       // fetchAllBookings();
-       // setShowForm(false);
+        // fetchAllBookings();
+        // setShowForm(false);
       } else {
         toast.error("Something went wrong.");
       }
@@ -784,7 +786,7 @@ useEffect(()=>{
       }
       try {
         const res = await fetch(
-          `https://callback-2suo.onrender.com/api/bookings/getProjectMilestones/${formData.projectid}`
+          `https://rapidcollaborate.com/rc-main/cron/index/getprojectmilestones?project_id=${formData.projectid}`
         );
         const data = await res.json();
 
@@ -811,7 +813,16 @@ useEffect(()=>{
         className="fixed top-0 right-0 w-[25%] h-full bg-white shadow z-50 overflow-y-auto"
       >
         {/* Header */}
-      <SocketHandler otherSetters={[{ setFn: setConsultants, isBookingList: true,subjectArea:formData.subject_area,callRelatedTo:formData.call_related_to} ]}/>
+        <SocketHandler
+          otherSetters={[
+            {
+              setFn: setConsultants,
+              isBookingList: true,
+              subjectArea: formData.subject_area,
+              callRelatedTo: formData.call_related_to,
+            },
+          ]}
+        />
 
         <div className="flex justify-between items-center px-4 py-3 border-b bg-[#224d68] text-white">
           <h2 className="text-[15px] font-semibold">Add Booking</h2>
@@ -851,38 +862,38 @@ useEffect(()=>{
 
             {(formData.sale_type === "Presales" ||
               formData.sale_type === "Postsales") && (
-                <div>
-                  <label className="block mb-1">
-                    {formData.sale_type === "Presales"
-                      ? "Insta CRM RefId"
-                      : "RC Student Code"}
-                  </label>
-                  <input
-                    type="text"
-                    name="client_id"
-                    value={formData.client_id}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      setFormData((prev) => ({
-                        ...prev,
-                        client_id: value,
-                        client_plan_id: "",
-                        client_plan_name: "",
-                        // projectid: "",
-                        project_milestone: "",
-                        project_milestone_name: "",
-                        allowedCalls: "",
-                        completedCalls: "",
-                        insta_website: "",
-                        company_name: "",
-                      }));
-                      setProjects([]);
-                    }}
-                    className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
-                    required
-                  />
-                </div>
-              )}
+              <div>
+                <label className="block mb-1">
+                  {formData.sale_type === "Presales"
+                    ? "Insta CRM RefId"
+                    : "RC Student Code"}
+                </label>
+                <input
+                  type="text"
+                  name="client_id"
+                  value={formData.client_id}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setFormData((prev) => ({
+                      ...prev,
+                      client_id: value,
+                      client_plan_id: "",
+                      client_plan_name: "",
+                      // projectid: "",
+                      project_milestone: "",
+                      project_milestone_name: "",
+                      allowedCalls: "",
+                      completedCalls: "",
+                      insta_website: "",
+                      company_name: "",
+                    }));
+                    setProjects([]);
+                  }}
+                  className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
+                  required
+                />
+              </div>
+            )}
 
             {formData.sale_type === "Presales" && (
               <>
@@ -941,7 +952,7 @@ useEffect(()=>{
                     <option value="">Select a project</option>
                     {projects.map((project) => (
                       <option key={project.id} value={project.id}>
-                        {"123"+project.id} - {project.project_title}
+                        {"123" + project.id} - {project.project_title}
                       </option>
                     ))}
                   </select>
@@ -1033,24 +1044,35 @@ useEffect(()=>{
             {formData.call_related_to === "subject_area_related" && (
               <div>
                 <label className="block mb-1">Subject Area</label>
-                <select
+                <Select
                   name="subject_area"
-                  value={formData.subject_area}
-                  onChange={(e) => {
-                    handleChange(e);
-                    handleSubjectAreaChange({ value: e.target.value });
+                  value={
+                    formData.subject_area
+                      ? {
+                          value: formData.subject_area,
+                          label: formData.subject_area,
+                        }
+                      : null
+                  }
+                  onChange={(selectedOption) => {
+                    handleChange({
+                      target: {
+                        name: "subject_area",
+                        value: selectedOption?.value || "",
+                      },
+                    });
+                    handleSubjectAreaChange(selectedOption);
                   }}
-                  className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
-                >
-                  <option value="">Select Subject Area</option>
-                  {subjectAreas.map((s) => (
-                    <option key={s.id} value={s.domain}>
-                      {s.domain}
-                    </option>
-                  ))}
-                </select>
+                  options={subjectAreas.map((s) => ({
+                    value: s.domain,
+                    label: s.domain,
+                  }))}
+                  placeholder="Select Subject Area"
+                  className="w-full"
+                />
               </div>
             )}
+
             {formData.call_related_to !== "I_am_not_sure" && (
               <div>
                 <label className="block mb-1">Primary Consultant</label>
@@ -1166,7 +1188,8 @@ useEffect(()=>{
 
             {showReassignOptions &&
               formData.sale_type === "Presales" &&
-              (formData.call_related_to === "direct_call" || formData.call_related_to === "subject_area_related") && (
+              (formData.call_related_to === "direct_call" ||
+                formData.call_related_to === "subject_area_related") && (
                 <div className="mb-4">
                   <label className="block mb-1">Sub Option</label>
                   <select
@@ -1306,13 +1329,29 @@ useEffect(()=>{
                 id="submitBtn"
                 type="button"
                 onClick={handleSubmit}
-                className={`bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700 text-[11px] flex items-center gap-1 cursor-pointer transition ${submitDisabled
-                  ? "opacity-50 cursor-not-allowed"
-                  : "hover:bg-blue-700"
-                  }`}
+                className={`bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700 text-[11px] flex items-center gap-1 cursor-pointer transition ${
+                  submitDisabled
+                    ? "opacity-50 cursor-not-allowed"
+                    : "hover:bg-blue-700"
+                }`}
                 disabled={submitDisabled || submitting}
               >
-                {submitting ? "Submitting..." : submitButtonText}<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevrons-right-icon lucide-chevrons-right"><path d="m6 17 5-5-5-5"/><path d="m13 17 5-5-5-5"/></svg>
+                {submitting ? "Submitting..." : submitButtonText}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="lucide lucide-chevrons-right-icon lucide-chevrons-right"
+                >
+                  <path d="m6 17 5-5-5-5" />
+                  <path d="m13 17 5-5-5-5" />
+                </svg>
               </button>
             </div>
           </div>
