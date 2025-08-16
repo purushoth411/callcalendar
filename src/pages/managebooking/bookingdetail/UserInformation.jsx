@@ -9,8 +9,9 @@ const UserInformation = ({ data, user, bgColor,externalCallInfo}) => {
 
   return (
     <>
-    <div className="p-4 rounded-lg mb-6 shadow bg-[#f1efff] border border-[#c1b9ff] " >
-      <h5 className="text-[14px] font-semibold mb-4 text-gray-800">User Information</h5>
+    <div className="grid grid-cols-1 gap-4">
+    <div className="p-3 rounded bg-[#f1efff] border border-gray-200" >
+      <h5 className="text-[14px] font-semibold text-gray-900 mb-4 flex items-center border-b border-gray-300 pb-3 mb-3">User Information</h5>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Client Code / Ref Id */}
@@ -285,10 +286,10 @@ const UserInformation = ({ data, user, bgColor,externalCallInfo}) => {
 
 {/* Booking Information */}
 {data.fld_booking_date && data.fld_booking_slot && (
-  <div className={`p-4 rounded-lg mb-6 shadow mt-8 bg-[#f1efff] border border-[#c1b9ff]`} 
+  <div className={`p-3 rounded bg-[#f1efff] border border-gray-200`} 
 
   >
-    <h5 className="text-[14px] font-semibold mb-4 text-gray-800">Booking Information</h5>
+    <h5 className="text-[14px] font-semibold text-gray-900 mb-4 flex items-center border-b border-gray-300 pb-3 mb-3">Booking Information</h5>
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
       {/* Booking Date & Slot */}
@@ -406,7 +407,7 @@ const UserInformation = ({ data, user, bgColor,externalCallInfo}) => {
     </div>
   </div>
 )}
-
+</div>
 </>
 
     

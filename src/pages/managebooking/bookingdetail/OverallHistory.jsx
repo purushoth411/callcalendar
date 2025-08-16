@@ -94,7 +94,7 @@ const OverallHistory = ({ bookingData }) => {
           Overall History
         </h2>
 
-      <div className="space-y-2 pr-3 overflow-y-auto h-[15.3rem] text-[13px]">
+      <div className="space-y-2 pr-3 overflow-y-auto max-h-[15.3rem] text-[13px]">
         {overallHistory.map((entry, idx) => {
           const arrComment = entry.fld_comment?.split(" on ");
           const commentMain = arrComment[0];
