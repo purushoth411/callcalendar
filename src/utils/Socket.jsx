@@ -7,7 +7,7 @@ let currentUserId = null;
 // Initialize or return existing socket
 export const initSocket = (userId) => {
   if (!socket) {
-    socket = io("https://callback-2suo.onrender.com", {
+    socket = io("http://localhost:5000", {
       reconnection: true,
       reconnectionAttempts: 3,
       reconnectionDelay: 3000,
@@ -43,7 +43,7 @@ export const initSocket = (userId) => {
 export const getSocket = () => {
   if (!socket) {
     // initialize socket without userId - you can later emit registerUser separately
-    socket = io("https://callback-2suo.onrender.com");
+    socket = io("http://localhost:5000");
   }
   return socket;
 };

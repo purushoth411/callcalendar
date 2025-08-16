@@ -59,7 +59,7 @@ const CallUpdateActions = ({
   const fetchExternalCallCount = async (bookingId) => {
     try {
       const response = await fetch(
-        `https://callback-2suo.onrender.com/api/bookings/getExternalCallCount?bookingId=${bookingId}`
+        `http://localhost:5000/api/bookings/getExternalCallCount?bookingId=${bookingId}`
       );
       const data = await response.json();
 
@@ -273,7 +273,7 @@ const CallUpdateActions = ({
 
     try {
       const response = await fetch(
-        `https://callback-2suo.onrender.com/api/bookings/checkCompletedCall`,
+        `http://localhost:5000/api/bookings/checkCompletedCall`,
         {
           method: "POST",
           headers: {
@@ -531,7 +531,7 @@ const CallUpdateActions = ({
           )}
 
           {/* Completed Status - Rating Questions */}
-          {consultationStatus === "Completed" && userType !== "CONSULTANT" && (
+          {consultationStatus === "Completed" && (userType == "CONSULTANT" || (userType=="SUBADMIN" && user.fld_subadmin_type=="consultant_sub")) && (
             <div className="space-y-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-4">
