@@ -349,7 +349,7 @@ useEffect(() => {
       data: null,
       orderable: false,
       render: (data, type, row) => `
-        <button class="edit-btn bg-blue-600 px-2 py-1 rounded text-white leading-none text-[11px] mr-1" data-id="${row.id}">Edit</button>
+        <button class="edit-btn bg-yellow-600 hover:bg-yellow-700 px-2 py-1 rounded text-white leading-none text-[11px] cursor-pointer" data-id="${row.id}">Edit</button>
         <button class="delete-btn bg-red-600 px-2 py-1 rounded text-white leading-none text-[11px]" data-id="${row.id}">Delete</button>
       `,
     },
@@ -489,7 +489,7 @@ useEffect(() => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="fixed inset-0 bg-black bg-opacity-50 z-40"
+              className="fixed inset-0 bg-[#000000c2] bg-opacity-50 z-40"
               onClick={closeForm}
             />
 
@@ -504,24 +504,24 @@ useEffect(() => {
                 damping: 30,
                 duration: 0.4,
               }}
-              className="fixed top-0 right-0 h-full w-full bg-white shadow-2xl z-50 overflow-y-auto"
+              className="fixed top-0 right-0 h-full w-[70%] bg-white shadow-2xl z-50 overflow-y-auto"
             >
-              <div className="p-6">
+              <div className="p-0">
                 {/* Header */}
-                <div className="flex justify-between items-center mb-6 pb-4">
-                  <h3 className="text-xl font-semibold text-gray-800">
-                    {editId ? "Edit Domain" : "Add New Domain"}
+                <div className="flex justify-between items-center px-4 py-3 border-b bg-[#224d68] text-white">
+                  <h3 className="text-[15px] font-semibold">
+                    {editId ? "Add Domain" : "Add New Domain"}
                   </h3>
                   <button
                     onClick={closeForm}
-                    className="text-gray-500 hover:text-gray-700 text-2xl font-bold"
+                    className="text-gray-100 hover:text-black text-2xl cursor-pointer"
                   >
                     <X size={15} />
                   </button>
                 </div>
 
                 {/* Form Content */}
-                <div className="space-y-6">
+                <div className="space-y-6 p-4">
                   {/* Domain Input */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -597,19 +597,20 @@ useEffect(() => {
                       ))}
                     </div>
                   </div>
+                    {/* Action Buttons */}
+                  <div className="flex justify-end gap-3">
+                    <button
+                      onClick={handleSave}
+                      disabled={submitting}
+                      className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-[11px] flex items-center gap-1 cursor-pointer"
+                    >
+                      {submitting? "Saving...":"Save"}
+                    </button>
+                  </div>
                 </div>
-
-                {/* Action Buttons */}
-                <div className="flex justify-end gap-3 mt-8 pt-6 border-t">
-                  <button
-                    onClick={handleSave}
-                    disabled={submitting}
-                    className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
-                  >
-                    {submitting? "Saving...":"Save"}
-                  </button>
                 </div>
-              </div>
+                
+                
             </motion.div>
           </>
         )}
@@ -621,7 +622,7 @@ useEffect(() => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="fixed inset-0 bg-black bg-opacity-50 z-40"
+              className="fixed inset-0 bg-[#000000c2] bg-opacity-50 z-40"
               onClick={closeForm}
             />
 
@@ -636,24 +637,24 @@ useEffect(() => {
                 damping: 30,
                 duration: 0.4,
               }}
-              className="fixed top-0 right-0 h-full w-full bg-white shadow-2xl z-50 overflow-y-auto"
+              className="fixed top-0 right-0 h-full w-[70%] bg-white shadow-2xl z-50 overflow-y-auto"
             >
-              <div className="p-6">
+              <div className="p-0">
                 {/* Header */}
-                <div className="flex justify-between items-center mb-6 pb-4">
-                  <h3 className="text-xl font-semibold text-gray-800">
+                <div className="flex justify-between items-center px-4 py-3 border-b bg-[#224d68] text-white">
+                  <h3 className="text-[15px] font-semibold">
                     {editId ? "Edit Domain" : "Add New Domain"}
                   </h3>
                   <button
                     onClick={closeForm}
-                    className="text-gray-500 hover:text-gray-700 text-2xl font-bold"
+                    className="text-gray-100 hover:text-black text-2xl cursor-pointer"
                   >
                     <X size={15} />
                   </button>
                 </div>
 
                 {/* Form Content */}
-                <div className="space-y-6">
+                <div className="space-y-6 p-4">
                   {/* Domain Input */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -729,19 +730,20 @@ useEffect(() => {
                       ))}
                     </div>
                   </div>
+                  {/* Action Buttons */}
+                  <div className="flex justify-end gap-3">
+                    <button
+                      onClick={handleUpdate}
+                      disabled={submitting}
+                      className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-[11px] flex items-center gap-1 cursor-pointer"
+                    >
+                      {submitting?"Updating...":"Update"}
+                    </button>
+                  </div>
+                </div>
                 </div>
 
-                {/* Action Buttons */}
-                <div className="flex justify-end gap-3 mt-8 pt-6 border-t">
-                  <button
-                    onClick={handleUpdate}
-                    disabled={submitting}
-                    className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
-                  >
-                    {submitting?"Updating...":"Update"}
-                  </button>
-                </div>
-              </div>
+                
             </motion.div>
           </>
         )}

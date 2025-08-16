@@ -841,7 +841,7 @@ export default function AddBooking({
             </div>
           )}
           {/* Form */}
-          <div className={`p-4 space-y-4 row ${pageLoading ? "disabled" : ""}`}>
+          <div className={`p-4 space-y-4  ${pageLoading ? "disabled" : ""}`}>
             <div>
               <label className="block mb-1">Select Call Type</label>
               <select

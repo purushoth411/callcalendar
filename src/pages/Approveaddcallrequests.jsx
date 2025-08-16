@@ -151,7 +151,7 @@ useEffect(() => {
           `;
         } else {
           const color = data === "Approved" ? "green" : "red";
-          return `<span class="inline-block px-2 py-1 text-xs font-medium rounded bg-${color}-100 text-${color}-800">${data}</span>`;
+          return `<span class="inline-block px-2 py-1 text-[10px] font-medium rounded bg-${color}-100 text-${color}-800">${data}</span>`;
         }
       },
     }

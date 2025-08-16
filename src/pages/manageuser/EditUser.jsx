@@ -166,11 +166,11 @@ const EditUser = ({
         </button>
       </div>
 
-      <div className="p-4 space-y-4 row">
+      <div className="p-4 space-y-4 ">
         {(formType === "EXECUTIVE" ||
           formType === "CONSULTANT" ||
           formType === "SUBADMIN") && (
-          <div className="col-md-4">
+          <div className="">
             <label className="block mb-1">Select Team</label>
             <Select
               className="react-select-container"
@@ -220,7 +220,7 @@ const EditUser = ({
           </div>
         )}
 
-        <div className="col-md-4">
+        <div className="">
           <label className="block mb-1">Username</label>
           <input
             type="text"
@@ -232,7 +232,7 @@ const EditUser = ({
           />
         </div>
 
-        <div className="col-md-4">
+        <div className="">
           <label className="block mb-1">Name</label>
           <input
             type="text"
@@ -242,7 +242,7 @@ const EditUser = ({
           />
         </div>
 
-        <div className="col-md-4">
+        <div className="">
           <label className="block mb-1">Email ID</label>
           <input
             type="email"
@@ -254,7 +254,7 @@ const EditUser = ({
           />
         </div>
 
-        <div className="col-md-4">
+        <div className="">
           <label className="block mb-1">Phone</label>
           <input
             type="text"
@@ -311,7 +311,7 @@ const EditUser = ({
 
         {/* Permissions */}
         {(formType === "SUBADMIN" || formType === "CONSULTANT") && (
-          <div className="space-y-2 col-md-4">
+          <div className="space-y-2 ">
             <label className="block font-medium">Permissions</label>
             <div className="flex gap-4 flex-wrap">
               <label>

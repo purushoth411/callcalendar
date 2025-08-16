@@ -323,7 +323,7 @@ export default function Users() {
       data: "fld_admin_type",
       orderable: true,
       render: (data) =>
-        `<div class="px-2 py-1 text-[10px] font-semibold text-indigo-600 bg-indigo-50 rounded-md inline-block">${
+        `<div class="px-2 py-1 text-[9px] font-semibold text-indigo-600 bg-indigo-50 rounded-md inline-block">${
           data || ""
         }</div>`,
     },
@@ -515,7 +515,7 @@ export default function Users() {
             {/* Header */}
             <div className="px-3 py-2 bg-[#d7efff7d]">
               <div className="flex justify-between items-center">
-                <h2 className="text-[16px] font-semibold text-gray-900">
+                <h2 className="text-[14px] font-semibold text-gray-900">
                   {userTabs.find((tab) => tab.key === selectedUserType)?.label}{" "}
                   Users
                 </h2>

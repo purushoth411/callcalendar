@@ -381,7 +381,7 @@ export default function Teams() {
                   </button>
                 </div>
 
-                <div className="p-4 space-y-4 row">
+                <div className="p-4 space-y-4 ">
                   {/* Team Name */}
                   <div>
                     <label className="block mb-1">
@@ -448,7 +448,7 @@ export default function Teams() {
                   </button>
                 </div>
 
-                <div className="p-4 space-y-4 row">
+                <div className="p-4 space-y-4 ">
                   {/* Team Name */}
                   <div>
                     <label className="block mb-1">

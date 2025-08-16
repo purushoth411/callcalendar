@@ -64,7 +64,9 @@ const BookingDetail = () => {
   const isSuperAdminOrExecutive =
     user?.fld_admin_type === "SUPERADMIN" ||
     user?.fld_admin_type === "EXECUTIVE";
-  const [activeTab, setActiveTab] = useState((isSuperAdminOrExecutive ? "consultant":"user"));
+  const [activeTab, setActiveTab] = useState(
+    isSuperAdminOrExecutive ? "consultant" : "user"
+  );
   ///socket
   //   useEffect(() => {
   //   const socket = getSocket();
@@ -1213,7 +1215,7 @@ const BookingDetail = () => {
       </div>
     );
   }
-  
+
   return (
     <div className="flex-1 flex flex-col">
       <SocketHandler
@@ -1223,17 +1225,16 @@ const BookingDetail = () => {
         ]}
       />
 
-      
-          <div className="flex-1 flex flex-col">
-            {/* Header */}
-            <div className="flex justify-between items-center mb-4">
-              <h4 className="text-[16px] font-semibold text-gray-900">
-                View Booking Information
-              </h4>
+      <div className="flex-1 flex flex-col">
+        {/* Header */}
+        <div className="flex justify-between items-center mb-4">
+          <h4 className="text-[16px] font-semibold text-gray-900">
+            View Booking Information
+          </h4>
 
-              <div className="flex items-center space-x-3">
-                {/* Delete Button */}
-                {/* {canDelete && (
+          <div className="flex items-center gap-3">
+            {/* Delete Button */}
+            {/* {canDelete && (
                   <button
                     onClick={handleDeleteCallRequest}
                     className="bg-red-500 hover:bg-red-600 text-[11px] text-white px-2 py-1  rounded-md flex items-center space-x-1 transition-colors cursor-pointer"
@@ -1243,28 +1244,28 @@ const BookingDetail = () => {
                   </button>
                 )} */}
 
-                {/* Set as Converted */}
-                {canSetAsConverted && (
-                  <>
-                    <button
-                      onClick={() => setShowConvertModal(true)}
-                      className="bg-green-600 hover:bg-green-600 text-white px-4 rounded-sm the_act cursor-pointer"
-                    >
-                      Set as Converted
-                    </button>
-                    <SetAsConvertedModal
-                      isOpen={showConvertModal}
-                      onClose={() => setShowConvertModal(false)}
-                      onConvert={handleSetAsConverted}
-                      isSubmitting={isSubmitting}
-                    />
-                  </>
-                )}
+            {/* Set as Converted */}
+            {canSetAsConverted && (
+              <>
+                <button
+                  onClick={() => setShowConvertModal(true)}
+                  className="bg-green-600 hover:bg-green-600 text-white px-4 rounded-sm the_act cursor-pointer"
+                >
+                  Set as Converted
+                </button>
+                <SetAsConvertedModal
+                  isOpen={showConvertModal}
+                  onClose={() => setShowConvertModal(false)}
+                  onConvert={handleSetAsConverted}
+                  isSubmitting={isSubmitting}
+                />
+              </>
+            )}
 
-                <ViewCommentModal user={user} bookingData={bookingData} />
+            <ViewCommentModal user={user} bookingData={bookingData} />
 
-                {/* View Chat */}
-                {/* <button
+            {/* View Chat */}
+            {/* <button
                   onClick={scrollToChat}
                   className="bg-blue-500 hover:bg-blue-600 text-white px-2 rounded-md flex items-center space-x-2 transition-colors"
                 >
@@ -1272,194 +1273,204 @@ const BookingDetail = () => {
                   <span>View Chat</span>
                 </button> */}
 
-                {/* Back Button */}
-                {/* Mark as Confirmed Button */}
-                {canMarkAsConfirmed && (
-                  <div className="flex justify-end">
-                    <button
-                      onClick={handleMarkAsConfirmed}
-                      className="bg-blue-500 hover:bg-blue-600 text-white px-2 rounded-md transition-colors cursor-pointer"
-                    >
-                      Mark as Confirmed by Client
-                    </button>
-                  </div>
-                )}
-
-                {/* Loading Overlay */}
-                <AnimatePresence>
-                  {isProcessing && (
-                    <motion.div
-                      className="fixed inset-0 backdrop-blur-sm bg-black/10 flex items-center justify-center z-50"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                    >
-                      <motion.div
-                        className="bg-white p-6 rounded-lg shadow-md flex items-center gap-4"
-                        initial={{ scale: 0.8, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        exit={{ scale: 0.8, opacity: 0 }}
-                      >
-                        <svg
-                          className="animate-spin h-6 w-6 text-blue-600"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                        >
-                          <circle
-                            className="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                          />
-                          <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                          />
-                        </svg>
-                        <span className="text-gray-700 font-medium">
-                          {loaderMessage}
-                        </span>
-                      </motion.div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                {/* Reassign Comment Form */}
-                {user.fld_admin_type === "EXECUTIVE" &&
-                  bookingData.fld_call_request_sts === "Consultant Assigned" &&
-                  bookingData.fld_consultant_approve_sts === "Yes" && (
-                    <>
-                      <div className=" flex justify-end">
-                        <button
-                          onClick={() => setShowReassignForm(true)}
-                          className="bg-yellow-500 hover:bg-yellow-600 text-white px-2 rounded-md transition-colors cursor-pointer"
-                        >
-                          Request for reassign
-                        </button>
-                      </div>
-
-                      <ReassignModal
-                        show={showReassignForm}
-                        onClose={() => setShowReassignForm(false)}
-                        comment={reassignComment}
-                        setComment={setReassignComment}
-                        onSubmit={handleReassignComment}
-                        isReassigning={isReassigning}
-                      />
-                    </>
-                  )}
+            {/* Back Button */}
+            {/* Mark as Confirmed Button */}
+            {canMarkAsConfirmed && (
+              <div className="flex justify-end">
                 <button
-                  onClick={() => navigate(-1)}
-                  className="bg-none hover:bg-gray-300  text-black text-[11px] px-2 py-1 cursor-pointer  rounded-sm flex items-center space-x-2 transition-colors hover:text-gray-700"
+                  onClick={handleMarkAsConfirmed}
+                  className="bg-blue-500 hover:bg-blue-600 text-white px-2 rounded-md transition-colors cursor-pointer"
                 >
-                  <ArrowLeft className="mr-1" size={12} />
-                  <span>Back</span>
+                  Mark as Confirmed by Client
                 </button>
               </div>
-            </div>
-
-            {/* Status Update Section */}
-            {canUpdateStatus && (
-              <div className="mb-6 bg-white  rounded-lg">
-                <div className="flex items-center justify-end space-x-4">
-                  <select
-                    value={statusByCrm}
-                    onChange={(e) => setStatusByCrm(e.target.value)}
-                    className="border border-gray-300 rounded px-3 py-1 min-w-48"
-                  >
-                    <option value="">Update Call Status</option>
-                    <option value="Completed">✔️ Completed</option>
-                    <option value="Not Join">❌ Client Did Not Join</option>
-                    <option value="Postponed">⏳ Postponed</option>
-                  </select>
-                  <button
-                    onClick={handleStatusUpdate}
-                    className={`${
-                      isSubmitting
-                        ? "bg-blue-300 hover:bg-blue-400"
-                        : "bg-[#ff6800] hover:bg-orange-600"
-                    } text-white px-4 py-1 rounded-md transition-colors flex`}
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? "Submitting.." : "Submit"}
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="pt-1 ml-1"
-                      width="17"
-                      height="17"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      class="lucide lucide-chevrons-right-icon lucide-chevrons-right"
-                    >
-                      <path d="m6 17 5-5-5-5"></path>
-                      <path d="m13 17 5-5-5-5"></path>
-                    </svg>
-                  </button>
-                </div>
-              </div>
             )}
-            <div className="grid grid-cols-3 gap-3">
-            <div className="col-span-2">
-              <div className="flex flex-col gap-4">
-                <ConsultantInformation
-                  bookingData={bookingData}
-                  user={user}
-                  bgColor={getStatusColor(bookingData?.fld_call_request_sts)}
-                />
-              
-                <UserInformation
-                  data={bookingData}
-                  user={user}
-                  bgColor={getStatusColor(bookingData?.fld_call_request_sts)}
-                  externalCallInfo={externalCallInfo}
-                />
-                <CallUpdateActions
-                  bookingData={bookingData}
-                  user={user}
-                  consultantList={consultantList}
-                  onUpdateStatus={onUpdateStatus}
-                  onAssignExternal={onAssignExternal}
-                  onReassignCall={onReassignCall}
-                />
-                <CallUpdateOtherActions
-                  bookingData={bookingData}
-                  user={user}
-                  consultantList={consultantList}
-                  externalCallInfo={externalCallInfo}
-                  onUpdateExternal={onUpdateExternal}
-                  onSubmitCompletedComment={onSubmitCompletedComment}
-                  onAddFollower={onAddFollower}
-                  onUpdateExternalBooking={onUpdateExternalBooking}
-                  followerConsultants={followerConsultants}
-                  hasFollowers={hasFollowers}
-                  getFollowerConsultant={getFollowerConsultant}
-                  loadingFollowers={loadingFollowers}
-                />
-                <div className="flex gap-4">
-                  {/* Reassign to Consultant Form */}
-                  {canShowReasignConsultant && (
-                    <div className=" flex-wrap gap-4 w-[50%] bg-white border border-gray-200 rounded p-4 ">
-                      <div className="w-full ">
-                        <h2 className="text-[14px] font-semibold text-gray-900 mb-4 flex items-center border-b border-gray-300 pb-3 mb-3">
-                          <Handshake size={16} className="mr-2" />
-                          Reassign
-                        </h2>
-                        <label className="block mb-2 font-medium">
-                          Reassign to another Consultant
-                        </label>
-                        <Select
-                          name="consultant_id"
-                          className="react-select-container"
-                          classNamePrefix="react-select"
-                          options={consultantList
+
+            {/* Loading Overlay */}
+            <AnimatePresence>
+              {isProcessing && (
+                <motion.div
+                  className="fixed inset-0 backdrop-blur-sm bg-black/10 flex items-center justify-center z-50"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
+                  <motion.div
+                    className="bg-white p-6 rounded-lg shadow-md flex items-center gap-4"
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.8, opacity: 0 }}
+                  >
+                    <svg
+                      className="animate-spin h-6 w-6 text-blue-600"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                      />
+                    </svg>
+                    <span className="text-gray-700 font-medium">
+                      {loaderMessage}
+                    </span>
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Reassign Comment Form */}
+            {user.fld_admin_type === "EXECUTIVE" &&
+              bookingData.fld_call_request_sts === "Consultant Assigned" &&
+              bookingData.fld_consultant_approve_sts === "Yes" && (
+                <>
+                  <div className=" flex justify-end">
+                    <button
+                      onClick={() => setShowReassignForm(true)}
+                      className="bg-yellow-500 hover:bg-yellow-600 text-white px-2 rounded-md transition-colors cursor-pointer"
+                    >
+                      Request for reassign
+                    </button>
+                  </div>
+
+                  <ReassignModal
+                    show={showReassignForm}
+                    onClose={() => setShowReassignForm(false)}
+                    comment={reassignComment}
+                    setComment={setReassignComment}
+                    onSubmit={handleReassignComment}
+                    isReassigning={isReassigning}
+                  />
+                </>
+              )}
+            <button
+              onClick={() => navigate(-1)}
+              className="bg-none hover:bg-gray-300  text-black text-[11px] px-2 py-1 cursor-pointer  rounded-sm flex items-center space-x-2 transition-colors hover:text-gray-700"
+            >
+              <ArrowLeft className="mr-1" size={12} />
+              <span>Back</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Status Update Section */}
+        {canUpdateStatus && (
+          <div className="mb-6 bg-white p-2 rounded">
+            <div className="flex items-end justify-end space-x-4">
+              <select
+                value={statusByCrm}
+                onChange={(e) => setStatusByCrm(e.target.value)}
+                className="border px-1 py-1 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600 min-w-48"
+              >
+                <option value="">Update Call Status</option>
+                <option value="Completed">✔️ Completed</option>
+                <option value="Not Join">❌ Client Did Not Join</option>
+                <option value="Postponed">⏳ Postponed</option>
+              </select>
+              <button
+                onClick={handleStatusUpdate}
+                className={`${
+                  isSubmitting
+                    ? "bg-blue-300 hover:bg-blue-400"
+                    : "bg-[#ff6800] hover:bg-orange-600"
+                } text-white px-2 py-1 rounded transition-colors flex items-center cursor-pointer text-[12px]`}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Submitting.." : "Submit"}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="pt-1 ml-1"
+                  width="15"
+                  height="15"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="lucide lucide-chevrons-right-icon lucide-chevrons-right"
+                >
+                  <path d="m6 17 5-5-5-5"></path>
+                  <path d="m13 17 5-5-5-5"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+        )}
+        <div className="grid grid-cols-3 gap-3">
+          <div className="col-span-2">
+            <div className="flex flex-col gap-4">
+              <ConsultantInformation
+                bookingData={bookingData}
+                user={user}
+                bgColor={getStatusColor(bookingData?.fld_call_request_sts)}
+              />
+
+              <UserInformation
+                data={bookingData}
+                user={user}
+                bgColor={getStatusColor(bookingData?.fld_call_request_sts)}
+                externalCallInfo={externalCallInfo}
+              />
+              <CallUpdateActions
+                bookingData={bookingData}
+                user={user}
+                consultantList={consultantList}
+                onUpdateStatus={onUpdateStatus}
+                onAssignExternal={onAssignExternal}
+                onReassignCall={onReassignCall}
+              />
+              <CallUpdateOtherActions
+                bookingData={bookingData}
+                user={user}
+                consultantList={consultantList}
+                externalCallInfo={externalCallInfo}
+                onUpdateExternal={onUpdateExternal}
+                onSubmitCompletedComment={onSubmitCompletedComment}
+                onAddFollower={onAddFollower}
+                onUpdateExternalBooking={onUpdateExternalBooking}
+                followerConsultants={followerConsultants}
+                hasFollowers={hasFollowers}
+                getFollowerConsultant={getFollowerConsultant}
+                loadingFollowers={loadingFollowers}
+              />
+              <div className="flex gap-4">
+                {/* Reassign to Consultant Form */}
+                {canShowReasignConsultant && (
+                  <div className=" flex-wrap gap-4 w-[50%] bg-white border border-gray-200 rounded p-4 ">
+                    <div className="w-full ">
+                      <h2 className="text-[14px] font-semibold text-gray-900 mb-4 flex items-center border-b border-gray-300 pb-3 mb-3">
+                        <Handshake size={16} className="mr-2" />
+                        Reassign
+                      </h2>
+                      <label className="block mb-2 font-medium">
+                        Reassign to another Consultant
+                      </label>
+                      <Select
+                        name="consultant_id"
+                        className="react-select-container"
+                        classNamePrefix="react-select"
+                        options={consultantList
+                          .filter(
+                            (consultant) =>
+                              consultant.id !== bookingData.fld_consultantid
+                          )
+                          .map((consultant) => ({
+                            value: consultant.id,
+                            label: consultant.fld_name,
+                          }))}
+                        value={
+                          consultantList
                             .filter(
                               (consultant) =>
                                 consultant.id !== bookingData.fld_consultantid
@@ -1467,39 +1478,66 @@ const BookingDetail = () => {
                             .map((consultant) => ({
                               value: consultant.id,
                               label: consultant.fld_name,
-                            }))}
-                          value={
-                            consultantList
-                              .filter(
-                                (consultant) =>
-                                  consultant.id !== bookingData.fld_consultantid
-                              )
-                              .map((consultant) => ({
-                                value: consultant.id,
-                                label: consultant.fld_name,
-                              }))
-                              .find(
-                                (option) => option.value === primaryConsultantId
-                              ) || null
-                          }
-                          onChange={(selectedOption) =>
-                            setPrimaryConsultantId(
-                              selectedOption ? selectedOption.value : ""
-                            )
-                          }
-                          placeholder="Select Primary Consultant"
-                          isClearable
+                            }))
+                            .find(
+                              (option) => option.value === primaryConsultantId
+                            ) || null
+                        }
+                        onChange={(selectedOption) =>
+                          setPrimaryConsultantId(
+                            selectedOption ? selectedOption.value : ""
+                          )
+                        }
+                        placeholder="Select Primary Consultant"
+                        isClearable
+                      />
+                    </div>
+
+                    <div className="w-full  self-end mt-3 justify-end flex">
+                      <button
+                        type="button"
+                        onClick={handleReassignToConsultant}
+                        className="bg-[#ff6800]  text-white px-2 py-1 rounded hover:bg-orange-600"
+                      >
+                        {" "}
+                        Update Consultant{" "}
+                        <i
+                          className="fa fa-arrow-right ml-1"
+                          aria-hidden="true"
+                        ></i>
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Cancel Booking Form */}
+                {canCancelCall && (
+                  <>
+                    <div className=" flex-wrap gap-4 w-[50%] bg-white border border-gray-200 rounded p-4 ">
+                      <h2 className="text-[14px] font-semibold text-gray-900 mb-4 flex items-center border-b border-gray-300 pb-3 mb-3">
+                        <PhoneMissed size={16} className="mr-2" />
+                        Call Cancelled
+                      </h2>
+                      <div className="w-full ">
+                        <label className="block mb-2">
+                          Comments <span className="text-red-500">*</span>
+                        </label>
+                        <textarea
+                          className="w-full border border-gray-300 rounded px-4 py-2"
+                          value={cancelComment}
+                          onChange={(e) => setCancelComment(e.target.value)}
+                          placeholder="Add Comments"
                         />
                       </div>
 
-                      <div className="w-full  self-end mt-3 justify-end flex">
+                      <div className="w-full  self-end mt-1 justify-end flex">
                         <button
                           type="button"
-                          onClick={handleReassignToConsultant}
-                          className="bg-[#ff6800]  text-white px-2 py-1 rounded hover:bg-orange-600"
+                          onClick={handleCancelBooking}
+                          className="bg-[#ff6800] text-white px-2 py-1 rounded hover:bg-orange-600"
                         >
                           {" "}
-                          Update Consultant{" "}
+                          Update{" "}
                           <i
                             className="fa fa-arrow-right ml-1"
                             aria-hidden="true"
@@ -1507,67 +1545,27 @@ const BookingDetail = () => {
                         </button>
                       </div>
                     </div>
-                  )}
-
-                  {/* Cancel Booking Form */}
-                  {canCancelCall && (
-                    <>
-                      <div className=" flex-wrap gap-4 w-[50%] bg-white border border-gray-200 rounded p-4 ">
-                        <h2 className="text-[14px] font-semibold text-gray-900 mb-4 flex items-center border-b border-gray-300 pb-3 mb-3">
-                          <PhoneMissed size={16} className="mr-2" />
-                          Call Cancelled
-                        </h2>
-                        <div className="w-full ">
-                          <label className="block mb-2">
-                            Comments <span className="text-red-500">*</span>
-                          </label>
-                          <textarea
-                            className="w-full border border-gray-300 rounded px-4 py-2"
-                            value={cancelComment}
-                            onChange={(e) => setCancelComment(e.target.value)}
-                            placeholder="Add Comments"
-                          />
-                        </div>
-
-                        <div className="w-full  self-end mt-1 justify-end flex">
-                          <button
-                            type="button"
-                            onClick={handleCancelBooking}
-                            className="bg-[#ff6800] text-white px-2 py-1 rounded hover:bg-orange-600"
-                          >
-                            {" "}
-                            Update{" "}
-                            <i
-                              className="fa fa-arrow-right ml-1"
-                              aria-hidden="true"
-                            ></i>
-                          </button>
-                        </div>
-                      </div>
-                    </>
-                  )}
-                  </div>
+                  </>
+                )}
               </div>
             </div>
-            <div className="space-y-3">
-              <ChatBox
-                user={user}
-                messageData={messageData}
-                onSend={(message) => sendMessage(message)}
-                isMsgSending={isMsgSending}
-              />
-              <OtherCalls
-                bookingId={bookingId}
-                clientId={bookingData.fld_client_id}
-                fetchBookingById={fetchBookingById}
-              />
-              <OverallHistory bookingData={bookingData} />
-            </div>
-            </div>
-
-            
           </div>
-        
+          <div className="space-y-3">
+            <ChatBox
+              user={user}
+              messageData={messageData}
+              onSend={(message) => sendMessage(message)}
+              isMsgSending={isMsgSending}
+            />
+            <OtherCalls
+              bookingId={bookingId}
+              clientId={bookingData.fld_client_id}
+              fetchBookingById={fetchBookingById}
+            />
+            <OverallHistory bookingData={bookingData} />
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
