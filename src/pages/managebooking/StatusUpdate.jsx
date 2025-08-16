@@ -211,7 +211,7 @@ const StatusUpdate = ({
     <td className="n-cal-sts">
       {/* Main badge */}
       <span
-        className={`inline-flex items-center gap-1 py-[1px] px-[6px] ml-1 rounded text-xs font-medium ${
+        className={`inline-flex items-center gap-1 py-[1px] px-[6px] ml-1 rounded text-[10px] font-medium ${
           meta.bg
         } ${meta.text} ${strikeout(isDeleted)}`}
       >
@@ -222,7 +222,7 @@ const StatusUpdate = ({
       {/* Edit Booking */}
       {canEditBooking && (
         <a
-          className={`inline-flex items-center gap-1 py-[1px] px-[6px] ml-1 rounded text-xs ${
+          className={`inline-flex items-center gap-1 py-[1px] px-[6px] ml-1 rounded text-[10px] ${
             meta.bg
           } ${meta.text} ${strikeout(isDeleted)} n-bdge`}
           href={`${baseUrl}admin/edit_booking/${row.id}`}
@@ -234,7 +234,7 @@ const StatusUpdate = ({
 
       {/* Web Code/OTP */}
       {canShowOTP && (
-        <span className="inline-flex items-center gap-1 py-[1px] px-[6px] ml-1 rounded text-xs bg-blue-100 text-blue-800 n-bdge">
+        <span className="inline-flex items-center gap-1 py-[1px] px-[6px] ml-1 rounded text-[10px] bg-blue-100 text-blue-800 n-bdge">
           <Lock size={11} /> Web Code: {row.fld_otp}
         </span>
       )}
@@ -242,7 +242,7 @@ const StatusUpdate = ({
       {/* Schedule Call */}
       {(canScheduleCallExec || canScheduleCallSubadmin) && (
         <a
-          className="inline-flex items-center gap-1 py-[1px] px-[6px] ml-1 rounded text-xs bg-blue-600 text-white"
+          className="inline-flex items-center gap-1 py-[1px] px-[6px] ml-1 rounded text-[10px] bg-blue-600 text-white"
           href={`${baseUrl}schedulecall/${row.id}`}
           title="Schedule Call"
         >
@@ -252,7 +252,7 @@ const StatusUpdate = ({
 
       {/* Converted badge */}
       {isConverted && (
-        <span className="inline-flex items-center gap-1 py-[1px] px-[6px] ml-1 rounded text-xs bg-green-100 text-green-800">
+        <span className="inline-flex items-center gap-1 py-[1px] px-[6px] ml-1 rounded text-[10px] bg-green-100 text-green-800">
           <ArrowUpRightFromCircle size={12} /> Converted
         </span>
       )}
@@ -260,7 +260,7 @@ const StatusUpdate = ({
       {/* Convert pencil for presales */}
       {canConvertPresales && (
         <a
-          className={`inline-flex items-center gap-1 py-[1px] px-[6px] ml-1 rounded text-xs ${
+          className={`inline-flex items-center gap-1 py-[1px] px-[6px] ml-1 rounded text-[10px] ${
             meta.bg
           } ${meta.text} ${strikeout(isDeleted)} n-sts-slt`}
           href={`${baseUrl}admin/booking_detail/${row.id}/convert`}
@@ -274,7 +274,7 @@ const StatusUpdate = ({
       {isCancelled && (
         <>
           <a
-            className={`inline-flex items-center gap-1 py-[1px] px-[6px] ml-1 rounded text-xs ${
+            className={`inline-flex items-center gap-1 py-[1px] px-[6px] ml-1 rounded text-[10px] ${
               meta.bg
             } ${meta.text} ${strikeout(isDeleted)} n-sts-slt`}
             href={`${baseUrl}admin/booking_detail/${row.id}`}
@@ -284,7 +284,7 @@ const StatusUpdate = ({
           </a>
           {isPresales && (
             <a
-              className={`inline-flex edit-sub-area  items-center gap-1 py-[1px] px-[6px] ml-1 rounded text-xs ${
+              className={`inline-flex edit-sub-area  items-center gap-1 py-[1px] px-[6px] ml-1 rounded text-[10px] ${
                 meta.bg
               } ${meta.text} ${strikeout(isDeleted)} n-sts-slt cursor-pointer`}
               data-id={row.id}
@@ -302,19 +302,19 @@ const StatusUpdate = ({
         <>
           {/* Call status updation */}
           {call_status_updation_pending === "Call status updation pending" && (
-            <span className="inline-flex items-center gap-1 py-[1px] px-[6px] ml-1 rounded text-xs bg-amber-100 text-amber-800">
+            <span className="inline-flex items-center gap-1 py-[1px] px-[6px] ml-1 rounded text-[10px] bg-amber-100 text-amber-800">
               <Clock size={12} /> Call status updation pending
             </span>
           )}
           {/* Client confirmation */}
           {row.fld_call_confirmation_status ===
             "Call Confirmation Pending at Client End" && (
-            <span className="inline-flex items-center gap-1 py-[1px] px-[6px] ml-1 rounded text-xs bg-blue-100 text-blue-800">
+            <span className="inline-flex items-center gap-1 py-[1px] px-[6px] ml-1 rounded text-[10px] bg-blue-100 text-blue-800">
               <Clock size={12} /> {row.fld_call_confirmation_status}
             </span>
           )}
           {row.fld_call_confirmation_status === "Call Confirmed by Client" && (
-            <span className="inline-flex items-center gap-1 py-[1px] px-[6px] ml-1 rounded text-xs bg-green-100 text-green-800">
+            <span className="inline-flex items-center gap-1 py-[1px] px-[6px] ml-1 rounded text-[10px] bg-green-100 text-green-800">
               <CheckCircle size={12} /> {row.fld_call_confirmation_status}
             </span>
           )}
@@ -326,7 +326,7 @@ const StatusUpdate = ({
       {/* CRM status info */}
       {crmMetaToUse && (
         <span
-          className={`inline-flex items-center gap-1 py-[1px] px-[6px] ml-1 rounded text-xs ${crmMetaToUse.bg} ${crmMetaToUse.text}`}
+          className={`inline-flex items-center gap-1 py-[1px] px-[6px] ml-1 rounded text-[10px] ${crmMetaToUse.bg} ${crmMetaToUse.text}`}
         >
           {crmMetaToUse.icon}
           CRM Marked As {crmCompleted ? "Completed" : "Client Did Not Join"}
@@ -336,7 +336,7 @@ const StatusUpdate = ({
       {/* Call recording badge */}
       {showCallRecording && (
         <span
-          className={`inline-flex items-center gap-1 py-[1px] px-[6px] ml-1 rounded text-xs ${callRecordingColor}`}
+          className={`inline-flex items-center gap-1 py-[1px] px-[6px] ml-1 rounded text-[10px] ${callRecordingColor}`}
         >
           <Mic size={12} />
           {row.callRecordingSts}
@@ -346,7 +346,7 @@ const StatusUpdate = ({
       {/* CRM Status Dropdown */}
       {canCrmStatusDropdown && (
         <select
-          className={`ml-1 border border-gray-200 rounded-sm bg-gray-100 text-[12px] the_status statusByCrm${row.id}  px-1 `}
+          className={`ml-1 border border-gray-200 rounded-sm bg-gray-100 text-[10px] the_status statusByCrm${row.id}  px-1 `}
           style={{ width: "auto" }}
           onChange={(e) => onCrmStatusChange(row.id, e.target.value)}
           defaultValue=""

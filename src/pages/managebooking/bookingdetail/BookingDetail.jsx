@@ -1214,19 +1214,6 @@ const BookingDetail = () => {
     );
   }
   
-  // const canCancelCall=true;
-  const tabs = [
-    ...(isSuperAdminOrExecutive
-    ? [{ id: "consultant", label: "Consultant Information" }]
-    : []),
-    { id: "user", label: "User Information" },
-    { id: "follower", label: "Call Action" },
-    // { id: "chat", label: "Chat" },
-    // { id: "history", label: "History" },
-  ];
-  
-  
-  
   return (
     <div className="flex-1 flex flex-col">
       <SocketHandler
@@ -1420,70 +1407,43 @@ const BookingDetail = () => {
               </div>
             )}
             <div className="grid grid-cols-3 gap-3">
-            <div className="bg-white rounded    border border-gray-200 flex-1 col-span-2">
-              {/* Tabs - Horizontal */}
-              <div className="flex border-b border-gray-200">
-                {tabs.map((tab) => (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`px-4 py-3 border-b-2 transition-colors ${
-                      activeTab === tab.id
-                        ? "border-orange-500 text-orange-700 font-medium"
-                        : "border-transparent hover:bg-gray-50"
-                    }`}
-                  >
-                    {tab.label}
-                  </button>
-                ))}
-              </div>
-
-              {/* Tab Content */}
-              <div className="p-4">
-                {activeTab === "consultant" && (
-                  <ConsultantInformation
-                    bookingData={bookingData}
-                    user={user}
-                    bgColor={getStatusColor(bookingData?.fld_call_request_sts)}
-                  />
-                )}
-
-                {activeTab === "user" && (
-                  <UserInformation
-                    data={bookingData}
-                    user={user}
-                    bgColor={getStatusColor(bookingData?.fld_call_request_sts)}
-                    externalCallInfo={externalCallInfo}
-                  />
-                )}
-
-                {activeTab === "follower" && (
-                  <div className="">
-                  <div className="flex gap-4">
-                    <CallUpdateActions
-                      bookingData={bookingData}
-                      user={user}
-                      consultantList={consultantList}
-                      onUpdateStatus={onUpdateStatus}
-                      onAssignExternal={onAssignExternal}
-                      onReassignCall={onReassignCall}
-                    />
-                    <CallUpdateOtherActions
-                      bookingData={bookingData}
-                      user={user}
-                      consultantList={consultantList}
-                      externalCallInfo={externalCallInfo}
-                      onUpdateExternal={onUpdateExternal}
-                      onSubmitCompletedComment={onSubmitCompletedComment}
-                      onAddFollower={onAddFollower}
-                      onUpdateExternalBooking={onUpdateExternalBooking}
-                      followerConsultants={followerConsultants}
-                      hasFollowers={hasFollowers}
-                      getFollowerConsultant={getFollowerConsultant}
-                      loadingFollowers={loadingFollowers}
-                    />
-                  </div>
-                  <div className="flex gap-4 mt-4">
+            <div className="col-span-2">
+              <div className="flex flex-col gap-4">
+                <ConsultantInformation
+                  bookingData={bookingData}
+                  user={user}
+                  bgColor={getStatusColor(bookingData?.fld_call_request_sts)}
+                />
+              
+                <UserInformation
+                  data={bookingData}
+                  user={user}
+                  bgColor={getStatusColor(bookingData?.fld_call_request_sts)}
+                  externalCallInfo={externalCallInfo}
+                />
+                <CallUpdateActions
+                  bookingData={bookingData}
+                  user={user}
+                  consultantList={consultantList}
+                  onUpdateStatus={onUpdateStatus}
+                  onAssignExternal={onAssignExternal}
+                  onReassignCall={onReassignCall}
+                />
+                <CallUpdateOtherActions
+                  bookingData={bookingData}
+                  user={user}
+                  consultantList={consultantList}
+                  externalCallInfo={externalCallInfo}
+                  onUpdateExternal={onUpdateExternal}
+                  onSubmitCompletedComment={onSubmitCompletedComment}
+                  onAddFollower={onAddFollower}
+                  onUpdateExternalBooking={onUpdateExternalBooking}
+                  followerConsultants={followerConsultants}
+                  hasFollowers={hasFollowers}
+                  getFollowerConsultant={getFollowerConsultant}
+                  loadingFollowers={loadingFollowers}
+                />
+                <div className="flex gap-4">
                   {/* Reassign to Consultant Form */}
                   {canShowReasignConsultant && (
                     <div className=" flex-wrap gap-4 w-[50%] bg-white border border-gray-200 rounded p-4 ">
@@ -1587,10 +1547,6 @@ const BookingDetail = () => {
                     </>
                   )}
                   </div>
-                  </div>
-                )}
-
-                
               </div>
             </div>
             <div className="space-y-3">

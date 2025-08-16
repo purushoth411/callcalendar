@@ -8,14 +8,14 @@ const ConsultantInformation = ({ bookingData, user, bgColor }) => {
 
   return (
     <>
-      <div className="grid grid-cols-1 gap-4">
+      
       {/* Consultant Information */}
       {isSuperAdminOrExecutive && (
         <div
-          className="p-4 rounded-lg bg-[#f1efff] border border-[#c1b9ff]"
+          className="p-3 rounded bg-[#f1efff] border border-gray-200"
           // style={{ backgroundColor: bgColor }}
         >
-          <h5 className="text-[14px] font-semibold mb-4 text-gray-800">
+          <h5 className="text-[14px] font-semibold text-gray-900 mb-4 flex items-center border-b border-gray-300 pb-3 mb-3">
             Consultant Information
           </h5>
 
@@ -61,10 +61,10 @@ const ConsultantInformation = ({ bookingData, user, bgColor }) => {
       {isSuperAdminOrExecutive &&
         bookingData?.fld_secondary_consultant_id > 0 && (
           <div
-            className="p-4 rounded-lg mb-4 bg-[#f1efff] border border-[#c1b9ff]"
+            className="p-3 rounded-lg bg-[#f1efff] border border-gray-200"
             // style={{ backgroundColor: bgColor }}
           >
-            <h5 className="text-[14px] font-semibold mb-4 text-gray-800">
+            <h5 className="text-[14px] font-semibold text-gray-900 mb-4 flex items-center border-b border-gray-300 pb-3 mb-3">
               Secondary Consultant Information
             </h5>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -104,7 +104,7 @@ const ConsultantInformation = ({ bookingData, user, bgColor }) => {
             </div>
           </div>
         )}
-        </div>
+        
     </>
   );
 };
