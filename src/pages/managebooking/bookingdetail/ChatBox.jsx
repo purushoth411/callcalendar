@@ -49,7 +49,7 @@ const ChatBox = ({ bookingId, user, messageData, onSend,isMsgSending }) => {
           Chat
         </h2>
 
-      <div className="max-h-64 overflow-y-auto space-y-4 bg-white" id="messagebox">
+      <div className="max-h-64 overflow-y-auto space-y-4 bg-white px-2" id="messagebox">
         {messageData.length === 0 ? (
           <p className="text-red-700 text-[12px] bg-red-50 p-2 rounded">No messages yet.</p>
         ) : (
@@ -62,10 +62,10 @@ const ChatBox = ({ bookingId, user, messageData, onSend,isMsgSending }) => {
                 className={`flex ${isSender ? "justify-end" : "justify-start"}`}
               >
                 <div
-                  className={`max-w-md px-2 py-2 rounded-lg text-sm  ${
+                  className={`max-w-[300px] px-2 py-2 rounded-lg text-sm  ${
                     isSender
-                      ? "bg-blue-600 text-white rounded-br-none"
-                      : "bg-white border border-gray-500 text-gray-800 rounded-bl-none"
+                      ? "bg-blue-600 text-white rounded-br-none text-right"
+                      : "bg-gray-50 border border-gray-400 text-gray-800 rounded-bl-none text-left"
                   }`}
                 >
                   {!isSender && (
@@ -73,11 +73,15 @@ const ChatBox = ({ bookingId, user, messageData, onSend,isMsgSending }) => {
                       {msg.sender_name}
                     </div>
                   )}
-                  <div className="whitespace-pre-wrap text-[13px]">{msg.fld_message}</div>
-                  <div className="text-[10px] text-right mt-1 text-gray-400">
+                  <div className="whitespace-pre-wrap text-[12px]">{msg.fld_message}</div>
+                  <div className={`text-[9px] mt-2  ${
+                  isSender
+                      ? "text-right text-white"
+                      : "text-left"
+                  }`}>
                     {formatDateTime(msg.fld_addedon)}
                     {msg.fld_read_time && (
-                      <div className="italic mt-1 text-right">
+                      <div className="italic mt-1">
                         Read Time: {formatDateTime(msg.fld_read_time)}
                       </div>
                     )}
@@ -90,7 +94,7 @@ const ChatBox = ({ bookingId, user, messageData, onSend,isMsgSending }) => {
       </div>
 
       {isAllowedUser && (
-        <div className="mt-2  pt-3">
+        <div className="mt-3 border-t pt-2 border-gray-300">
           {messageData.length < maxMessages ? (
             <div className="flex gap-2 items-end">
               <textarea
@@ -103,9 +107,9 @@ const ChatBox = ({ bookingId, user, messageData, onSend,isMsgSending }) => {
               <button
                 onClick={handleSend}
                 disabled={isMsgSending}
-                className={`${isMsgSending? "bg-[#ff6800]" : "bg-[#ff6800]"} text-white px-3 py-1  rounded flex flex gap-1 items-center text-[12px]`}
+                className={`${isMsgSending? "bg-[#ff6800]" : "bg-[#ff6800]"} text-white px-3 py-1  rounded flex flex gap-1 items-center text-[11px]`}
               >
-                {isMsgSending ?"Sending...":"Send"} <SendIcon size={11}/>
+                {isMsgSending ?"Sending...":"Send"} <SendIcon className="mt-0.5" size={10}/>
               </button>
             </div>
           ) : (

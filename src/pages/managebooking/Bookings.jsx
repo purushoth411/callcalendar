@@ -484,7 +484,7 @@ export default function Bookings() {
           row.fld_booking_slot
         );
         return `
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-2 justify-between">
         <div class="text-gray-600">${formatted}</div>
         <button class="show-history-btn text-xs px-2 py-1 rounded" 
                 data-booking-id="${row.booking_id}">
@@ -681,9 +681,9 @@ export default function Bookings() {
                   <h2 className="text-[16px] font-semibold text-gray-900">
                     All Bookings
                   </h2>
-                  <div>
+                  <div className="flex gap-2 items-center">
                     <span className="text-sm text-gray-500">Total:</span>
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded text-[10px] font-medium bg-blue-100 text-blue-800">
                       {isLoading ? "..." : bookings.length}
                     </span>
                   </div>

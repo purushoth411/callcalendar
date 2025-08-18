@@ -203,11 +203,11 @@ const UserInformation = ({ data, user, bgColor,externalCallInfo}) => {
         {data.fld_asana_link && (
           <div className="flex items-start gap-2">
             <i className="fa fa-link mt-1" aria-hidden="true"></i>
-            <div>
+            <div className="truncate ">
               <div className="text-[12px] font-semibold text-gray-700 !mb-2">
                 Asana Link / Quote Id
               </div>
-              <p className="text-gray-900">
+              <p className="text-gray-900 truncate w-full">
                 {data.fld_asana_link}
               </p>
             </div>
@@ -263,23 +263,24 @@ const UserInformation = ({ data, user, bgColor,externalCallInfo}) => {
           </div>
           
         )}
+        {/* Internal Comments */}
+        {data.fld_internal_comments && (
+          <div className="flex items-start gap-2 col-span-3">
+            <i className="fa fa-comment mt-1" aria-hidden="true"></i>
+            <div>
+              <div className="text-[12px] font-semibold text-gray-700 !mb-2">
+                Internal Comments
+              </div>
+              <p className="text-gray-900">
+                {data.fld_internal_comments}
+              </p>
+            </div>
+          </div>
+          
+        )}
       </div>
 
-      {/* Internal Comments */}
-      {data.fld_internal_comments && (
-        <div className="flex items-start gap-2">
-          <i className="fa fa-comment mt-1" aria-hidden="true"></i>
-          <div>
-            <div className="text-[12px] font-semibold text-gray-700 !mb-2">
-              Internal Comments
-            </div>
-            <p className="text-gray-900">
-              {data.fld_internal_comments}
-            </p>
-          </div>
-        </div>
-        
-      )}
+      
     </div>
 
 

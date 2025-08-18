@@ -196,7 +196,7 @@ function CallRequestsFromRc() {
         const label =
           status === "Accept" || status === "Reject" ? `${status}ed` : status;
 
-        return `<span class="status the_addcall1 rounded f-11 ${cls} ${deleted}" style="text-align:center">
+        return `<span class="status px-1 py-0.5 rounded text-[10px] ${cls} ${deleted}" style="text-align:center">
         ${label}
       </span>`;
       },

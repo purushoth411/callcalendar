@@ -14,10 +14,10 @@ const ViewCommentModal = ({ user, bookingData }) => {
         bookingData.fld_consultation_sts === "Completed" &&
         bookingData.fld_comment && (
           <button
-            className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-md flex items-center space-x-2 transition-colors"
+            className="bg-yellow-600 hover:bg-yellow-700 text-[12px] text-white px-2 py-1 rounded flex items-center space-x-2 transition-colors cursor-pointer"
             onClick={handleOpen}
           >
-            <Eye size={16} />
+            <Eye size={12} />
             <span>View Comments</span>
           </button>
         )}

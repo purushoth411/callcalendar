@@ -304,13 +304,13 @@ export default function Plans() {
                   </h3>
                   <button
                     onClick={closeForm}
-                    className="text-gray-100 hover:text-black text-2xl"
+                    className="text-gray-100 hover:text-red-500 text-2xl cursor-pointer"
                   >
                     <XIcon size={17} />
                   </button>
                 </div>
 
-                <div className="p-4 space-y-4 row">
+                <div className="p-4 space-y-4">
                   {/* Plan Name */}
                   <div>
                     <label className="block mb-1">

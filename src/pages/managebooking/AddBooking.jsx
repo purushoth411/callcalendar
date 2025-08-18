@@ -828,7 +828,7 @@ export default function AddBooking({
           <h2 className="text-[15px] font-semibold">Add Booking</h2>
           <button
             onClick={() => setShowForm(false)}
-            className="text-gray-100 hover:text-black text-2xl"
+            className="text-gray-100 hover:text-red-500 text-2xl cursor-pointer"
           >
             <XIcon size={17} />
           </button>
@@ -841,7 +841,7 @@ export default function AddBooking({
             </div>
           )}
           {/* Form */}
-          <div className={`p-4 space-y-4 row ${pageLoading ? "disabled" : ""}`}>
+          <div className={`p-4 space-y-4  ${pageLoading ? "disabled" : ""}`}>
             <div>
               <label className="block mb-1">Select Call Type</label>
               <select

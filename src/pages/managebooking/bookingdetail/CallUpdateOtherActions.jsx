@@ -231,16 +231,16 @@ useEffect(() => {
         bookingData.fld_consultation_sts === "Completed" &&
         !bookingData.fld_call_complete_comment &&
         bookingData.callRecordingSts === "Call Recording Pending" && (
-          <div className="bg-white border border-gray-200 rounded-lg p-4">
-            <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
-              <Star className="w-5 h-5 mr-2" />
+          <div className="bg-white  border border-gray-200  rounded-md p-3 ">
+            <h2 className="text-[14px] font-semibold text-gray-900 mb-4 flex items-center border-b border-gray-300 pb-3 mb-3">
+              <Star className="mr-2" size={16} />
               After Call Comments
             </h2>
 
            <div className="grid grid-cols-1 gap-4">
   {/* Comments - Full Width */}
   <div>
-    <label className="block text-sm font-medium text-gray-700 mb-1">
+    <label className="text-[12px] font-semibold text-gray-700 !mb-2">
       Comments
     </label>
     <textarea
@@ -254,7 +254,7 @@ useEffect(() => {
   {/* Rating + Call Recording in 2 Columns */}
   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
     <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">
+      <label className="text-[12px] font-semibold text-gray-700 !mb-2">
         Rating
       </label>
       <select
@@ -272,7 +272,7 @@ useEffect(() => {
     </div>
 
     <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">
+      <label className="text-[12px] font-semibold text-gray-700 !mb-2">
         Call Recording URL
       </label>
       <input
@@ -305,36 +305,43 @@ useEffect(() => {
         bookingData.fld_call_complete_comment &&
         bookingData.callRecordingSts === "Call Recording Updated" &&
         bookingData.fld_call_complete_recording && (
-          <div className="bg-white border border-gray-200 rounded-lg p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
-              <Star className="w-5 h-5 mr-2" />
+          <div className="bg-white  border border-gray-200  rounded-md p-3 ">
+            <h2 className="text-[14px] font-semibold text-gray-900 mb-4 flex items-center border-b border-gray-300 pb-3 mb-3">
+              <Star className="mr-2" size={16} />
               After Call Comments
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="flex items-start gap-2">
+              <i class="fa fa-book mt-1" aria-hidden="true"></i>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="text-[12px] font-semibold text-gray-700 !mb-2">
                   Comments
                 </label>
-                <p className="text-gray-800">
+                <p className="text-gray-900">
                   {bookingData.fld_call_complete_comment}
                 </p>
               </div>
+              </div>
 
+              <div className="flex items-start gap-2">
+              <i class="fa fa-star mt-1" aria-hidden="true"></i>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="text-[12px] font-semibold text-gray-700 !mb-2">
                   Rating
                 </label>
-                <p className="text-gray-800">
+                <p className="text-gray-900">
                   {bookingData.fld_call_complete_rating}
                 </p>
               </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+              </div>
+              <div className="flex items-start gap-2">
+              <i class="fa fa-key mt-1" aria-hidden="true"></i>
+              <div className="truncate ">
+                <label className="text-[12px] font-semibold text-gray-700 !mb-2">
                   Call Recordings
                 </label>
-                <p className="text-blue-600 underline break-words">
+                <p className="text-blue-600 underline break-words truncate w-full">
                   {bookingData.fld_call_complete_recording.startsWith(
                     "http"
                   ) ? (
@@ -357,6 +364,7 @@ useEffect(() => {
                     </a>
                   )}
                 </p>
+              </div>
               </div>
             </div>
           </div>
@@ -429,13 +437,13 @@ useEffect(() => {
 
       {/* Update Booking Info */}
       {showExecutiveExternalBooking && (
-        <div className="bg-white border border-gray-200 rounded-lg p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-            <Calendar className="w-5 h-5 mr-2" />
+        <div className="bg-white rounded-lg border border-gray-200 p-3">
+          <h2 className="text-[14px] font-semibold text-gray-900 mb-4 flex items-center border-b border-gray-300 pb-3 mb-3">
+            <Calendar className="mr-2" size={16} />
             Update Booking Info
           </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <input
               type="url"
               value={callJoiningLink}
@@ -481,14 +489,16 @@ useEffect(() => {
                 })
               )}
             </select>
-            <button
+            <div className="flex items-end justify-end col-span-3">
+              <button
               type="button"
               onClick={handleExternalBookingSubmit}
-              className="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+              className="inline-flex items-center justify-center px-2 py-1 bg-blue-600 text-white text-[12px] font-medium rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors cursor-pointer"
             >
-              <ArrowRight className="w-4 h-4 mr-2" />
+              <ArrowRight className="mr-1" size={13} />
               Update
             </button>
+            </div>
           </div>
         </div>
       )}

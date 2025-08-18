@@ -209,7 +209,7 @@ export default function ExternalCalls() {
         : "";
 
       return `
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2 justify-between">
           <div class="text-gray-600">${formatted}</div>
           ${historyButton}
         </div>
@@ -220,7 +220,7 @@ export default function ExternalCalls() {
     title: "Sale Type",
     data: "fld_sale_type",
     render: (data) =>
-      `<div class="text-indigo-700 font-medium text-sm">${data || "—"}</div>`,
+      `<div class="text-indigo-700 font-medium ">${data || "—"}</div>`,
   },
   {
     title: "Status",
@@ -315,7 +315,7 @@ export default function ExternalCalls() {
               className="border border-gray-500 text-gray-500 hover:text-white px-2 py-1 rounded hover:bg-gray-500 text-sm ml-3  "
               onClick={fetchAllBookings}
             >
-              <RefreshCcw size={15} />
+              <RefreshCcw size={13} />
             </button>
           </div>
 

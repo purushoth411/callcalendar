@@ -324,7 +324,7 @@ export default function Teams() {
             <h2 className="text-[16px] font-semibold text-gray-900">Team Management</h2>
             <button
               onClick={openAddForm}
-              className="bg-green-600 leading-none text-white px-2 py-1.5 rounded hover:bg-green-700 text-[11px] flex items-center gap-1"
+              className="bg-green-600 leading-none text-white px-2 py-1.5 rounded hover:bg-green-700 text-[11px] flex items-center gap-1 cursor-pointer"
             >
               <PlusIcon size={11} className="leading-none" /> Add New
             </button>
@@ -375,13 +375,13 @@ export default function Teams() {
                   </h3>
                   <button
                     onClick={closeForm}
-                    className="text-gray-100 hover:text-black text-2xl"
+                    className="text-gray-100 hover:text-red-500 text-2xl cursor-pointer"
                   >
                     <XIcon size={17} />
                   </button>
                 </div>
 
-                <div className="p-4 space-y-4 row">
+                <div className="p-4 space-y-4 ">
                   {/* Team Name */}
                   <div>
                     <label className="block mb-1">
@@ -442,13 +442,13 @@ export default function Teams() {
                   </h3>
                   <button
                     onClick={closeForm}
-                    className="text-gray-100 hover:text-black text-2xl"
+                    className="text-gray-100 hover:text-red-500 text-2xl cursor-pointer"
                   >
                     <XIcon size={17} />
                   </button>
                 </div>
 
-                <div className="p-4 space-y-4 row">
+                <div className="p-4 space-y-4 ">
                   {/* Team Name */}
                   <div>
                     <label className="block mb-1">
