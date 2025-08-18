@@ -24,7 +24,7 @@ const OverallHistory = ({ bookingData }) => {
   const fetchOverallHistory = async (bookingId) => {
     try {
       const res = await fetch(
-        `http://localhost:5000/api/bookings/history/${bookingId}`
+        `https://callback-2suo.onrender.com/api/bookings/history/${bookingId}`
       );
       const data = await res.json();
       setOverallHistory(data.data);
@@ -34,7 +34,7 @@ const OverallHistory = ({ bookingData }) => {
         const status = extractStatus(commentText);
         if (status) {
           const statusRes = await fetch(
-            `http://localhost:5000/api/bookings/statusHistory?bookingId=${bookingId}&status=${status}`
+            `https://callback-2suo.onrender.com/api/bookings/statusHistory?bookingId=${bookingId}&status=${status}`
           );
           const statusData = await statusRes.json();
           setStatusHistories((prev) => ({
