@@ -1,4 +1,5 @@
 import toast from "react-hot-toast";
+import moment from "moment-timezone";
 export const toastInfo = (message) =>
   toast(message, {
     icon: "ℹ️",
@@ -101,6 +102,14 @@ export const formatDateTimeStr = (dateStr, slotStr = "00:00 AM") => {
 
   return new Intl.DateTimeFormat("en-GB", options).format(date).replace(",", "");
 };
+
+export function getCurrentDate(format = "YYYY-MM-DD") {
+  return moment().tz("Asia/Kolkata").format(format);
+}
+
+export function getDateBefore(days = 0, format = "YYYY-MM-DD") {
+  return moment().tz("Asia/Kolkata").subtract(days, "days").format(format);
+} 
 
 
 

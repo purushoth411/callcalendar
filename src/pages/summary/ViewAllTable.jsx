@@ -7,7 +7,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { useAuth } from "../../utils/idb";
 import toast from "react-hot-toast";
 import SkeletonLoader from "../../components/SkeletonLoader";
-import moment from "moment";
+import moment from "moment-timezone";
 import { formatBookingDateTime, formatDate } from "../../helpers/CommonHelper";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
@@ -110,7 +110,8 @@ const consultants = [
   { id: 1, fld_name: "Consultant 1", type: "ACTIVE" },
   { id: 2, fld_name: "Consultant 2", type: "INACTIVE" },
 ];
-const today = moment().startOf("day");
+
+const today = moment().tz("Asia/Kolkata").startOf("day");
 
 // Pagination Component
 const Pagination = ({

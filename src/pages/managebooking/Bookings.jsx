@@ -8,6 +8,8 @@ import { PlusIcon, RefreshCcw } from "lucide-react";
 import {
   formatBookingDateTime,
   formatDate,
+  getCurrentDate,
+  getDateBefore,
 } from "../../helpers/CommonHelper.jsx";
 import SkeletonLoader from "../../components/SkeletonLoader.jsx";
 import AddBooking from "./AddBooking.jsx";
@@ -108,8 +110,8 @@ export default function Bookings() {
 
   const navigate = useNavigate();
 
-  const today = moment().format("YYYY-MM-DD");
-  const lastWeek = moment().subtract(7, "days").format("YYYY-MM-DD");
+  const today = getCurrentDate("YYYY-MM-DD");
+  const lastWeek = getDateBefore(7);
 
   const isSuperadmin = user?.fld_admin_type === "SUPERADMIN";
 
@@ -184,6 +186,7 @@ export default function Bookings() {
       const filterPayload = {
         userId: user.id,
         userType: user.fld_admin_type,
+        subAdminType:user.fld_subadmin_type,
         assigned_team: user.fld_team_id,
         filters: {
           consultationStatus:
@@ -284,15 +287,15 @@ export default function Bookings() {
       // Destroy existing DataTable if it exists
       if ($.fn.DataTable.isDataTable(tableRef.current)) {
         $(tableRef.current).DataTable().destroy();
-      }
+      }getDateBefore(7);
     }
   }, [bookings, isLoading]);
 
   const fetchAllBookings = async () => {
     try {
       setIsLoading(true);
-      const today = moment().format("YYYY-MM-DD");
-      const lastWeek = moment().subtract(7, "days").format("YYYY-MM-DD");
+      const today =getCurrentDate("YYYY-MM-DD");
+      const lastWeek = getDateBefore(7);
 
       const isSuperadmin = user?.fld_admin_type === "SUPERADMIN";
 
@@ -313,7 +316,8 @@ export default function Bookings() {
           body: JSON.stringify({
             userId: user?.id,
             userType: user?.fld_admin_type,
-            assigned_team: user?.fld_team || "",
+            subAdminType:user.fld_subadmin_type,
+            assigned_team: user?.fld_team_id || "",
             filters: filtersToSend,
             dashboard_status,
           }),
@@ -624,13 +628,20 @@ export default function Bookings() {
   };
 
   const handleClearFilters = () => {
+      const today =getCurrentDate("YYYY-MM-DD");
+      const lastWeek = getDateBefore(7);
+
+  const isSuperadmin = user?.fld_admin_type === "SUPERADMIN";
+
+  const fromDate = isSuperadmin ? today : lastWeek;
+  const toDate = isSuperadmin ? today : today;
     setFilters({
       sale_type: "",
       call_rcrd_status: "",
       booking_status: [],
       keyword_search: "",
       filter_type: "Booking",
-      date_range: [today.toDate(), today.toDate()],
+       date_range: [fromDate, toDate],
     });
   };
   return (

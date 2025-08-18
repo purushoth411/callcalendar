@@ -6,7 +6,7 @@ import CalendarLoader from "./CalendarLoader.jsx";
 import toast from "react-hot-toast";
 import { TimeZones } from "../../helpers/TimeZones";
 import { formatDateTimeStr } from "../../helpers/CommonHelper.jsx";
-import moment from "moment";
+import moment from "moment-timezone";
 import { getSocket } from "../../utils/Socket.jsx";
 import { useAuth } from "../../utils/idb.jsx";
 
@@ -73,10 +73,8 @@ const EditBooking = () => {
       const handleBookingConfirmed = (consultantId, date, slot) => {
         console.log("Socket Called - Booking Confirmed");
   
-        const selectedDateFormatted = selectedDate.format("YYYY-MM-DD");
-        const eventDateFormatted = moment(date, "YYYY-MM-DD").format(
-          "YYYY-MM-DD"
-        );
+        const selectedDateFormatted = selectedDate.tz("Asia/Kolkata").format("YYYY-MM-DD");
+const eventDateFormatted = moment.tz(date, "YYYY-MM-DD", "Asia/Kolkata").format("YYYY-MM-DD");
   
         if (bookingDetails?.fld_consultantid == consultantId) {
           console.log(
@@ -148,7 +146,8 @@ const EditBooking = () => {
     sat: "fld_sat_time_block",
   };
 
- const normalizeTime = (time) => moment(time, ["h:mm A"]).format("h:mm A");
+const normalizeTime = (time) =>
+  moment.tz(time, ["h:mm A"], "Asia/Kolkata").format("h:mm A");
 
   const timeData = consultantSettings[dayFieldMap[dayKey]];
   const blockData = consultantSettings[blockFieldMap[dayKey]] || "";
@@ -170,21 +169,18 @@ const EditBooking = () => {
     const [startHour, startMinute] = start.split(":").map(Number);
     const [endHour, endMinute] = end.split(":").map(Number);
 
-     let current = moment().set({ hour: startHour, minute: startMinute, second: 0, millisecond: 0 });
-   
-   let endTime = moment().set({ hour: endHour, minute: endMinute, second: 0, millisecond: 0 });
-   
-   
-      while (current <= endTime) {
-     const slot = current.format("h:mm A"); // format with Moment directly
-   
-     const normalizedSlot = normalizeTime(slot);
-     if (!blockedSlots.includes(normalizedSlot)) {
-       generatedSlots.push(normalizedSlot);
-     }
-   
-     current = current.clone().add(30, "minutes"); // add 30 min in Moment
-   }
+    let current = moment.tz({ hour: startHour, minute: startMinute, second: 0, millisecond: 0 }, "Asia/Kolkata");
+let endTime = moment.tz({ hour: endHour, minute: endMinute, second: 0, millisecond: 0 }, "Asia/Kolkata");
+
+while (current <= endTime) {
+  const slot = current.format("h:mm A"); // formatted slot in IST
+  const normalizedSlot = normalizeTime(slot); // use your timezone-aware normalizeTime
+  if (!blockedSlots.includes(normalizedSlot)) {
+    generatedSlots.push(normalizedSlot);
+  }
+
+  current = current.clone().add(30, "minutes"); // move to next slot
+}
    
      });
 
@@ -270,27 +266,59 @@ const EditBooking = () => {
         }
       });
     }
-
+    bookedSlots.push("2:00 PM");
     let finalAvailableSlots = generatedSlots.filter(
       (slot) => !bookedSlots.includes(slot)
     );
 
   
-   const selectedDate = moment(dateStr, "YYYY-MM-DD");
-const today = moment();
+
+
 
 // If the booking date is today
-if (selectedDate.isSame(today, "day")) {
-  
-  const timeBufferMinutes = bookingDetails.fld_sale_type === "Postsales" ? 4 * 60 : 30;
-  const minTime = moment().add(timeBufferMinutes, "minutes");
+const selectedDate = moment.tz(dateStr, "YYYY-MM-DD", "Asia/Kolkata");
+const today = moment.tz("Asia/Kolkata");
 
-  finalAvailableSlots = finalAvailableSlots.filter(slot => {
-    const slotMoment = moment(slot, "hh:mm A"); // e.g., "02:30 PM"
+// Only for today
+if (selectedDate.isSame(today, "day")) {
+  const timeBufferMinutes = bookingDetails.fld_sale_type === "Postsales" ? 4 * 60 : 15;
+
+  // minTime in Asia/Kolkata timezone
+  const minTime = moment.tz("Asia/Kolkata").add(timeBufferMinutes, "minutes");
+
+  finalAvailableSlots = finalAvailableSlots.filter((slot) => {
+    // Attach selectedDate to slot for proper comparison
+    const [hour, minutePart] = slot.split(":");
+    const [minute, meridiem] = minutePart.split(" ");
+    let hour24 = parseInt(hour, 10);
+    if (meridiem === "PM" && hour24 !== 12) hour24 += 12;
+    if (meridiem === "AM" && hour24 === 12) hour24 = 0;
+
+    const slotMoment = moment.tz(selectedDate.format("YYYY-MM-DD"), "YYYY-MM-DD", "Asia/Kolkata")
+      .set({ hour: hour24, minute: parseInt(minute, 10), second: 0, millisecond: 0 });
 
     return slotMoment.isSameOrAfter(minTime);
   });
 }
+
+// Postsales max time limit
+if (bookingDetails.fld_sale_type === "Postsales") {
+  const maxTime = moment.tz(selectedDate.format("YYYY-MM-DD") + " 17:00", "YYYY-MM-DD HH:mm", "Asia/Kolkata");
+
+  finalAvailableSlots = finalAvailableSlots.filter((slot) => {
+    const [hour, minutePart] = slot.split(":");
+    const [minute, meridiem] = minutePart.split(" ");
+    let hour24 = parseInt(hour, 10);
+    if (meridiem === "PM" && hour24 !== 12) hour24 += 12;
+    if (meridiem === "AM" && hour24 === 12) hour24 = 0;
+
+    const slotMoment = moment.tz(selectedDate.format("YYYY-MM-DD"), "YYYY-MM-DD", "Asia/Kolkata")
+      .set({ hour: hour24, minute: parseInt(minute, 10), second: 0, millisecond: 0 });
+
+    return slotMoment.isSameOrBefore(maxTime);
+  });
+}
+
 
 
     console.log("Generated:", generatedSlots);

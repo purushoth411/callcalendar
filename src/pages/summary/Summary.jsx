@@ -7,13 +7,16 @@ import "react-datepicker/dist/react-datepicker.css";
 import { useAuth } from "../../utils/idb";
 import toast from "react-hot-toast";
 import SkeletonLoader from "../../components/SkeletonLoader";
-import moment from "moment";
+
+import moment from "moment-timezone";
 import { RefreshCcw } from "lucide-react";
 import SocketHandler from "../../hooks/SocketHandler";
 // import ViewAllTable from "./ViewAllTable";
 
 
-const today = moment().startOf("day");
+
+
+const today = moment().tz("Asia/Kolkata").startOf("day");
 const Summary = () => {
   const [filters, setFilters] = useState({
     sale_type: "",

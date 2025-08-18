@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Clock, User, Calendar, Phone, FileText, Info, ChevronDown, ChevronUp } from 'lucide-react';
+import { formatDate } from '../../../helpers/CommonHelper';
 
 const OtherCalls = ({ bookingId, clientId, fetchBookingById }) => {
   const [allbookingData, setAllbookingData] = useState([]);
@@ -83,7 +84,7 @@ const OtherCalls = ({ bookingId, clientId, fetchBookingById }) => {
         <Phone size={14} className="" />
         Previous Calls
         <span className="bg-red-100 text-gray-600 px-2 py-1 rounded text-[12px] leading-none ">
-          {allbookingData.length} calls
+           {allbookingData.filter(item => item.id !== selectedBookingId).length} calls
         </span>
       </h2>
 
@@ -114,7 +115,9 @@ const OtherCalls = ({ bookingId, clientId, fetchBookingById }) => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {allbookingData.map((item) => (
+                {allbookingData
+    .filter(item => item.id !== selectedBookingId ) 
+    .map((item) => (
                   <tr
                     key={item.id}
                     onClick={() => handleRowClick(item.id)}
@@ -150,7 +153,7 @@ const OtherCalls = ({ bookingId, clientId, fetchBookingById }) => {
                       <div className="flex items-center">
                         {/* <Calendar className="text-gray-400 mr-1" size={11} /> */}
                         <div>
-                          <div className="text-gray-900">{item.fld_booking_date}</div>
+                          <div className="text-gray-900">{formatDate(item.fld_booking_date)}</div>
                           <div className="text-gray-500">{item.fld_booking_slot}</div>
                         </div>
                       </div>

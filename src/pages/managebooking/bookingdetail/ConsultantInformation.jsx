@@ -13,7 +13,7 @@ const ConsultantInformation = ({ bookingData, user, bgColor }) => {
       {isSuperAdminOrExecutive && (
         <div
           className="p-3 rounded bg-[#f1efff] border border-gray-200"
-          // style={{ backgroundColor: bgColor }}
+          style={{ backgroundColor: bgColor }}
         >
           <h5 className="text-[14px] font-semibold text-gray-900 mb-4 flex items-center border-b border-gray-300 pb-3 mb-3">
             Consultant Information
@@ -62,7 +62,7 @@ const ConsultantInformation = ({ bookingData, user, bgColor }) => {
         bookingData?.fld_secondary_consultant_id > 0 && (
           <div
             className="p-3 rounded-lg bg-[#f1efff] border border-gray-200"
-            // style={{ backgroundColor: bgColor }}
+             style={{ backgroundColor: bgColor }}
           >
             <h5 className="text-[14px] font-semibold text-gray-900 mb-4 flex items-center border-b border-gray-300 pb-3 mb-3">
               Secondary Consultant Information

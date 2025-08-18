@@ -35,6 +35,7 @@ export default function AppRouter() {
         {/* Public Restaurant Routes (NO layout) */}
         <Route path="/login" element={<Login/>} />
        <Route path="/otp/:bookingId/:verifyOtpUrl" element={<OTPVerificationPage />} />
+       <Route path="/otp/:bookingId" element={<OTPVerificationPage />} />
        <Route path="/booking_details/:bookingId" element={<ClientBookingDetails />} />
         <Route element={<PrivateRoute />}>
        

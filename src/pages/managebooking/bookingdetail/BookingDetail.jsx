@@ -354,6 +354,7 @@ const resetBookingStates = () => {
 
   // Get background color based on status
   const getStatusColor = (status) => {
+    console.log("Status"+status)
     switch (status) {
       case "Accept":
         return "#c2f5da"; // greenish
@@ -1231,6 +1232,7 @@ const resetBookingStates = () => {
     bookingData.fld_call_request_sts === "Completed" &&
     bookingData.fld_converted_sts === "No" &&
     bookingData.fld_sale_type === "Presales";
+    var canSetAsConverted =false;
 
   const canShowReasignConsultant =
     user.fld_admin_type === "EXECUTIVE" &&

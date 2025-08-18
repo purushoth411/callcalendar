@@ -10,7 +10,7 @@ const UserInformation = ({ data, user, bgColor,externalCallInfo}) => {
   return (
     <>
     <div className="grid grid-cols-1 gap-4">
-    <div className="p-3 rounded bg-[#f1efff] border border-gray-200" >
+    <div className="p-3 rounded bg-[#f1efff] border border-gray-200"  style={{ backgroundColor: bgColor }}>
       <h5 className="text-[14px] font-semibold text-gray-900 mb-4 flex items-center border-b border-gray-300 pb-3 mb-3">User Information</h5>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -192,7 +192,7 @@ const UserInformation = ({ data, user, bgColor,externalCallInfo}) => {
               <p className="text-gray-900">
                 {data.fld_consultant_another_option === "TEAM"
                 ? "Assign Call to Team Member"
-                : `Assign Call to ${data.admin_name}`}
+                : `Assign Call to Consultant`}
               </p>
             </div>
           </div>
@@ -287,7 +287,7 @@ const UserInformation = ({ data, user, bgColor,externalCallInfo}) => {
 
 {/* Booking Information */}
 {data.fld_booking_date && data.fld_booking_slot && (
-  <div className={`p-3 rounded bg-[#f1efff] border border-gray-200`} 
+  <div className={`p-3 rounded bg-[#f1efff] border border-gray-200`} style={{ backgroundColor: bgColor }} 
 
   >
     <h5 className="text-[14px] font-semibold text-gray-900 mb-4 flex items-center border-b border-gray-300 pb-3 mb-3">Booking Information</h5>
@@ -316,7 +316,7 @@ const UserInformation = ({ data, user, bgColor,externalCallInfo}) => {
      
 
       {/* No. of Hours for Call */}
-      <div className="flex items-start gap-2">
+      {/* <div className="flex items-start gap-2">
         <i className="fa fa-clock-o mt-1" aria-hidden="true"></i>
         <div>
           <div className="text-[12px] font-semibold text-gray-700 !mb-2">
@@ -327,7 +327,7 @@ const UserInformation = ({ data, user, bgColor,externalCallInfo}) => {
           </p>
         </div>
       </div>
-      
+       */}
 
       {/* Timezone */}
       <div className="flex items-start gap-2">
