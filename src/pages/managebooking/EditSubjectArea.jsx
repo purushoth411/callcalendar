@@ -159,7 +159,7 @@ const EditSubjectArea = ({
           <h4 className="text-[15px] font-semibold">Edit Subject Area</h4>
           <button
             onClick={() => setShowEditSubjectForm(false)}
-            className="text-gray-100 hover:text-black text-2xl"
+            className="text-gray-100 hover:text-red-500 text-2xl cursor-pointer"
           >
             <X size={17} />
           </button>

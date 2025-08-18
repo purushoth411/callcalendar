@@ -441,7 +441,7 @@ useEffect(() => {
             </h2>
             <button
               onClick={openAddForm}
-              className="bg-green-600 leading-none text-white px-2 py-1.5 rounded hover:bg-green-700 text-[11px] flex items-center gap-1"
+              className="bg-green-600 leading-none text-white px-2 py-1.5 rounded hover:bg-green-700 text-[11px] flex items-center gap-1 cursor-pointer"
             >
               Add New
             </button>
@@ -514,7 +514,7 @@ useEffect(() => {
                   </h3>
                   <button
                     onClick={closeForm}
-                    className="text-gray-100 hover:text-black text-2xl cursor-pointer"
+                    className="text-gray-100 hover:text-red-500 text-2xl cursor-pointer"
                   >
                     <X size={15} />
                   </button>
@@ -647,7 +647,7 @@ useEffect(() => {
                   </h3>
                   <button
                     onClick={closeForm}
-                    className="text-gray-100 hover:text-black text-2xl cursor-pointer"
+                    className="text-gray-100 hover:text-red-500 text-2xl cursor-pointer"
                   >
                     <X size={15} />
                   </button>

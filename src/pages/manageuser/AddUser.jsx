@@ -45,7 +45,7 @@ const AddUser = ({
         </h2>
         <button
           onClick={() => setShowForm(false)}
-          className="text-gray-100 hover:text-black text-2xl"
+          className="text-gray-100 hover:text-red-500 text-2xl cursor-pointer"
         >
           <XIcon size={17} />
         </button>

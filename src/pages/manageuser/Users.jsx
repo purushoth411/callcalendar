@@ -532,7 +532,7 @@ export default function Users() {
                         setFormType("EXECUTIVE");
                         setShowForm(true);
                       }}
-                      className="bg-green-600 leading-none text-white px-2 py-1.5 rounded hover:bg-green-700 text-[11px] flex items-center gap-1"
+                      className="bg-green-600 leading-none text-white px-2 py-1.5 rounded hover:bg-green-700 text-[11px] flex items-center gap-1 cursor-pointer"
                     >
                       <PlusIcon size={11} className="leading-none" /> Add CRM
                     </button>
@@ -543,7 +543,7 @@ export default function Users() {
                         setFormType("SUBADMIN");
                         setShowForm(true);
                       }}
-                      className="bg-green-600 leading-none text-white px-2 py-1.5 rounded hover:bg-green-700 text-[11px] flex items-center gap-1"
+                      className="bg-green-600 leading-none text-white px-2 py-1.5 rounded hover:bg-green-700 text-[11px] flex items-center gap-1 cursor-pointer"
                     >
                       <PlusIcon size={11} className="leading-none" /> Add
                       Subadmin
@@ -555,7 +555,7 @@ export default function Users() {
                         setFormType("CONSULTANT");
                         setShowForm(true);
                       }}
-                      className="bg-green-600 leading-none text-white px-2 py-1.5 rounded hover:bg-green-700 text-[11px] flex items-center gap-1"
+                      className="bg-green-600 leading-none text-white px-2 py-1.5 rounded hover:bg-green-700 text-[11px] flex items-center gap-1 cursor-pointer"
                     >
                       <PlusIcon size={11} className="leading-none" /> Add
                       Consultant
@@ -567,7 +567,7 @@ export default function Users() {
                         setFormType("OPSADMIN");
                         setShowForm(true);
                       }}
-                      className="bg-green-600 leading-none text-white px-2 py-1.5 rounded hover:bg-green-700 text-[11px] flex items-center gap-1"
+                      className="bg-green-600 leading-none text-white px-2 py-1.5 rounded hover:bg-green-700 text-[11px] flex items-center gap-1 cursor-pointer"
                     >
                       <PlusIcon size={11} className="leading-none" /> Add OPS
                       Admin

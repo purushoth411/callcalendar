@@ -62,7 +62,7 @@ const ChatBox = ({ bookingId, user, messageData, onSend,isMsgSending }) => {
                 className={`flex ${isSender ? "justify-end" : "justify-start"}`}
               >
                 <div
-                  className={`m-w-[300px] px-2 py-2 rounded-lg text-sm  ${
+                  className={`max-w-[300px] px-2 py-2 rounded-lg text-sm  ${
                     isSender
                       ? "bg-blue-600 text-white rounded-br-none text-right"
                       : "bg-gray-50 border border-gray-400 text-gray-800 rounded-bl-none text-left"

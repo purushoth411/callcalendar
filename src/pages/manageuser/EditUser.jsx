@@ -153,14 +153,14 @@ const EditUser = ({
     >
       <div className="flex justify-between items-center px-4 py-3 border-b bg-[#224d68] text-white">
         <h2 className="text-[15px] font-semibold">
-          {formType === "EXECUTIVE" && "Add CRM"}
-          {formType === "CONSULTANT" && "Add Consultant"}
-          {formType === "SUBADMIN" && "Add Subadmin"}
-          {formType === "OPSADMIN" && "Add OPS Admin"}
+          {formType === "EXECUTIVE" && "Edit CRM"}
+          {formType === "CONSULTANT" && "Edit Consultant"}
+          {formType === "SUBADMIN" && "Edit Subadmin"}
+          {formType === "OPSADMIN" && "Edit OPS Admin"}
         </h2>
         <button
           onClick={() => setShowForm(false)}
-          className="text-gray-100 hover:text-black text-2xl"
+          className="text-gray-100 hover:text-red-500 text-2xl cursor-pointer"
         >
           <XIcon size={17} />
         </button>
