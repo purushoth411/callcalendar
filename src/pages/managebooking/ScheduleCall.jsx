@@ -335,7 +335,7 @@ if (!urlPattern.test(callLink.trim())) {
         setSelectedSlot("");
 
         setTimeout(() => {
-          window.location.href = "http://localhost:5173/bookings";
+          window.location.href = "https://callcalendar.vercel.app/bookings";
         }, 1500); 
       } else {
         toast.errro("Failed to submit booking.");
