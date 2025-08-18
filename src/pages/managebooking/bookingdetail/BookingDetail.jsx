@@ -168,6 +168,11 @@ const BookingDetail = () => {
         if (isSuperOrSubAdmin || isConsultant || isExecutive) {
           setHasPermission(true);
         } else {
+          toast.error("You don't have permission.");
+
+  setTimeout(() => {
+    navigate(-1); 
+  }, 2000);
           setHasPermission(false);
         }
       } else {
@@ -1241,7 +1246,7 @@ const resetBookingStates = () => {
   if (!hasPermission) {
     return (
       <div className="p-4 text-center text-red-600 font-semibold">
-        You don't have permission to view this booking.
+        You don't have permission to view this booking.Redirecting...
       </div>
     );
   }
