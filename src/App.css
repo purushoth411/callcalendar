@@ -88,6 +88,10 @@
 
 a {
   text-decoration: none !important;
+  cursor: pointer;
+}
+button{
+  cursor: pointer;
 }
 
 /* Datatable Style */
