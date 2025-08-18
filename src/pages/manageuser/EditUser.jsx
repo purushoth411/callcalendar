@@ -13,6 +13,8 @@ const EditUser = ({
   editData,
   fetchAllUsers,
 }) => {
+
+  console.log(formType)
   const [isUpdating,setisUpdating]=useState(false);
   const [formData, setFormData] = useState({
     user_id: editData.id || null,
@@ -116,7 +118,7 @@ const EditUser = ({
     try {
       setisUpdating(true);
       const res = await fetch(
-        `https://callback-2suo.onrender.com/api/users/update/${user_id}`,
+        `http://localhost:5000/api/users/update/${user_id}`,
         {
           method: "PUT",
           headers: {
@@ -153,10 +155,10 @@ const EditUser = ({
     >
       <div className="flex justify-between items-center px-4 py-3 border-b bg-[#224d68] text-white">
         <h2 className="text-[15px] font-semibold">
-          {formType === "EXECUTIVE" && "Add CRM"}
-          {formType === "CONSULTANT" && "Add Consultant"}
-          {formType === "SUBADMIN" && "Add Subadmin"}
-          {formType === "OPSADMIN" && "Add OPS Admin"}
+          {formType === "EXECUTIVE" && "Edit CRM"}
+          {formType === "CONSULTANT" && "Edit Consultant"}
+          {formType === "SUBADMIN" && "Edit Subadmin"}
+           {formType === "OPERATIONSADMIN" && "Edit OPS Admin"}
         </h2>
         <button
           onClick={() => setShowForm(false)}

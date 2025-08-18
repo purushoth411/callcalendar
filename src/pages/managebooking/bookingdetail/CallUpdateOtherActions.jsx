@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Select from "react-select";
 import {
   ArrowRight,
@@ -81,6 +81,28 @@ const hasNoFollowers = hasFollowers === false;
     bookingData.fld_call_external_assign === "Yes" &&
     bookingData.fld_booking_date &&
     bookingData.fld_booking_slot;
+
+
+  const resetStates = () => {
+  setConsultantName(externalCallInfo?.fld_consultant_name || "");
+  setInitialConsultationStatus(bookingData?.fld_consultation_sts || "");
+  setConsultationStatus("");
+  setExternalComment("");
+  setCallCompleteComment("");
+  setCallCompleteRating("");
+  setCallRecordingUrl("");
+  setShowFollowerForm(false);
+  setFollowerConsultantId("");
+  setFollowerConsultantName("");
+  setExternalBookingDate("");
+  setExternalBookingTime("");
+  setCallJoiningLink(bookingData?.fld_call_joining_link || "");
+};
+
+
+useEffect(() => {
+  resetStates();
+}, [bookingData, externalCallInfo]);
 
   const handleExternalSubmit = async () => {
     const payload = {

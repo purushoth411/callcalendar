@@ -32,7 +32,7 @@ const ScheduleCall = () => {
   const fetchBookingDetailsWithRc = async () => {
     try {
       const response = await fetch(
-        `https://callback-2suo.onrender.com/api/helpers/getBookingDetailsWithRc?id=${bookingId}`
+        `http://localhost:5000/api/helpers/getBookingDetailsWithRc?id=${bookingId}`
       );
       const data = await response.json();
 
@@ -169,7 +169,7 @@ const ScheduleCall = () => {
 
     try {
       const res1 = await fetch(
-        "https://callback-2suo.onrender.com/api/helpers/getBookingData",
+        "http://localhost:5000/api/helpers/getBookingData",
         {
           method: "POST",
           headers: {
@@ -190,7 +190,7 @@ const ScheduleCall = () => {
       const data1 = await res1.json();
 
       const res2 = await fetch(
-        "https://callback-2suo.onrender.com/api/helpers/getRcCallBookingRequest",
+        "http://localhost:5000/api/helpers/getRcCallBookingRequest",
         {
           method: "POST",
           headers: {
@@ -308,7 +308,7 @@ if (!urlPattern.test(callLink.trim())) {
     try {
       setIsSubmitting(true);
       const response = await fetch(
-        "https://callback-2suo.onrender.com/api/bookings/saveCallScheduling",
+        "http://localhost:5000/api/bookings/saveCallScheduling",
         {
           method: "POST",
           headers: {

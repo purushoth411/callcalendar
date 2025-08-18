@@ -26,6 +26,7 @@ import ClientBookingDetails from "../pages/ClientBookingDetails";
 
 
 
+
 export default function AppRouter() {
   return (
     <Router>
@@ -36,6 +37,7 @@ export default function AppRouter() {
        <Route path="/otp/:bookingId/:verifyOtpUrl" element={<OTPVerificationPage />} />
        <Route path="/booking_details/:bookingId" element={<ClientBookingDetails />} />
         <Route element={<PrivateRoute />}>
+       
           <Route element={<Layout />}>
             <Route path="/" element={<Dashboard />} />
             <Route path="/users" element={<Users />} />
@@ -60,6 +62,7 @@ export default function AppRouter() {
 
             
           </Route>
+        
         </Route>
         
       </Routes>

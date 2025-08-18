@@ -32,11 +32,35 @@ const CallUpdateActions = ({
   const [callSummary, setCallSummary] = useState("");
   const [uploadedFile, setUploadedFile] = useState(null);
   const userType = user.fld_admin_type;
-  console.log(userType);
+  
   const permissions = user.fld_permission;
   const [externalCount, setExternalCount] = useState(0);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [displayConsultantId, setDisplayConsultantId] = useState("");
+
+
+  const resetStates = () => {
+    setSelectedAction("");
+    setConsultationStatus("");
+    setStatusOptions([]);
+    setComment("");
+    setSelectedConsultant("");
+    setExternalConsultantName("");
+    setRescheduledOthersText("");
+    setScaleQuestion1("Being Poor");
+    setScaleQuestion2("Being Poor");
+    setScaleQuestion3("scale8");
+    setCallSummary("");
+    setUploadedFile(null);
+    setExternalCount(0);
+    setIsButtonDisabled(false);
+    setDisplayConsultantId("");
+  };
+
+  // Example: Reset whenever bookingData changes
+  useEffect(() => {
+    resetStates();
+  }, [bookingData]);
 
   useEffect(() => {
     if (bookingData?.id) {
@@ -59,7 +83,7 @@ const CallUpdateActions = ({
   const fetchExternalCallCount = async (bookingId) => {
     try {
       const response = await fetch(
-        `https://callback-2suo.onrender.com/api/bookings/getExternalCallCount?bookingId=${bookingId}`
+        `http://localhost:5000/api/bookings/getExternalCallCount?bookingId=${bookingId}`
       );
       const data = await response.json();
 
@@ -273,7 +297,7 @@ const CallUpdateActions = ({
 
     try {
       const response = await fetch(
-        `https://callback-2suo.onrender.com/api/bookings/checkCompletedCall`,
+        `http://localhost:5000/api/bookings/checkCompletedCall`,
         {
           method: "POST",
           headers: {

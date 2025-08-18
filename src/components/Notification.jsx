@@ -44,7 +44,7 @@ useEffect(() => {
     setLoading(true);
     try {
       const response = await fetch(
-        "https://callback-2suo.onrender.com/api/helpers/getNotifications",
+        "http://localhost:5000/api/helpers/getNotifications",
         {
           method: "POST",
           headers: {
@@ -103,7 +103,7 @@ useEffect(() => {
 
 const handleNotificationClick = async (notif) => {
   try {
-    await fetch("https://callback-2suo.onrender.com/api/helpers/markAsRead", {
+    await fetch("http://localhost:5000/api/helpers/markAsRead", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
