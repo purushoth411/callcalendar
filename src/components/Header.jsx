@@ -114,7 +114,7 @@ export default function Header() {
               to="/"
               className={({ isActive }) =>
                 isActive
-                  ? "flex items-center text-white underline font-semibold"
+                  ? "flex items-center  underline text-orange-500 font-semibold"
                   : "flex items-center text-white hover:text-gray-300"
               }
             >
@@ -126,7 +126,7 @@ export default function Header() {
                 to="/summary"
                 className={({ isActive }) =>
                   isActive
-                    ? "flex items-center text-white underline font-semibold"
+                    ? "flex items-center  underline text-orange-500 font-semibold"
                     : "flex items-center text-white hover:text-gray-300"
                 }
               >
@@ -139,7 +139,7 @@ export default function Header() {
                 to="/users"
                 className={({ isActive }) =>
                   isActive
-                    ? "flex items-center text-white underline font-semibold"
+                    ? "flex items-center  underline text-orange-500 font-semibold"
                     : "flex items-center text-white hover:text-gray-300"
                 }
               >
@@ -152,7 +152,7 @@ export default function Header() {
                 to="/teams"
                 className={({ isActive }) =>
                   isActive
-                    ? "flex items-center text-white underline font-semibold"
+                    ? "flex items-center  underline text-orange-500 font-semibold"
                     : "flex items-center text-white hover:text-gray-300"
                 }
               >
@@ -164,7 +164,7 @@ export default function Header() {
               to="/bookings"
               className={({ isActive }) =>
                 isActive
-                  ? "flex items-center text-white underline font-semibold"
+                  ? "flex items-center  underline text-orange-500 font-semibold"
                   : "flex items-center text-white hover:text-gray-300"
               }
             >
@@ -180,7 +180,7 @@ export default function Header() {
                 to="/external_calls"
                 className={({ isActive }) =>
                   isActive
-                    ? "flex items-center text-white underline font-semibold"
+                    ? "flex items-center  underline text-orange-500 font-semibold"
                     : "flex items-center text-white hover:text-gray-300"
                 }
               >
@@ -194,7 +194,7 @@ export default function Header() {
                 to="/call_request_from_rc"
                 className={({ isActive }) =>
                   isActive
-                    ? "flex items-center text-white underline font-semibold"
+                    ? "flex items-center  underline text-orange-500 font-semibold"
                     : "flex items-center text-white hover:text-gray-300"
                 }
               >
@@ -207,7 +207,7 @@ export default function Header() {
                 to="/domain_pref"
                 className={({ isActive }) =>
                   isActive
-                    ? "flex items-center text-white underline font-semibold"
+                    ? "flex items-center  underline text-orange-500 font-semibold"
                     : "flex items-center text-white hover:text-gray-300"
                 }
               >
@@ -222,7 +222,7 @@ export default function Header() {
                 to="/followers"
                 className={({ isActive }) =>
                   isActive
-                    ? "flex items-center text-white underline font-semibold"
+                    ? "flex items-center  underline text-orange-500 font-semibold"
                     : "flex items-center text-white hover:text-gray-300"
                 }
               >
@@ -237,7 +237,7 @@ export default function Header() {
                 to="/completedcallratings"
                 className={({ isActive }) =>
                   isActive
-                    ? "flex items-center text-white underline font-semibold"
+                    ? "flex items-center  underline text-orange-500 font-semibold"
                     : "flex items-center text-white hover:text-gray-300"
                 }
               >
