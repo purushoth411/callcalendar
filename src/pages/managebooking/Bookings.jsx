@@ -4,7 +4,7 @@ import ReactDOMServer from "react-dom/server";
 import DT from "datatables.net-dt";
 import $ from "jquery";
 import { useAuth } from "../../utils/idb.jsx";
-import { PlusIcon, RefreshCcw } from "lucide-react";
+import { PlusIcon, RefreshCcw, Users } from "lucide-react";
 import {
   formatBookingDateTime,
   formatDate,
@@ -47,6 +47,8 @@ export default function Bookings() {
   const { dashboard_status } = useParams();
   const [showEditSubjectForm, setShowEditSubjectForm] = useState(false);
   const [selectedRow, setSelectedRow] = useState([]);
+  const [teamBookings, setTeamBookings] = useState([]);
+  const [loadingTeamBookings, setLoadingTeamBookings] = useState(false);
 
   const { bookingid } = useParams();
 
@@ -54,16 +56,15 @@ export default function Bookings() {
 
   useEffect(() => {
     const socket = getSocket();
+
     const handleBookingAdded = (newBooking) => {
+      console.log("Socket Called - Booking Added");
       const mappedBooking = {
         ...newBooking,
         client_name: newBooking.user_name,
         client_email: newBooking.user_email,
         client_phone: newBooking.user_phone,
       };
-
-      console.log(mappedBooking);
-      console.log("Socket Called - Booking Added");
 
       setBookings((prev) => {
         const list = Array.isArray(prev) ? prev : [];
@@ -76,10 +77,17 @@ export default function Bookings() {
 
     const handleBookingUpdated = (updatedBooking) => {
       console.log("Socket Called - Booking Updated");
+      const mappedBooking = {
+        ...updatedBooking,
+        client_name: updatedBooking.user_name,
+        client_email: updatedBooking.user_email,
+        client_phone: updatedBooking.user_phone,
+      };
+
       setBookings((prev) => {
         const list = Array.isArray(prev) ? prev : [];
         return list.map((booking) =>
-          booking.id == updatedBooking.id ? updatedBooking : booking
+          booking.id == mappedBooking.id ? mappedBooking : booking
         );
       });
     };
@@ -186,7 +194,7 @@ export default function Bookings() {
       const filterPayload = {
         userId: user.id,
         userType: user.fld_admin_type,
-        subAdminType:user.fld_subadmin_type,
+        subAdminType: user.fld_subadmin_type,
         assigned_team: user.fld_team_id,
         filters: {
           consultationStatus:
@@ -287,14 +295,15 @@ export default function Bookings() {
       // Destroy existing DataTable if it exists
       if ($.fn.DataTable.isDataTable(tableRef.current)) {
         $(tableRef.current).DataTable().destroy();
-      }getDateBefore(7);
+      }
+      getDateBefore(7);
     }
   }, [bookings, isLoading]);
 
   const fetchAllBookings = async () => {
     try {
       setIsLoading(true);
-      const today =getCurrentDate("YYYY-MM-DD");
+      const today = getCurrentDate("YYYY-MM-DD");
       const lastWeek = getDateBefore(7);
 
       const isSuperadmin = user?.fld_admin_type === "SUPERADMIN";
@@ -316,7 +325,7 @@ export default function Bookings() {
           body: JSON.stringify({
             userId: user?.id,
             userType: user?.fld_admin_type,
-            subAdminType:user.fld_subadmin_type,
+            subAdminType: user.fld_subadmin_type,
             assigned_team: user?.fld_team_id || "",
             filters: filtersToSend,
             dashboard_status,
@@ -338,6 +347,9 @@ export default function Bookings() {
       setBookings([]);
     } finally {
       setIsLoading(false);
+      // if(user?.fld_admin_type=="CONSULTANT"){
+      // fetchTeamBookings();
+      // }
     }
   };
 
@@ -413,6 +425,26 @@ export default function Bookings() {
         .join("")}
     </div>
   `;
+  };
+
+  const fetchTeamBookings = async () => {
+    setLoadingTeamBookings(true);
+    try {
+      const response = await fetch(
+        `https://callback-2suo.onrender.com/api/bookings/getConsultantTeamBookings?userId=${user.id}`
+      );
+      const data = await response.json();
+      if (response.ok) {
+        setTeamBookings(data.data || []);
+      } else {
+        setTeamBookings([]);
+      }
+    } catch (error) {
+      console.error("Error fetching team bookings:", error);
+      setTeamBookings([]);
+    } finally {
+      setLoadingTeamBookings(false);
+    }
   };
 
   const handleCrmStatusUpdate = async (id, status) => {
@@ -628,20 +660,20 @@ export default function Bookings() {
   };
 
   const handleClearFilters = () => {
-      const today =getCurrentDate("YYYY-MM-DD");
-      const lastWeek = getDateBefore(7);
+    const today = getCurrentDate("YYYY-MM-DD");
+    const lastWeek = getDateBefore(7);
 
-  const isSuperadmin = user?.fld_admin_type === "SUPERADMIN";
+    const isSuperadmin = user?.fld_admin_type === "SUPERADMIN";
 
-  const fromDate = isSuperadmin ? today : lastWeek;
-  const toDate = isSuperadmin ? today : today;
+    const fromDate = isSuperadmin ? today : lastWeek;
+    const toDate = isSuperadmin ? today : today;
     setFilters({
       sale_type: "",
       call_rcrd_status: "",
       booking_status: [],
       keyword_search: "",
       filter_type: "Booking",
-       date_range: [fromDate, toDate],
+      date_range: [fromDate, toDate],
     });
   };
   return (
@@ -668,6 +700,7 @@ export default function Bookings() {
               <h2 className="text-[16px] font-semibold text-gray-900">
                 Booking Management
               </h2>
+
               <button
                 className="border border-gray-500 text-gray-500 hover:text-white px-2 py-1 rounded hover:bg-gray-500 text-sm ml-3  cursor-pointer"
                 onClick={handleReload}
@@ -675,6 +708,15 @@ export default function Bookings() {
                 <RefreshCcw size={13} />
               </button>
             </div>
+            {user?.fld_admin_type == "CONSULTANT" && (
+              <button
+                onClick={fetchTeamBookings}
+                className="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700 transition-colors text-[11px] flex items-center gap-1"
+              >
+                <Users size={12} />{" "}
+                {loadingTeamBookings ? "Loading..." : "Team Bookings"}
+              </button>
+            )}
             {user.fld_admin_type == "EXECUTIVE" && (
               <button
                 onClick={handleAddNewClick}
@@ -684,6 +726,40 @@ export default function Bookings() {
               </button>
             )}
           </div>
+          {user?.fld_admin_type === "CONSULTANT" && (
+            <>
+              {teamBookings.length > 0 && (
+                <div className="mt-2 mb-2 px-2 py-1 bg-red-50 rounded-md shadow-sm max-w-full">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
+                    {teamBookings.map((booking, index) => (
+                      <div
+                        key={index}
+                        className="relative group bg-white rounded-md border border-gray-200 p-2 cursor-pointer transition hover:shadow-sm"
+                        tabIndex={0}
+                        aria-label={`Booking by client ID ${booking.fld_client_id}`}
+                      >
+                        {/* Small Label */}
+                        <span onClick={()=>navigate(`/admin/booking_detail/${booking.booking_id}`)} className="block text-center px-2 py-0.5 text-xs font-medium border border-red-300 rounded bg-red-100 text-red-700 select-none truncate">
+                          {booking.client_name} – {booking.fld_client_id}
+                        </span>
+
+                        {/* Tooltip */}
+                        {/* <div className="pointer-events-none absolute z-20 hidden group-hover:block group-focus:block w-52 top-full mt-1 left-1/2 -translate-x-1/2 bg-gradient-to-tr from-red-900 via-red-800 to-red-700 text-white text-[10px] rounded p-2 shadow-md">
+                          <p className="truncate">{booking.fld_sale_type}</p>
+                          <p>
+                            {new Date(
+                              booking.fld_booking_date
+                            ).toLocaleDateString()}
+                          </p>
+                          <p>{booking.fld_booking_slot}</p>
+                        </div> */}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
+          )}
 
           <div className="bg-white rounded-lg shadow-sm border border-gray-200">
             <div className="px-3 py-2 bg-[#d7efff7d]">

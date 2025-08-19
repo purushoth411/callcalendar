@@ -166,7 +166,7 @@ export default function ExternalCalls() {
       const bookingId = row.bookingid || row.fld_booking_id || "";
       return `
         <button class="details-btn font-medium text-blue-600 hover:underline cursor-pointer" data-id="${bookingId}">
-          ${data || "N/A"} - ${row.fld_booking_id}
+          ${data || "N/A"} - ${row.fld_client_id}
         </button>
       `;
     },

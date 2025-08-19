@@ -701,7 +701,7 @@ export default function AddBooking({
       ) {
         toast.error("Please select a Consultant");
         return;
-      } else if (showReassignOptions && !formData.consultant_another_option) {
+      } else if (showReassignOptions && !formData.consultant_another_option && formData.call_related_to !="price_and_discount_related") {
         toast.error("Please select a Consultant SubOption");
         return;
       }
@@ -714,11 +714,8 @@ export default function AddBooking({
       ) {
         toast.error("Please select a Consultant");
         return;
-      } else if (!formData.secondary_consultant_id) {
-        //toast.error("Please select a Secondary Consultant")
-        //  return;
-      } else if (!formData.projectid) {
-        toast.error("Please select a Project ID");
+      }  else if (!formData.projectid) {
+        toast.error("Please select a Project ");
         return;
       } else if (!formData.project_milestone) {
         toast.error("Please select a Project Milestone");

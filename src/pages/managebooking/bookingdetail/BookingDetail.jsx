@@ -187,9 +187,9 @@ const BookingDetail = () => {
       getOtherBookings();
       getExternalCallByBookingId(bookingId);
       if (
-        tempBooking &&
-        tempBooking.fld_subject_area &&
-        tempBooking.fld_call_related_to
+        tempBooking && (
+        tempBooking.fld_subject_area ||
+        tempBooking.fld_call_related_to)
       ) {
         fetchConsultants(
           tempBooking.fld_subject_area,

@@ -10,7 +10,7 @@ const ConsultantInformation = ({ bookingData, user, bgColor }) => {
     <>
       
       {/* Consultant Information */}
-      {isSuperAdminOrExecutive && (
+      {isSuperAdminOrExecutive && bookingData.fld_call_related_to != "I_am_not_sure" && (
         <div
           className="p-3 rounded bg-[#f1efff] border border-gray-200"
           style={{ backgroundColor: bgColor }}

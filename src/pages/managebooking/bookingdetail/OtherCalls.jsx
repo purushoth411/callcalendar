@@ -18,7 +18,10 @@ const OtherCalls = ({ bookingId, clientId, fetchBookingById }) => {
         const result = await response.json();
 
         if (result.status) {
-          setAllbookingData(result.data);
+          const filteredData = result.data.filter(
+    booking => booking.id != selectedBookingId
+  );
+  setAllbookingData(filteredData);
         } else {
           console.error("Failed to fetch other bookings");
         }

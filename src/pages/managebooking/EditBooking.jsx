@@ -30,40 +30,44 @@ const EditBooking = () => {
    const [isSubmitting,setIsSubmitting]=useState(false);
 
   const fetchBookingDetailsWithRc = async () => {
-    try {
-      const response = await fetch(
-        `https://callback-2suo.onrender.com/api/helpers/getBookingDetailsWithRc?id=${bookingId}`
-      );
-      const data = await response.json();
+  try {
+    const response = await fetch(
+      `https://callback-2suo.onrender.com/api/helpers/getBookingDetailsWithRc?id=${bookingId}`
+    );
+    const data = await response.json();
 
-      if (data.status) {
-        setBookingDetails(data.bookingDetails);
-        setConsultantSettings(data.consultantSettings);
-        setConsultantName(data.consultantSettings?.fld_consultant_name || "");
-        setSelectedDate(data.bookingDetails?.fld_booking_date ?? null);
-        setSelectedSlot(data.bookingDetails?.fld_booking_slot ?? null);
-        setCallLink(data.bookingDetails?.fld_call_joining_link ?? "");
-        setSelectedTimezone(data.bookingDetails?.fld_timezone)
-        const bookingDate = data.bookingDetails.fld_booking_date;
-        const dayName = bookingDate
-          ? new Date(bookingDate).toLocaleDateString("en-US", { weekday: "short" }).toLowerCase()
-          : "";
+    if (data.status) {
+      const bookingDate = data.bookingDetails?.fld_booking_date ?? null;
+      const bookingSlot = data.bookingDetails?.fld_booking_slot ?? null;
+      const timezone = data.bookingDetails?.fld_timezone ?? "";
 
-        handleDateSelect(bookingDate, dayName, false)
+      setBookingDetails(data.bookingDetails);
+      setConsultantSettings(data.consultantSettings);
+      setConsultantName(data.consultantSettings?.fld_consultant_name || "");
+      setSelectedDate(bookingDate);
+      setSelectedSlot(bookingSlot);
+      setCallLink(data.bookingDetails?.fld_call_joining_link ?? "");
+      setSelectedTimezone(timezone);
 
-        
-       
-        setError("");
-      } else {
-        setError(data.message || "Failed to fetch booking details");
-      }
-    } catch (err) {
-      console.error("Fetch error:", err);
-      setError("Something went wrong. Please try again.");
-    } finally {
-      setLoading(false);
+      const dayName = bookingDate
+        ? new Date(bookingDate).toLocaleDateString("en-US", { weekday: "short" }).toLowerCase()
+        : "";
+
+      // ✅ safe to call here because we use bookingDate & dayName directly
+      handleDateSelect(bookingDate, dayName, false);
+
+      setError("");
+    } else {
+      setError(data.message || "Failed to fetch booking details");
     }
-  };
+  } catch (err) {
+    console.error("Fetch error:", err);
+    setError("Something went wrong. Please try again.");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   ///socket ////////
   
@@ -74,7 +78,7 @@ const EditBooking = () => {
         console.log("Socket Called - Booking Confirmed");
   
         const selectedDateFormatted = selectedDate.tz("Asia/Kolkata").format("YYYY-MM-DD");
-const eventDateFormatted = moment.tz(date, "YYYY-MM-DD", "Asia/Kolkata").format("YYYY-MM-DD");
+        const eventDateFormatted = moment.tz(date, "YYYY-MM-DD", "Asia/Kolkata").format("YYYY-MM-DD");
   
         if (bookingDetails?.fld_consultantid == consultantId) {
           console.log(
@@ -97,13 +101,28 @@ const eventDateFormatted = moment.tz(date, "YYYY-MM-DD", "Asia/Kolkata").format(
     fetchBookingDetailsWithRc();
   }, []);
 
+  // useEffect(() => {
+  //   if (!selectedDate) {
+  //     return
+  //   }
+  //   console.log("selectedDate", selectedDate)
+  //   handleDateSelect(selectedDate, 'tue')
+  // }, [selectedDate])
   useEffect(() => {
-    if (!selectedDate) {
-      return
-    }
-    console.log("selectedDate", selectedDate)
-    handleDateSelect(selectedDate, 'tue')
-  }, [selectedDate])
+    const localSelectedDate=selectedDate ||bookingDetails?.fld_booking_date ;
+  if (!localSelectedDate) return;
+
+  console.log("selectedDate", localSelectedDate);
+
+
+  const dateObj = new Date(localSelectedDate);
+
+  
+  const day = dateObj.toLocaleDateString("en-US", { weekday: "short" }).toLowerCase();
+
+  handleDateSelect(localSelectedDate, day);
+}, [selectedDate]);
+
 
   useEffect(() => {
     console.log("selectedSlot", selectedSlot)
@@ -118,6 +137,7 @@ const eventDateFormatted = moment.tz(date, "YYYY-MM-DD", "Asia/Kolkata").format(
   };
 
  const handleDateSelect = async (dateStr, dayKey, emptySlot = true) => {
+  console.log("handleDateSelect called with dateStr:", dateStr, "dayKey:", dayKey);
   setLoadingSlots(true);
   setSelectedDate(dateStr);
   if(emptySlot){
