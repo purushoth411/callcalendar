@@ -4,11 +4,36 @@ import { BarChart2 } from "lucide-react";
 
 export default function PlansDropdown() {
   const [open, setOpen] = useState(false);
+  const [pendingCount, setPendingCount] = useState(0);
+
+  const handleToggle = async () => {
+    const newOpen = !open;
+    setOpen(newOpen);
+
+    if (newOpen) {
+      
+      try {
+        const response = await fetch(
+          "http://localhost:5000/api/approveaddcallrequests/getAllPendingaddcallrequests"
+        );
+        const result = await response.json();
+
+        if (result.status ) {
+          setPendingCount(result.count || 0);
+        } else {
+          setPendingCount(0);
+        }
+      } catch (error) {
+        console.error("Error fetching pending count:", error);
+        setPendingCount(0);
+      }
+    }
+  };
 
   return (
     <div className="relative">
       <button
-        onClick={() => setOpen(!open)}
+        onClick={handleToggle}
         className="flex items-center text-white hover:text-gray-300 focus:outline-none"
       >
         <BarChart2 className="mr-1" size={14} />
@@ -37,12 +62,18 @@ export default function PlansDropdown() {
           >
             Plans
           </NavLink>
+
           <NavLink
             to="/approveaddcallrequests"
-            className="block px-4 py-2 text-white hover:bg-[#2d6689]"
+            className="flex items-center justify-between px-4 py-2 text-white hover:bg-[#2d6689]"
             onClick={() => setOpen(false)}
           >
-            Approved Call Request
+            <span>Approved Call Request</span>
+            {pendingCount >= 0 && (
+              <span className="ml-2 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                {pendingCount}
+              </span>
+            )}
           </NavLink>
         </div>
       )}

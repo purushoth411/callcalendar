@@ -23,6 +23,7 @@ import Completedcallratings from "../pages/Completedcallratings";
 import Followers from "../pages/Followers";
 import OTPVerificationPage from "../pages/OTPVerificationPage";
 import ClientBookingDetails from "../pages/ClientBookingDetails";
+import ResetPassword from "../pages/ResetPassword";
 
 
 
@@ -37,6 +38,7 @@ export default function AppRouter() {
        <Route path="/otp/:bookingId/:verifyOtpUrl" element={<OTPVerificationPage />} />
        <Route path="/otp/:bookingId" element={<OTPVerificationPage />} />
        <Route path="/booking_details/:bookingId" element={<ClientBookingDetails />} />
+       <Route path="/reset_password" element={<ResetPassword />} />
         <Route element={<PrivateRoute />}>
        
           <Route element={<Layout />}>

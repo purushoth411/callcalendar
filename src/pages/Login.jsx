@@ -11,12 +11,14 @@ function Login() {
   const [errorMsg, setErrorMsg] = useState('');
   const navigate = useNavigate();
   const { login } = useAuth();
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
+   
 
     try {
-      const response = await fetch('https://callback-2suo.onrender.com/api/users/login', {
+      setSubmitting(true);
+      const response = await fetch('http://localhost:5000/api/users/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, userpass }),
@@ -33,6 +35,8 @@ function Login() {
       }
     } catch (error) {
       toast.error('Unable to connect to server');
+    }finally{
+      setSubmitting(false);
     }
   };
 
@@ -46,7 +50,7 @@ function Login() {
           Sign into your account
         </h2>
 
-        {errorMsg && (
+        {/* {errorMsg && (
           <div className="bg-red-100 text-red-700 px-4 py-2 rounded relative mb-4">
             <strong className="font-semibold">Error:</strong> {errorMsg}
             <button
@@ -56,9 +60,9 @@ function Login() {
               &times;
             </button>
           </div>
-        )}
+        )} */}
 
-        <form onSubmit={handleSubmit}>
+        < >
           <div className="mb-5">
             <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
               Username
@@ -108,17 +112,17 @@ function Login() {
               Forgot password?
             </a>
             <button
-              type="submit"
+              type="button" onClick={handleSubmit} disabled={submitting}
               className=" btn-prime font-semibold py-1 px-2 rounded-md flex text-[13px]"
             >
-              Login<svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" className='ml-0 pt-1' viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevrons-right-icon lucide-chevrons-right"><path d="m6 17 5-5-5-5"/><path d="m13 17 5-5-5-5"/></svg>
+              {submitting ? "Logging In...": "Login"}<svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" className='ml-0 pt-1' viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevrons-right-icon lucide-chevrons-right"><path d="m6 17 5-5-5-5"/><path d="m13 17 5-5-5-5"/></svg>
             </button>
           </div>
 
           {/* <div className="text-center">
            
           </div> */}
-        </form>
+        </>
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { set, get, del } from "idb-keyval"; // Import IndexedDB helper
+import moment from "moment-timezone";
 
 const AuthContext = createContext();
   const appKey = "CallCalendarApp";
@@ -9,26 +10,35 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      const storedUser = await get("LoggedInUser");
-      if (storedUser) {
+ useEffect(() => {
+  const fetchUser = async () => {
+    const storedUser = await get("LoggedInUser");
+    if (storedUser) {
+      const now = moment().tz("Asia/Kolkata").valueOf();
+      const twelveHours = moment.duration(12, "hours").asMilliseconds();
+
+      if (now - storedUser.loginTime < twelveHours) {
         setUser(storedUser);
+      } else {
+        await del("LoggedInUser"); 
+        setUser(null);
       }
-      setLoading(false);
-    };
+    }
+    setLoading(false);
+  };
 
-    fetchUser();
-  }, []);
+  fetchUser();
+}, []);
 
-  const login = async (userData) => {
-    const updatedUserData = {
+const login = async (userData) => {
+  const updatedUserData = {
     ...userData,
     appKey,
+    loginTime: moment().tz("Asia/Kolkata").valueOf(), 
   };
-    setUser(updatedUserData);
-    await set("LoggedInUser", updatedUserData);
-  };
+  setUser(updatedUserData);
+  await set("LoggedInUser", updatedUserData);
+};
 
   const logout = async () => {
     setUser(null);

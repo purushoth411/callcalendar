@@ -311,7 +311,7 @@ const ViewAllTable = () => {
     try {
       // Fetch consultants first
       const consultantRes = await fetch(
-        "https://callback-2suo.onrender.com/api/helpers/getUsersByRole",
+        "http://localhost:5000/api/helpers/getUsersByRole",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -322,7 +322,7 @@ const ViewAllTable = () => {
 
       // Then fetch CRMs
       const crmRes = await fetch(
-        "https://callback-2suo.onrender.com/api/helpers/getUsersByRole",
+        "http://localhost:5000/api/helpers/getUsersByRole",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -345,7 +345,7 @@ const ViewAllTable = () => {
 
     try {
       const res = await fetch(
-        "https://callback-2suo.onrender.com/api/helpers/getUsersByRole",
+        "http://localhost:5000/api/helpers/getUsersByRole",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -407,7 +407,7 @@ const ViewAllTable = () => {
 
     try {
       const response = await fetch(
-        `https://callback-2suo.onrender.com/api/bookings/fetchSummaryBookings`,
+        `http://localhost:5000/api/bookings/fetchSummaryBookings`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -529,7 +529,7 @@ const ViewAllTable = () => {
 
     try {
       const res = await fetch(
-        `https://callback-2suo.onrender.com/api/bookings/history/${bookingId}`
+        `http://localhost:5000/api/bookings/history/${bookingId}`
       );
 
       if (!res.ok) {
