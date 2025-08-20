@@ -15,72 +15,72 @@ const badgeMeta = {
   "Call Scheduled": {
     bg: "bg-slate-100",
     text: "text-slate-800",
-    icon: <Activity size={13} />,
+    icon: <Activity size={9} />,
   },
   "Call Rescheduled": {
     bg: "bg-slate-100",
     text: "text-slate-800",
-    icon: <Activity size={13} />,
+    icon: <Activity size={9} />,
   },
   "Consultant Assigned": {
     bg: "bg-blue-100",
     text: "text-blue-800",
-    icon: <UserCheck size={13} />,
+    icon: <UserCheck size={11} />,
   },
   Pending: {
     bg: "bg-amber-100",
     text: "text-amber-800",
-    icon: <Clock size={13} />,
+    icon: <Clock size={11} />,
   },
   Accept: {
     bg: "bg-blue-100",
     text: "text-blue-800",
-    icon: <CheckCircle size={13} />,
+    icon: <CheckCircle size={9} />,
   },
   Accepted: {
     bg: "bg-blue-100",
     text: "text-blue-800",
-    icon: <CheckCircle size={13} />,
+    icon: <CheckCircle size={11} />,
   },
   Reject: {
     bg: "bg-rose-100",
     text: "text-rose-800",
-    icon: <UserX size={13} />,
+    icon: <UserX size={11} />,
   },
   Rejected: {
     bg: "bg-rose-100",
     text: "text-rose-800",
-    icon: <UserX size={13} />,
+    icon: <UserX size={11} />,
   },
   Completed: {
     bg: "bg-green-100",
     text: "text-green-800",
-    icon: <CheckCircle size={13} />,
+    icon: <CheckCircle size={11} />,
   },
   Converted: {
     bg: "bg-green-100",
     text: "text-green-800",
-    icon: <ArrowUpRightFromCircle size={13} />,
+    icon: <ArrowUpRightFromCircle size={11} />,
   },
   Rescheduled: {
     bg: "bg-gray-100",
     text: "text-gray-800",
-    icon: <Clock size={13} />,
+    icon: <Clock size={11} />,
   },
   "Reassign Request": {
     bg: "bg-gray-100",
     text: "text-gray-800",
-    icon: <Clock size={13} />,
+    icon: <Clock size={11} />,
   },
   "Client did not join": {
     bg: "bg-red-100",
     text: "text-red-800",
-    icon: <UserX size={13} />,
+    icon: <UserX size={11} />,
   },
   Cancelled: {
     bg: "bg-red-100",
     text: "text-red-800",
-    icon: <UserX size={13} />,
+    icon: <UserX size={11} />,
   },
   _: { bg: "bg-gray-100", text: "text-gray-900", icon: <Activity size={13} /> },
 };
@@ -277,7 +277,7 @@ const TableSection = ({
                               row.fld_booking_slot
                             )}
                             <button
-                              className="ml-2 text-gray-500 hover:text-blue-600 show-history-btn"
+                              className="ml-2 text-gray-500 hover:text-blue-600 show-history-btn "
                               onClick={async () => {
                                 if (isExpanded) {
                                   setExpandedRow(null);
@@ -295,8 +295,9 @@ const TableSection = ({
                             {row.fld_sale_type}
                           </td>
                           <td className="px-4 py-2 border-b">
+                            <div className="flex gap-2 flex-wrap">
                             <div
-                              className={`px-2 py-1 inline-flex items-center gap-1 rounded  font-medium ${badge.bg} ${badge.text} ${deletedClass}`}
+                              className={`py-[1px] px-[6px] inline-flex items-center whitespace-nowrap gap-1 rounded  font-medium ${badge.bg} ${badge.text} ${deletedClass}`}
                             >
                               {badge.icon}
                               {row.fld_call_request_sts}
@@ -305,20 +306,21 @@ const TableSection = ({
                               <>
                                 {row.fld_call_confirmation_status ===
                                   "Call Confirmation Pending at Client End" && (
-                                  <span className="inline-flex items-center gap-1 py-[1px] px-[6px] ml-1 rounded  bg-blue-100 text-blue-800">
-                                    <Clock size={12} />{" "}
+                                  <span className="inline-flex items-start gap-1 py-[1px] px-[6px] rounded  bg-blue-100 text-blue-800">
+                                    <Clock size={15} />{" "}
                                     {row.fld_call_confirmation_status}
                                   </span>
                                 )}
                                 {row.fld_call_confirmation_status ===
                                   "Call Confirmed by Client" && (
-                                  <span className="inline-flex items-center gap-1 py-[1px] px-[6px] ml-1 rounded  bg-green-100 text-green-800">
-                                    <CheckCircle size={12} />{" "}
+                                  <span className="inline-flex items-start gap-1 py-[1px] px-[6px] rounded  bg-green-100 text-green-800">
+                                    <CheckCircle size={15} />{" "}
                                     {row.fld_call_confirmation_status}
                                   </span>
                                 )}
                               </>
                             )}
+                            </div>
                           </td>
                         </tr>
 
