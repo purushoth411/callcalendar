@@ -252,7 +252,10 @@ export default function Followers() {
         const textStyle = isDeleted ? "line-through text-gray-400" : "";
 
         return `
-          <button class="details-btn font-medium text-blue-600 hover:underline ${textStyle}" data-id="${row.id}">
+          <button
+          data-tooltip-id="my-tooltip"
+          data-tooltip-content="${data} - ${clientId}"
+           class="details-btn font-medium text-blue-600 hover:underline  truncate w-[150px] text-left ${textStyle}" data-id="${row.id}">
             ${data} - ${clientId}
           </button>
         `;
@@ -365,12 +368,12 @@ export default function Followers() {
 
           if (row.child.isShown()) {
             row.child.hide();
-            tr.removeClass("shown");
+            tr.removeClass("shown !hover:bg-transparent");
           } else {
             if (historyData[bookingId]) {
               const html = generateHistoryHTML(historyData[bookingId]);
-              row.child(html).show();
-              tr.addClass("shown");
+              row.child(html , "hover:!bg-transparent").show();
+              tr.addClass("shown !hover:bg-transparent");
             } else {
               row
                 .child(
@@ -379,8 +382,8 @@ export default function Followers() {
                 .show();
               fetchBookingHistory(bookingId).then((data) => {
                 const html = generateHistoryHTML(data || []);
-                row.child(html).show();
-                tr.addClass("shown");
+                row.child(html , "hover:!bg-transparent").show();
+                tr.addClass("shown !hover:bg-transparent");
               });
             }
           }

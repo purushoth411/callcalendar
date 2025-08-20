@@ -165,7 +165,10 @@ export default function ExternalCalls() {
     render: (data, type, row) => {
       const bookingId = row.bookingid || row.fld_booking_id || "";
       return `
-        <button class="details-btn font-medium text-blue-600 hover:underline cursor-pointer" data-id="${bookingId}">
+        <button
+          data-tooltip-id="my-tooltip"
+      data-tooltip-content="${data || "N/A"} - ${row.fld_client_id}"
+         class="details-btn font-medium text-blue-600 hover:underline  truncate w-[150px] text-left cursor-pointer" data-id="${bookingId}">
           ${data || "N/A"} - ${row.fld_client_id}
         </button>
       `;
@@ -271,7 +274,7 @@ export default function ExternalCalls() {
           } else {
             if (historyData[bookingId]) {
               const html = generateHistoryHTML(historyData[bookingId]);
-              row.child(html).show();
+              row.child(html , "hover:!bg-transparent").show();
               tr.addClass("shown");
             } else {
               row
@@ -281,7 +284,7 @@ export default function ExternalCalls() {
                 .show();
               fetchBookingHistory(bookingId).then((data) => {
                 const html = generateHistoryHTML(data || []);
-                row.child(html).show();
+                row.child(html , "hover:!bg-transparent").show();
                 tr.addClass("shown");
               });
             }

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Calendar, Clock, User, Mail, Building, Phone, AlertTriangle } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
-
+import logo from '../assets/images/callcalendar-logo.png';
 const OTPVerificationPage = () => {
   // State management
   const [otp, setOtp] = useState(['', '', '', '']);
@@ -217,7 +217,7 @@ const handleSubmit = async () => {
 
   // Skeleton Loader Component
   const SkeletonLoader = () => (
-    <div className="min-h-screen bg-gray-100 font-sans">
+    <div className="min-h-screen bg-gray-100 font-sans flex">
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Left Column Skeleton */}
@@ -305,9 +305,19 @@ const handleSubmit = async () => {
   if (urlStatus === 'Expired') {
     return (
       <>
-        <div className="min-h-screen bg-gray-100 font-sans">
-          <div className="container mx-auto px-4 py-8">
-            <div className="flex justify-center">
+        <div className="min-h-screen bg-gray-100 font-sans flex flex-col">
+          {/* Navbar */}
+      <nav className="py-3" style={{ backgroundColor: "rgb(215, 215, 215)" }}>
+        <div className="container mx-auto px-4">
+          <div className="flex items-center">
+            <div className="text-xl font-semibold text-gray-800">
+              <img src={logo} alt="Logo" className="mx-auto w-50 ml-[-7px]" />
+            </div>
+          </div>
+        </div>
+      </nav>
+          <div className="container mx-auto px-4 py-8 flex-1 flex justify-center items-center">
+            <div className="flex justify-center items-center">
               <div className="bg-white rounded-lg shadow-lg overflow-hidden max-w-md w-full">
                 {/* Danger header */}
                 <div className="bg-red-600 px-6 py-4">
@@ -345,7 +355,7 @@ const handleSubmit = async () => {
             </div>
           </div>
           
-          <footer className="bg-gray-900 text-white py-4 fixed bottom-0 w-full">
+          <footer className="bg-gray-900 text-white py-2 fixed bottom-0 w-full">
             <div className="container mx-auto px-4">
               <div className="text-sm">
                 All Rights Reserved, Rapid Collaborate, (c) Copyright 2024.
@@ -366,13 +376,25 @@ const handleSubmit = async () => {
 
   return (
     <>
-      <div className="min-h-screen bg-gray-100 font-sans">
-        <div className="container mx-auto px-4 py-8">
+      <div className="min-h-screen bg-gray-100 font-sans flex flex-col">
+        {/* Navbar */}
+      <nav className="py-3" style={{ backgroundColor: "rgb(215, 215, 215)" }}>
+        <div className="container mx-auto px-4">
+          <div className="flex items-center">
+            <div className="text-xl font-semibold text-gray-800">
+              <img src={logo} alt="Logo" className="mx-auto w-50 ml-[-7px]" />
+            </div>
+          </div>
+        </div>
+      </nav>
+        <div className="container mx-auto px-4 py-4 flex-1">
+          
+          <h1 className="text-2xl font-bold text-gray-800 mb-6">Call Summary</h1>
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Left Column - Call Summary */}
             <div className="lg:w-2/3">
               <div className="mb-6">
-                <h1 className="text-2xl font-bold text-gray-800 mb-6">Call Summary</h1>
+                
                 
                 {/* Calendar Card */}
                 <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-4">
@@ -488,7 +510,7 @@ const handleSubmit = async () => {
         </div>
 
         {/* Footer */}
-        <footer className="bg-gray-900 text-white py-4">
+        <footer className="bg-gray-900 text-white py-2">
           <div className="container mx-auto px-4">
             <div className="text-sm">
               All Rights Reserved, Rapid Collaborate, (c) Copyright 2024.
