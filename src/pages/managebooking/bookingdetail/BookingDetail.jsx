@@ -1371,14 +1371,14 @@ const resetBookingStates = () => {
               bookingData.fld_call_request_sts === "Consultant Assigned" &&
               bookingData.fld_consultant_approve_sts === "Yes" && (
                 <>
-                  <div className=" flex justify-end">
+                  {/* <div className=" flex justify-end">
                     <button
                       onClick={() => setShowReassignForm(true)}
                       className="bg-yellow-500 hover:bg-yellow-600 text-white px-2 rounded-md transition-colors cursor-pointer"
                     >
                       Request for reassign
                     </button>
-                  </div>
+                  </div> */}
 
                   <ReassignModal
                     show={showReassignForm}
