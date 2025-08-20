@@ -138,16 +138,18 @@ useEffect(() => {
       render: function (data, type, row) {
         if (data === "Pending") {
           return `
+            <div class="flex gap-2">
             <button 
-              class="edit-btn bg-green-500 hover:bg-green-600 text-white text-sm px-3 py-1 rounded mr-2" 
+              class="edit-btn bg-green-500 hover:bg-green-600 text-white text-[11px] px-2 py-0.5 rounded whitespace-nowrap" 
               data-id="${row.id}" data-status="Approved">
-              Approve
+              Approve <i class="fa fa-check" aria-hidden="true"></i>
             </button>
             <button 
-              class="edit-btn bg-red-500 hover:bg-red-600 text-white text-sm px-3 py-1 rounded" 
+              class="edit-btn bg-red-500 hover:bg-red-600 text-white text-[11px] px-2 py-0.5 rounded whitespace-nowrap" 
               data-id="${row.id}" data-status="Rejected">
-              Reject
+              Reject <i class="fa fa-times" aria-hidden="true"></i>
             </button>
+            </div>
           `;
         } else {
           const color = data === "Approved" ? "green" : "red";

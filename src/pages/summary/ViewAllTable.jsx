@@ -32,74 +32,74 @@ const badgeMeta = {
   "Call Scheduled": {
     bg: "bg-slate-100",
     text: "text-slate-800",
-    icon: <Activity size={13} />,
+    icon: <Activity size={10} />,
   },
   "Call Rescheduled": {
     bg: "bg-slate-100",
     text: "text-slate-800",
-    icon: <Activity size={13} />,
+    icon: <Activity size={10} />,
   },
   "Consultant Assigned": {
     bg: "bg-blue-100",
     text: "text-blue-800",
-    icon: <UserCheck size={13} />,
+    icon: <UserCheck size={10} />,
   },
   Pending: {
     bg: "bg-amber-100",
     text: "text-amber-800",
-    icon: <Clock size={13} />,
+    icon: <Clock size={10} />,
   },
   Accept: {
     bg: "bg-blue-100",
     text: "text-blue-800",
-    icon: <CheckCircle size={13} />,
+    icon: <CheckCircle size={10} />,
   },
   Accepted: {
     bg: "bg-blue-100",
     text: "text-blue-800",
-    icon: <CheckCircle size={13} />,
+    icon: <CheckCircle size={10} />,
   },
   Reject: {
     bg: "bg-rose-100",
     text: "text-rose-800",
-    icon: <UserX size={13} />,
+    icon: <UserX size={10} />,
   },
   Rejected: {
     bg: "bg-rose-100",
     text: "text-rose-800",
-    icon: <UserX size={13} />,
+    icon: <UserX size={10} />,
   },
   Completed: {
     bg: "bg-green-100",
     text: "text-green-800",
-    icon: <CheckCircle size={13} />,
+    icon: <CheckCircle size={10} />,
   },
   Converted: {
     bg: "bg-green-100",
     text: "text-green-800",
-    icon: <ArrowUpRightFromCircle size={13} />,
+    icon: <ArrowUpRightFromCircle size={10} />,
   },
   Rescheduled: {
     bg: "bg-gray-100",
     text: "text-gray-800",
-    icon: <Clock size={13} />,
+    icon: <Clock size={10} />,
   },
   "Reassign Request": {
     bg: "bg-gray-100",
     text: "text-gray-800",
-    icon: <Clock size={13} />,
+    icon: <Clock size={10} />,
   },
   "Client did not join": {
     bg: "bg-red-100",
     text: "text-red-800",
-    icon: <UserX size={13} />,
+    icon: <UserX size={10} />,
   },
   Cancelled: {
     bg: "bg-red-100",
     text: "text-red-800",
-    icon: <UserX size={13} />,
+    icon: <UserX size={10} />,
   },
-  _: { bg: "bg-gray-100", text: "text-gray-900", icon: <Activity size={13} /> },
+  _: { bg: "bg-gray-100", text: "text-gray-900", icon: <Activity size={10} /> },
 };
 
 const crms = [
@@ -996,7 +996,7 @@ const ViewAllTable = () => {
                             </td>
                             <td className="px-4 py-2 text-gray-600 border-r border-gray-300">
                               <div
-                                className={`px-2 py-1 inline-flex items-center gap-1 rounded text-[10px] font-medium ${badge.bg} ${badge.text} ${deletedClass}`}
+                                className={`py-[1px] px-[6px] inline-flex items-center gap-1 rounded text-[10px] font-medium ${badge.bg} ${badge.text} ${deletedClass}`}
                               >
                                 {badge.icon}
                                 {row.fld_call_request_sts}
