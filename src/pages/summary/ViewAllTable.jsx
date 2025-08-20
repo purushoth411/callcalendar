@@ -561,7 +561,7 @@ const ViewAllTable = () => {
     return (
       <tr className="bg-gray-50">
         <td colSpan={6} className="px-4 py-3">
-          <div className="flex flex-col items-start w-full">
+          <div className="flex flex-col items-start w-full text-[10px]">
             {isLoading ? (
               <div className="text-blue-500 text-sm flex items-center">
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500 mr-2"></div>

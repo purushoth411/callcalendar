@@ -506,7 +506,10 @@ export default function Bookings() {
         const textStyle = isDeleted ? "line-through text-gray-400" : "";
 
         return `
-      <button class="details-btn font-medium text-blue-600 hover:underline ${textStyle}" data-id="${row.id}">
+      <button
+      data-tooltip-id="my-tooltip"
+      data-tooltip-content="${data} - ${clientId}"
+      class="details-btn font-medium text-blue-600 hover:underline truncate w-[150px] text-left ${textStyle}" data-id="${row.id}">
         ${data} - ${clientId}
       </button>
     `;
@@ -606,7 +609,7 @@ export default function Bookings() {
           } else {
             if (historyData[bookingId]) {
               const html = generateHistoryHTML(historyData[bookingId]);
-              row.child(html).show();
+              row.child(html, "hover:!bg-transparent").show();
               tr.addClass("shown");
             } else {
               row
@@ -616,7 +619,7 @@ export default function Bookings() {
                 .show();
               fetchBookingHistory(bookingId).then((data) => {
                 const html = generateHistoryHTML(data || []);
-                row.child(html).show();
+                row.child(html , "hover:!bg-transparent").show();
                 tr.addClass("shown");
               });
             }

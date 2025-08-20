@@ -115,7 +115,7 @@ export default function ClientBookingDetails() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 font-sans" style={{ fontFamily: "'Poppins', sans-serif" }}>
+    <div className="min-h-screen bg-gray-100 font-sans flex flex-col" style={{ fontFamily: "'Poppins', sans-serif" }}>
       {/* Navbar */}
       <nav className="py-3" style={{ backgroundColor: "rgb(215, 215, 215)" }}>
         <div className="container mx-auto px-4">
@@ -129,8 +129,8 @@ export default function ClientBookingDetails() {
 
       {/* Booking Details */}
       {booking.fld_call_confirmation_status === "Call Confirmed by Client" && (
-        <div className="flex justify-center items-start py-6">
-          <div className="w-full max-w-2xl mx-4 mt-6 mb-16">
+        <div className="flex justify-center items-center py-6 flex-1 ">
+          <div className="w-full max-w-2xl mx-auto ">
             <div className="bg-white rounded-lg shadow-xl p-4 border-2 border-gray-300">
               <div style={{ backgroundColor: "rgb(239, 239, 239)" }}>
                 <div
@@ -180,7 +180,7 @@ export default function ClientBookingDetails() {
       )}
 
       {/* Footer */}
-      <div className="bg-gray-900 text-white py-4 mt-auto">
+      <div className="bg-gray-900 text-white py-2 mt-auto">
         <div className="container mx-auto px-4">
           <small>All Rights Reserved, Rapid Collaborate, (c) Copyright 2024.</small>
         </div>

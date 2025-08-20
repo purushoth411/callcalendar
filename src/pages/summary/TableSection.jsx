@@ -133,9 +133,9 @@ const TableSection = ({
     return (
       <tr className="bg-gray-50">
         <td colSpan={6} className="px-4 py-3">
-          <div className="flex flex-col items-start w-full">
+          <div className="flex flex-col items-start w-full text-[10px]">
             {isLoading ? (
-              <div className="text-blue-500 text-sm">
+              <div className="text-blue-500 ">
                 Loading booking history...
               </div>
             ) : data && data.length > 0 ? (
@@ -146,7 +146,7 @@ const TableSection = ({
                     <div className="absolute -left-1.5 top-1 w-3 h-3 bg-blue-500 rounded-full border-2 border-white z-10" />
 
                     {/* Content */}
-                    <div className="text-sm pl-5 ">
+                    <div className=" pl-5 ">
                       <span className="font-medium text-gray-800">
                         {item.fld_comment}
                       </span>
@@ -213,7 +213,7 @@ const TableSection = ({
       <div className="overflow-hidden px-3">
         <div className="overflow-y-auto" style={{ height: "300px" }}>
           <table className="w-full text-[10px]">
-            <thead className="sticky top-0 bg-gray-100 shadow text-gray-700">
+            <thead className="sticky top-0 bg-gray-100 shadow text-gray-700 z-99">
               <tr>
                 {[
                   "Client",
