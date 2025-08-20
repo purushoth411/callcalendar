@@ -4,7 +4,7 @@ import ReactDOMServer from "react-dom/server";
 import DT from "datatables.net-dt";
 import $ from "jquery";
 import { useAuth } from "../../utils/idb.jsx";
-import { PlusIcon, RefreshCcw, Users } from "lucide-react";
+import { ChevronDown, ChevronUp, PlusIcon, RefreshCcw, Users } from "lucide-react";
 import {
   formatBookingDateTime,
   formatDate,
@@ -47,6 +47,7 @@ export default function Bookings() {
   const { dashboard_status } = useParams();
   const [showEditSubjectForm, setShowEditSubjectForm] = useState(false);
   const [selectedRow, setSelectedRow] = useState([]);
+  const [showTeamBookings, setShowTeamBookings] = useState(false);
   const [teamBookings, setTeamBookings] = useState([]);
   const [loadingTeamBookings, setLoadingTeamBookings] = useState(false);
 
@@ -427,6 +428,16 @@ export default function Bookings() {
   `;
   };
 
+    const handleToggleTeamBookings = async () => {
+    if (!showTeamBookings) {
+      
+      setLoadingTeamBookings(true);
+      await fetchTeamBookings();
+      setLoadingTeamBookings(false);
+    }
+    setShowTeamBookings(!showTeamBookings);
+  };
+
   const fetchTeamBookings = async () => {
     setLoadingTeamBookings(true);
     try {
@@ -444,6 +455,7 @@ export default function Bookings() {
       setTeamBookings([]);
     } finally {
       setLoadingTeamBookings(false);
+      setShowTeamBookings((prev) => !prev); // toggle visibility
     }
   };
 
@@ -708,15 +720,25 @@ export default function Bookings() {
                 <RefreshCcw size={13} />
               </button>
             </div>
-            {user?.fld_admin_type == "CONSULTANT" && (
-              <button
-                onClick={fetchTeamBookings}
-                className="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700 transition-colors text-[11px] flex items-center gap-1"
-              >
-                <Users size={12} />{" "}
-                {loadingTeamBookings ? "Loading..." : "Team Bookings"}
-              </button>
-            )}
+            {user?.fld_admin_type === "CONSULTANT" && (
+        <button
+          onClick={handleToggleTeamBookings}
+          className="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700 transition-colors text-[11px] flex items-center gap-1"
+        >
+          <Users size={12} />
+          {loadingTeamBookings
+            ? "Loading..."
+            : showTeamBookings
+            ? "Hide Team Bookings"
+            : "Show Team Bookings"}
+          {showTeamBookings ? (
+            <ChevronUp size={12} />
+          ) : (
+            <ChevronDown size={12} />
+          )}
+        </button>
+      )}
+
             {user.fld_admin_type == "EXECUTIVE" && (
               <button
                 onClick={handleAddNewClick}
@@ -728,35 +750,38 @@ export default function Bookings() {
           </div>
           {user?.fld_admin_type === "CONSULTANT" && (
             <>
-              {teamBookings.length > 0 && (
-                <div className="mt-2 mb-2 px-2 py-1 bg-red-50 rounded-md shadow-sm max-w-full">
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
-                    {teamBookings.map((booking, index) => (
-                      <div
-                        key={index}
-                        className="relative group bg-white rounded-md border border-gray-200 p-2 cursor-pointer transition hover:shadow-sm"
-                        tabIndex={0}
-                        aria-label={`Booking by client ID ${booking.fld_client_id}`}
-                      >
-                        {/* Small Label */}
-                        <span onClick={()=>navigate(`/admin/booking_detail/${booking.booking_id}`)} className="block text-center px-2 py-0.5 text-xs font-medium border border-red-300 rounded bg-red-100 text-red-700 select-none truncate">
-                          {booking.client_name} – {booking.fld_client_id}
-                        </span>
-
-                        {/* Tooltip */}
-                        {/* <div className="pointer-events-none absolute z-20 hidden group-hover:block group-focus:block w-52 top-full mt-1 left-1/2 -translate-x-1/2 bg-gradient-to-tr from-red-900 via-red-800 to-red-700 text-white text-[10px] rounded p-2 shadow-md">
-                          <p className="truncate">{booking.fld_sale_type}</p>
-                          <p>
-                            {new Date(
-                              booking.fld_booking_date
-                            ).toLocaleDateString()}
-                          </p>
-                          <p>{booking.fld_booking_slot}</p>
-                        </div> */}
+              {showTeamBookings && !loadingTeamBookings && (
+                <>
+                  {teamBookings.length > 0 ? (
+                    <div className="mt-2 mb-2 px-2 py-1 bg-red-50 rounded-md shadow-sm max-w-full">
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
+                        {teamBookings.map((booking, index) => (
+                          <div
+                            key={index}
+                            className="relative group bg-white rounded-md border border-gray-200 p-2 cursor-pointer transition hover:shadow-sm"
+                            tabIndex={0}
+                            aria-label={`Booking by client ID ${booking.fld_client_id}`}
+                          >
+                            <span
+                              onClick={() =>
+                                navigate(
+                                  `/admin/booking_detail/${booking.booking_id}`
+                                )
+                              }
+                              className="block text-center px-2 py-0.5 text-xs font-medium border border-red-300 rounded bg-red-100 text-red-700 select-none truncate"
+                            >
+                              {booking.client_name} – {booking.fld_client_id}
+                            </span>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                </div>
+                    </div>
+                  ) : (
+                    <p className="mt-2 text-xs text-gray-600 italic">
+                      No Team Calls Found
+                    </p>
+                  )}
+                </>
               )}
             </>
           )}
