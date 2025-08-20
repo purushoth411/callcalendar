@@ -103,7 +103,7 @@ useEffect(() => {
     try {
       setIsLoading(true);
       const response = await fetch(
-        "http://localhost:5000/api/helpers/getAllDomains"
+        "https://callback-2suo.onrender.com/api/helpers/getAllDomains"
       );
       const result = await response.json();
       if (result.status) {
@@ -122,7 +122,7 @@ useEffect(() => {
   const getConsultants = async () => {
     try {
       const response = await fetch(
-        "http://localhost:5000/api/users/getallusers",
+        "https://callback-2suo.onrender.com/api/users/getallusers",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -157,7 +157,7 @@ useEffect(() => {
     try {
       setSubmitting(true);
       const method = "POST";
-      const url = "http://localhost:5000/api/domains/addDomain";
+      const url = "https://callback-2suo.onrender.com/api/domains/addDomain";
 
       const response = await fetch(url, {
         method,
@@ -201,7 +201,7 @@ useEffect(() => {
     try {
       setSubmitting(true);
       const method = "PUT";
-      const url = `http://localhost:5000/api/domains/updateDomain/${editId}`;
+      const url = `https://callback-2suo.onrender.com/api/domains/updateDomain/${editId}`;
 
       const response = await fetch(url, {
         method,
@@ -255,7 +255,7 @@ useEffect(() => {
 
     try {
       const res = await fetch(
-        `http://localhost:5000/api/domains/deleteDomain/${id}`,
+        `https://callback-2suo.onrender.com/api/domains/deleteDomain/${id}`,
         {
           method: "DELETE",
         }
@@ -276,7 +276,7 @@ useEffect(() => {
   const updateDomainStatus = async (domainId, status) => {
     try {
       const res = await fetch(
-        `http://localhost:5000/api/domains/updateDomainStatus/${domainId}`,
+        `https://callback-2suo.onrender.com/api/domains/updateDomainStatus/${domainId}`,
         {
           method: "PUT",
           headers: {
