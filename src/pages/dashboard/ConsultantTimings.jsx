@@ -4,13 +4,14 @@ import toast from "react-hot-toast";
 import { Plus, X } from "lucide-react";
 import { TimeZones } from "../../helpers/TimeZones";
 import SocketHandler from "../../hooks/SocketHandler";
+import moment from "moment-timezone";
 
 function ConsultantTimings() {
   const [allConsultants, setAllConsultants] = useState([]);
   const [selectedConsultant, setSelectedConsultant] = useState(null);
   const [consultantSettings, setConsultantSettings] = useState(null);
   const [loading, setLoading] = useState(false);
-
+  const tomorrow = moment.tz("Asia/Kolkata").add(1, "day").format("YYYY-MM-DD");
   // Form state
   const [formData, setFormData] = useState({
     selectedWeekDays: [],
@@ -272,7 +273,7 @@ function ConsultantTimings() {
       const result = await response.json();
       if (result.status) {
         toast.success("Settings saved successfully");
-        fetchConsultantSettings();
+       // fetchConsultantSettings();
       } else {
         toast.error(result.message || "Failed to save settings");
       }
@@ -405,7 +406,9 @@ function ConsultantTimings() {
                         type="checkbox"
                         id={`day-${day.id}`}
                         checked={formData.selectedWeekDays.includes(day.id)}
-                        onChange={(e) => handleWeekDayChange(day.id, e.target.checked)}
+                        onChange={(e) =>
+                          handleWeekDayChange(day.id, e.target.checked)
+                        }
                         className="mr-2 rounded text-blue-600 focus:ring-blue-500"
                       />
                       <label
@@ -429,12 +432,17 @@ function ConsultantTimings() {
                 </div>
                 <div className="flex flex-wrap gap-4">
                   {[1, 2, 3, 4, 5].map((week) => (
-                    <label key={week} className="flex items-center text-sm text-gray-600 bg-gray-100 p-2 rounded py-1 hover:bg-gray-200 cursor-pointer">
+                    <label
+                      key={week}
+                      className="flex items-center text-sm text-gray-600 bg-gray-100 p-2 rounded py-1 hover:bg-gray-200 cursor-pointer"
+                    >
                       <input
                         type="checkbox"
                         id={`week-${week}`}
                         checked={formData.saturdayOff.includes(week)}
-                        onChange={(e) => handleSaturdayOffChange(week, e.target.checked)}
+                        onChange={(e) =>
+                          handleSaturdayOffChange(week, e.target.checked)
+                        }
                         className="mr-2 rounded text-blue-600 focus:ring-blue-500"
                       />
                       {week === 1
@@ -455,7 +463,9 @@ function ConsultantTimings() {
             <div className="bg-white p-4 rounded shadow-md border border-gray-200">
               {/* Timezone */}
               <div className="mb-6">
-                <h4 className="text-base font-semibold mb-3 border-b border-gray-100 pb-2">Timezone</h4>
+                <h4 className="text-base font-semibold mb-3 border-b border-gray-100 pb-2">
+                  Timezone
+                </h4>
                 <p className="text-sm text-gray-500 mb-1">
                   Select the timezone for your calendar.
                 </p>
@@ -476,7 +486,9 @@ function ConsultantTimings() {
 
               {/* Exclusions */}
               <div>
-                <h4 className="text-base font-semibold mb-3 border-b border-gray-100 pb-2">Exclusions</h4>
+                <h4 className="text-base font-semibold mb-3 border-b border-gray-100 pb-2">
+                  Exclusions
+                </h4>
                 <p className="text-sm text-gray-500 mb-1">
                   Add dates or a custom range to exclude from your availability
                   (holidays, vacation, etc.).
@@ -554,6 +566,7 @@ function ConsultantTimings() {
                           startDate: e.target.value,
                         }))
                       }
+                      min={tomorrow} // 🚫 no past / today
                       className="px-3 py-1 border border-gray-300 rounded w-[160px] text-[13px]"
                     />
                     {tempExclusion.type === "ranges" && (
@@ -566,6 +579,7 @@ function ConsultantTimings() {
                             endDate: e.target.value,
                           }))
                         }
+                        min={tomorrow} // 🚫 no past / today
                         className="px-3 py-1 border border-gray-300 rounded w-[160px] text-[13px]"
                       />
                     )}
@@ -581,7 +595,6 @@ function ConsultantTimings() {
                 </div>
               </div>
             </div>
-
           </div>
 
           {/* Submit Button */}

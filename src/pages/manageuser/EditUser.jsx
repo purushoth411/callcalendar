@@ -22,7 +22,7 @@ const EditUser = ({
     username: "",
     name: "",
     email: "",
-    phone: "",
+   
     password: "",
     confirmPassword: "",
     consultant_type: "",
@@ -45,7 +45,7 @@ const EditUser = ({
         username: editData.fld_username || "",
         name: editData.fld_name || "",
         email: editData.fld_email || "",
-        phone: editData.fld_phone || "",
+       
         password: "",
         confirmPassword: "",
         consultant_type: editData.fld_consultant_type || "",
@@ -65,7 +65,7 @@ const EditUser = ({
       username,
       name,
       email,
-      phone,
+     
       consultant_type,
       subadmin_type,
       permissions,
@@ -109,7 +109,7 @@ const EditUser = ({
       username,
       name,
       email,
-      phone,
+     
       consultant_type,
       subadmin_type,
       permissions: permissionArray, // ✅ pass array to backend
@@ -256,7 +256,7 @@ const EditUser = ({
           />
         </div>
 
-        <div className="">
+        {/* <div className="">
           <label className="block mb-1">Phone</label>
           <input
             type="text"
@@ -266,7 +266,7 @@ const EditUser = ({
               setFormData({ ...formData, phone: e.target.value })
             }
           />
-        </div>
+        </div> */}
 
         {/* Consultant Type */}
          {formType === "CONSULTANT" && (

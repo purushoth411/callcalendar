@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import dayjs from "dayjs";
+import moment from "moment-timezone";
 import Select from "react-select";
 import {
   ArrowRight,
@@ -467,23 +468,25 @@ const CallUpdateOtherActions = ({
               placeholder="Call Joining Link"
               required
             />
-            <input
-              type="date"
-              value={externalBookingDate}
-              onChange={(e) => {
-                const selectedDate = new Date(e.target.value);
-                if (selectedDate.getDay() === 0) {
-                  toast.error(
-                    "Sundays are not allowed. Please select another date."
-                  );
-                  return;
-                }
-                setExternalBookingDate(e.target.value);
-              }}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              min={new Date().toISOString().split("T")[0]}
-              required
-            />
+           <input
+  type="date"
+  value={externalBookingDate}
+  onChange={(e) => {
+    const selectedDate = moment.tz(e.target.value, "Asia/Kolkata");
+
+    // Block Sundays
+    if (selectedDate.day() === 0) {
+      toast.error("Sundays are not allowed. Please select another date.");
+      return;
+    }
+
+    setExternalBookingDate(e.target.value);
+  }}
+  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+  // Min = tomorrow in IST
+  min={moment.tz("Asia/Kolkata").add(1, "day").format("YYYY-MM-DD")}
+  required
+/>
             <select
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               value={externalBookingTime}

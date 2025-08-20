@@ -9,6 +9,7 @@ import Select from "react-select";
 import SkeletonLoader from "../components/SkeletonLoader";
 import { getSocket } from "../utils/Socket";
 import { useAuth } from "../utils/idb";
+import { formatDate } from "../helpers/CommonHelper";
 
 DataTable.use(DT);
 
@@ -24,12 +25,11 @@ export default function Teams() {
     team: "",
   });
 
-  const {user}=useAuth();
-
+  const { user } = useAuth();
 
   /// socket ////////
   const socket = getSocket();
-  
+
   useEffect(() => {
     const handleTeamAdded = (newTeam) => {
       console.log("Socket Called - Team Added");
@@ -41,7 +41,7 @@ export default function Teams() {
         return [...list, newTeam];
       });
     };
-  
+
     const handleTeamUpdated = (updatedTeam) => {
       console.log("Socket Called - Team Updated");
       setTeams((prev) => {
@@ -51,10 +51,10 @@ export default function Teams() {
         );
       });
     };
-  
+
     socket.on("teamAdded", handleTeamAdded);
     socket.on("teamUpdated", handleTeamUpdated);
-  
+
     return () => {
       socket.off("teamAdded", handleTeamAdded);
       socket.off("teamUpdated", handleTeamUpdated);
@@ -65,25 +65,23 @@ export default function Teams() {
       console.log("Socket Called - Team Deleted");
       setTeams((prev) => prev.filter((team) => team.id != id));
     };
-  
+
     const handleTeamStatusUpdated = (updatedTeam) => {
       console.log("Socket Called - Team Status Updated");
       setTeams((prev) =>
-        prev.map((team) =>
-          team.id == updatedTeam.id ? updatedTeam : team
-        )
+        prev.map((team) => (team.id == updatedTeam.id ? updatedTeam : team))
       );
     };
-  
+
     socket.on("teamDeleted", handleTeamDeleted);
     socket.on("teamStatusUpdated", handleTeamStatusUpdated);
-  
+
     return () => {
       socket.off("teamDeleted", handleTeamDeleted);
       socket.off("teamStatusUpdated", handleTeamStatusUpdated);
     };
   }, [user.id]);
-  
+
   /// socket ////////
 
   useEffect(() => {
@@ -221,6 +219,8 @@ export default function Teams() {
     {
       title: "Added On",
       data: "fld_addedon",
+      orderable: false,
+      render: (data) => `<div class="text-gray-500 ">${formatDate(data)}</div>`,
     },
     {
       title: "Status",
@@ -263,7 +263,8 @@ export default function Teams() {
     responsive: true,
     pageLength: 25,
     lengthMenu: [5, 10, 25, 50, 100],
-    order: [[0, "asc"]],
+    order: false,
+    ordering: false,
     dom: '<"flex justify-between items-center mb-4"lf>rt<"flex justify-between items-center mt-4"ip>',
     language: {
       search: "",
@@ -321,7 +322,9 @@ export default function Teams() {
       <div className="">
         <div className="">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-[16px] font-semibold text-gray-900">Team Management</h2>
+            <h2 className="text-[16px] font-semibold text-gray-900">
+              Team Management
+            </h2>
             <button
               onClick={openAddForm}
               className="bg-green-600 leading-none text-white px-2 py-1.5 rounded hover:bg-green-700 text-[11px] flex items-center gap-1 cursor-pointer"
@@ -330,19 +333,19 @@ export default function Teams() {
             </button>
           </div>
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-          {isLoading ? (
-            <SkeletonLoader
-              rows={6}
-              columns={["Team Name", "Added On", "Status", "Actions"]}
-            />
-          ) : (
-            <DataTable
-              data={teams}
-              columns={columns}
-              className="display table table-auto w-full text-[12px] border border-gray-300 n-table-set dataTable"
-              options={tableOptions}
-            />
-          )}
+            {isLoading ? (
+              <SkeletonLoader
+                rows={6}
+                columns={["Team Name", "Added On", "Status", "Actions"]}
+              />
+            ) : (
+              <DataTable
+                data={teams}
+                columns={columns}
+                className="display table table-auto w-full text-[12px] border border-gray-300 n-table-set dataTable"
+                options={tableOptions}
+              />
+            )}
           </div>
         </div>
       </div>
@@ -370,9 +373,7 @@ export default function Teams() {
             >
               <div className="">
                 <div className="flex justify-between items-center px-4 py-3 border-b bg-[#224d68] text-white">
-                  <h3 className="text-[15px] font-semibold">
-                    Add New Team
-                  </h3>
+                  <h3 className="text-[15px] font-semibold">Add New Team</h3>
                   <button
                     onClick={closeForm}
                     className="text-gray-100 hover:text-red-500 text-2xl cursor-pointer"
@@ -384,9 +385,7 @@ export default function Teams() {
                 <div className="p-4 space-y-4 ">
                   {/* Team Name */}
                   <div>
-                    <label className="block mb-1">
-                      Team Name *
-                    </label>
+                    <label className="block mb-1">Team Name *</label>
                     <input
                       type="text"
                       placeholder="Enter team name"
@@ -397,17 +396,16 @@ export default function Teams() {
                       className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
                     />
                   </div>
-                
 
-                {/* Save Button */}
-                <div className="flex justify-end gap-3">
-                  <button
-                    onClick={handleSave}
-                    className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-[11px] flex items-center gap-1 cursor-pointer"
-                  >
-                    Save
-                  </button>
-                </div>
+                  {/* Save Button */}
+                  <div className="flex justify-end gap-3">
+                    <button
+                      onClick={handleSave}
+                      className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-[11px] flex items-center gap-1 cursor-pointer"
+                    >
+                      Save
+                    </button>
+                  </div>
                 </div>
               </div>
             </motion.div>
@@ -437,9 +435,7 @@ export default function Teams() {
             >
               <div className="">
                 <div className="flex justify-between items-center px-4 py-3 border-b bg-[#224d68] text-white">
-                  <h3 className="text-[15px] font-semibold">
-                    Edit Team
-                  </h3>
+                  <h3 className="text-[15px] font-semibold">Edit Team</h3>
                   <button
                     onClick={closeForm}
                     className="text-gray-100 hover:text-red-500 text-2xl cursor-pointer"
@@ -451,9 +447,7 @@ export default function Teams() {
                 <div className="p-4 space-y-4 ">
                   {/* Team Name */}
                   <div>
-                    <label className="block mb-1">
-                      Team Name *
-                    </label>
+                    <label className="block mb-1">Team Name *</label>
                     <input
                       type="text"
                       placeholder="Enter team name"
@@ -464,18 +458,16 @@ export default function Teams() {
                       className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
                     />
                   </div>
-                
 
-                {/* Update Button */}
-                <div className="flex justify-end gap-3 ">
-                  <button
-                    onClick={handleUpdate}
-                    className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-[11px] flex items-center gap-1 cursor-pointer"
-                  >
-                    Update
-                  </button>
-                </div>
-
+                  {/* Update Button */}
+                  <div className="flex justify-end gap-3 ">
+                    <button
+                      onClick={handleUpdate}
+                      className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-[11px] flex items-center gap-1 cursor-pointer"
+                    >
+                      Update
+                    </button>
+                  </div>
                 </div>
               </div>
             </motion.div>

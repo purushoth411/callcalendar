@@ -68,24 +68,22 @@ const BookingDetail = () => {
     isSuperAdminOrExecutive ? "consultant" : "user"
   );
   ///socket
-  //   useEffect(() => {
-  //   const socket = getSocket();
+    useEffect(() => {
+  const socket = getSocket();
 
-  //   const handleIncomingNotification = (notif) => {
+  const handleIncomingChat = (notif) => {
+    if (notif.fld_bookingid == bookingId) {
+      setMessageData((prev) => [ ...prev,notif]);
+    }
+  };
 
-  //     toast.success("📩 New message received");
+  socket.on("chatAdded", handleIncomingChat);
 
-  //     // Add to notifications
-  //     setMessageData((prev) => [notif, ...prev]);
+  return () => {
+    socket.off("chatAdded", handleIncomingChat);
+  };
+}, [bookingId]);
 
-  //   };
-
-  //   socket.on("notification", handleIncomingNotification);
-
-  //   return () => {
-  //     socket.off("notification", handleIncomingNotification);
-  //   };
-  // }, []);
 
   useEffect(() => {
     const socket = getSocket();
@@ -473,6 +471,7 @@ const resetBookingStates = () => {
             comment: message,
             admin_type: user.fld_admin_type,
             bookingid: bookingId,
+            sender_name:user?.fld_name || "Unknown User"
           }),
         }
       );

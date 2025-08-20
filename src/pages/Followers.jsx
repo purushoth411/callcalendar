@@ -298,43 +298,42 @@ export default function Followers() {
       },
     },
     {
-      title: "Status",
-      data: "followstatus",
-      render: (data) => {
-        if (data === "Pending") {
-          return `<div class="text-red-600 font-semibold">Pending</div>`;
-        } else {
-          return `<div class="text-green-600 font-semibold">Claimed</div>`;
-        }
-      },
-    },
-    {
-      title: "Action",
-      data: "followstatus",
-      orderable: false,
-      render: function (data, type, row) {
-        let bookingTime = new Date(
-          `${row.fld_booking_date} ${row.fld_booking_slot}`
-        ); // use ISO format
-        let currentTime = new Date();
-        if (
-          data === "Pending" &&
-          currentTime < bookingTime &&
-          (user.fld_admin_type == "SUBADMIN" ||
-            user.fld_admin_type == "CONSULTANT")
-        ) {
-          return `
-            <button 
-              class="edit-btn bg-green-500 hover:bg-green-600 text-white text-sm px-3 py-1 rounded mr-2" 
-              data-followerid="${row.followerid}" data-bookingid="${row.id}">
-              Claim
-            </button>
-          `;
-        } else {
-          return ` `;
-        }
-      },
-    },
+  title: "Action",
+  data: "followstatus",
+  orderable: false,
+  render: function (data, type, row) {
+    let bookingTime = new Date(
+      `${row.fld_booking_date} ${row.fld_booking_slot}`
+    );
+    let currentTime = new Date();
+    
+    // Show Claim button if conditions are met
+    if (
+      data === "Pending" &&
+      currentTime < bookingTime &&
+      (user.fld_admin_type == "SUBADMIN" ||
+        user.fld_admin_type == "CONSULTANT")
+    ) {
+      return `
+        <div class="flex items-center gap-2">
+          <div class="text-red-600 font-semibold">Pending</div>
+          <button 
+            class="edit-btn bg-green-500 hover:bg-green-600 text-white text-sm px-3 py-1 rounded" 
+            data-followerid="${row.followerid}" data-bookingid="${row.id}">
+            Claim
+          </button>
+        </div>
+      `;
+    } 
+    // Show status only
+    else if (data === "Pending") {
+      return `<div class="text-red-600 font-semibold">Pending</div>`;
+    } 
+    else {
+      return `<div class="text-green-600 font-semibold">Claimed</div>`;
+    }
+  },
+},
   ];
 
   const tableOptions = {
