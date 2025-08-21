@@ -552,9 +552,9 @@ export default function Bookings() {
       data: "fld_sale_type",
       render: (data) => {
         if (data === "Presales") {
-          return `<div class="text-blue-600 font-semibold">Presale</div>`;
+          return `<div class="text-blue-600 font-semibold">Presales</div>`;
         } else if (data === "Postsales") {
-          return `<div class="text-green-600 font-semibold">Postsale</div>`;
+          return `<div class="text-green-600 font-semibold">Postsales</div>`;
         } else {
           return `<div class="text-gray-600 text-sm">${data}</div>`;
         }
