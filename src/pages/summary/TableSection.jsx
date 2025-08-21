@@ -259,7 +259,7 @@ const TableSection = ({
                         >
                           <td className={`px-4 py-2 border-b ${deletedClass}`}>
                             <a
-                              href={`#/booking_detail/${row.id}`}
+                              href={`/admin/booking_detail/${row.id}`}
                               className="hover:underline text-blue-600"
                             >
                               {row.user_name} - {row.fld_client_id}
