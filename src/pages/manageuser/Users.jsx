@@ -598,7 +598,7 @@ export default function Users() {
                   {selectedUserType === "EXECUTIVE" && (
                     <DataTable
                       data={executiveUsers}
-                      columns={columns}
+                      columns={getColumns(selectedUserType)}
                       className="table-auto w-full text-[12px] border border-gray-300 divide-y divide-gray-300 dataTable the-table-set"
                       options={tableOptions}
                     />
@@ -606,7 +606,7 @@ export default function Users() {
                   {selectedUserType === "SUBADMIN" && (
                     <DataTable
                       data={subadminUsers}
-                      columns={columns}
+                      columns={getColumns(selectedUserType)}
                       className="table-auto w-full text-[12px] border border-gray-300 divide-y divide-gray-300 dataTable the-table-set"
                       options={tableOptions}
                     />
@@ -614,7 +614,7 @@ export default function Users() {
                   {selectedUserType === "CONSULTANT" && (
                     <DataTable
                       data={consultantUsers}
-                      columns={columns}
+                      columns={getColumns(selectedUserType)}
                       className="table-auto w-full text-[12px] border border-gray-300 divide-y divide-gray-300 dataTable the-table-set"
                       options={tableOptions}
                     />
@@ -622,7 +622,7 @@ export default function Users() {
                   {selectedUserType === "OPERATIONSADMIN" && (
                     <DataTable
                       data={opsAdminUsers}
-                      columns={columns}
+                      columns={getColumns(selectedUserType)}
                       className="table-auto w-full text-[12px] border border-gray-300 divide-y divide-gray-300 dataTable the-table-set"
                       options={tableOptions}
                     />
