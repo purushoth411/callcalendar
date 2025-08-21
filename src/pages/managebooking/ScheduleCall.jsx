@@ -478,19 +478,19 @@ if (!urlPattern.test(callLink.trim())) {
                 {selectedSlot && (
                   <div className="mt-4 space-y-3">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block  font-medium text-gray-700 mb-1">
                         Enter Call Link
                       </label>
                       <input
                         type="text"
                         value={callLink}
                         onChange={(e) => setCallLink(e.target.value)}
-                        className="w-full border px-3 py-2 rounded shadow-sm"
+                        className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
                         placeholder="https://zoom.us/..."
                         required
                       />
                     </div>
-
+                    <div className="flex justify-end">
                     <button
                       type="button"
                       onClick={handleSubmit}
@@ -499,6 +499,7 @@ if (!urlPattern.test(callLink.trim())) {
                     >
                       {isSubmitting ? "Submitting..." : "Submit"}
                     </button>
+                    </div>
 
                     {submitMessage && (
                       <p className="text-sm text-green-600 mt-2">

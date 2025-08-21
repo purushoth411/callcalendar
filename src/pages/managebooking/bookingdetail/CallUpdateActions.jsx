@@ -413,17 +413,17 @@ const [ratingQ1, setRatingQ1] = useState(0);
             {
               label: "Update Call Status",
               value: "Update Call Status",
-              icon: <UserCheck className="mr-1 mt-0.5" size={13} />,
+              // icon: <UserCheck className="mr-1 mt-0.5" size={13} />,
             },
             {
               label: "Reassign Call",
               value: "Reassign Call",
-              icon: <UserCheck className="mr-1 mt-0.5" size={13} />,
+              // icon: <UserCheck className="mr-1 mt-0.5" size={13} />,
             },
             {
               label: "Assign External",
               value: "Assign External",
-              icon: <ExternalLink className="mr-1 mt-0.5" size={13} />,
+              // icon: <ExternalLink className="mr-1 mt-0.5" size={13} />,
             },
           ].map((tab) => (
             <label
@@ -629,8 +629,8 @@ const [ratingQ1, setRatingQ1] = useState(0);
                   <div className="space-y-4">
                     <div className="space-y-6 ">
       {/* Question 1 */}
-      <div className="bg-white p-4 rounded shadow">
-        <div className="mb-4 text-sm font-medium text-gray-700">
+      <div className="bg-white p-3 rounded shadow">
+        <div className="mb-4  font-medium text-gray-700">
           Question 1 <span className="text-red-500">*</span>: Was the CRM able
           to Bridge the call effectively?
         </div>
@@ -643,8 +643,8 @@ const [ratingQ1, setRatingQ1] = useState(0);
       </div>
 
       {/* Question 2 */}
-      <div className="bg-white p-4 rounded shadow">
-        <div className="mb-4 text-sm font-medium text-gray-700">
+      <div className="bg-white p-3 rounded shadow">
+        <div className="mb-4  font-medium text-gray-700">
           Question 2 <span className="text-red-500">*</span>: Was the CRM's voice loud and clear?
         </div>
         <StarRating
@@ -657,8 +657,8 @@ const [ratingQ1, setRatingQ1] = useState(0);
     </div>
 
                     {/* Question 3 with Toggle UI */}
-                    <div className="bg-white p-4 rounded shadow">
-                      <div className="mb-4 text-sm font-medium text-gray-700">
+                    <div className="bg-white p-3 rounded shadow">
+                      <div className="mb-4  font-medium text-gray-700">
                         Question 3 <span className="text-red-500">*</span>: Was
                         the client informed about the call being recorded?
                       </div>

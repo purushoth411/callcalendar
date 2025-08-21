@@ -500,7 +500,7 @@ if (!urlPattern.test(callLink.trim())) {
 
                   {loadingSlots ? (
                     // Skeleton loader
-                    <div className="grid grid-cols-2 gap-2 max-h-80 overflow-y-auto p-3">
+                    <div className="grid grid-cols-2 gap-2 max-h-80 overflow-y-auto p-3 border-gray-100 border">
                       {Array(16)
                         .fill("")
                         .map((_, i) => (
@@ -512,7 +512,7 @@ if (!urlPattern.test(callLink.trim())) {
                     </div>
                   ) : availableSlots.length > 0 ? (
                     // Slots display
-                    <div className="grid grid-cols-2 gap-2 max-h-80 overflow-y-auto p-3">
+                    <div className="grid grid-cols-2 gap-2 max-h-80 overflow-y-auto p-3 border-gray-100 border">
                       {availableSlots.map((slot, i) => (
                         <div
                           key={i}
@@ -537,27 +537,29 @@ if (!urlPattern.test(callLink.trim())) {
                 {selectedSlot && (
                   <div className="mt-4 space-y-3">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block  font-medium text-gray-700 mb-1">
                         Enter Call Link
                       </label>
                       <input
                         type="text"
                         value={callLink}
                         onChange={(e) => setCallLink(e.target.value)}
-                        className="w-full border px-3 py-2 rounded shadow-sm"
+                        className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
                         placeholder="https://zoom.us/..."
                         required
                       />
                     </div>
+                    <div className="flex justify-end">
 
                     <button
                       type="button"
                       onClick={handleSubmit}
                       disabled={isSubmitting}
-                      className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+                      className="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 transition"
                     >
                       {isSubmitting ? "Updating...":"Update"}
                     </button>
+                    </div>
 
                     {submitMessage && (
                       <p className="text-sm text-green-600 mt-2">
