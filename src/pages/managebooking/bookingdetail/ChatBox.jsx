@@ -102,7 +102,7 @@ const ChatBox = ({ bookingId, user, messageData, onSend,isMsgSending }) => {
                 value={newMsg}
                 onChange={(e) => setNewMsg(e.target.value)}
                 placeholder="Type your message..."
-                className="flex-1 border border-gray-300 rounded p-1 px-2 text-[12px] resize-none "
+                className="flex-1 border border-gray-300 rounded p-1 px-2 text-[12px] resize "
               />
               <button
                 onClick={handleSend}

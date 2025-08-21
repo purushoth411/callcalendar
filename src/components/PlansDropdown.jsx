@@ -54,10 +54,10 @@ export default function PlansDropdown() {
       </button>
 
       {open && (
-        <div className="absolute bg-[#3c7ca5] shadow-lg mt-1 rounded w-48 z-50 top-7">
+        <div className="absolute bg-[#fff] shadow-lg mt-1 rounded w-50 z-50 top-7 right-0 border border-gray-400">
           <NavLink
             to="/plans"
-            className="block px-4 py-2 text-white hover:bg-[#2d6689]"
+            className="block px-4 py-2 text-gray-900 border-b border-gray-400 hover:bg-[#2d6689] hover:text-white"
             onClick={() => setOpen(false)}
           >
             Plans
@@ -65,7 +65,7 @@ export default function PlansDropdown() {
 
           <NavLink
             to="/approveaddcallrequests"
-            className="flex items-center justify-between px-4 py-2 text-white hover:bg-[#2d6689]"
+            className="flex items-center justify-between block px-4 py-2 text-gray-900 hover:bg-[#2d6689] hover:text-white"
             onClick={() => setOpen(false)}
           >
             <span>Approved Call Request</span>

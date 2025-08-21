@@ -353,16 +353,40 @@ body{
 
 
 
+table.dataTable.hover tbody tr:hover, table.dataTable.display tbody tr:hover {
+    background-color: #ecf7ff !important;
+}
+table.dataTable.stripe>tbody>tr:nth-child(odd)>*, table.dataTable.display>tbody>tr:nth-child(odd)>* {
+    background: #fff !important;
+}
 
 
 
 
+/* style all rows */
+.dataTable tbody tr {
+  background-color: #fff;   /* default white */
+  transition: background 0.2s ease-in-out;
+  border: 1px solid #ccc !important;
+}
 
+/* alternate row colors */
+.dataTable tbody tr:nth-child(even) {
+  background-color: #fff; /* light gray */
+}
 
+/* hover effect */
+.dataTable tbody tr:hover {
+  background-color: #d7efff7d; /* soft orange */
+  /* cursor: pointer; */
+}
 
-
-
-
+.dataTable tbody td {
+  border-bottom: 1px solid #ccc !important;
+}
+.dataTable tbody tr {
+  border-bottom: 1px solid #ccc !important;
+}
 
 
 
@@ -370,13 +394,14 @@ body{
 /* ============================================== monish start*/
 
 .the-table-set thead th {
-  border-left: 1px solid #6a6a6a;
+  border-left: 1px solid #e2d9d9;
 }
 
 .the-table-set thead {
   background: #224d68;
   color: #fff;
   border: 1px solid #6a6a6a;
+  white-space: nowrap;
 }
 
 .the-table-set thead tr th:last-of-type {
@@ -389,10 +414,9 @@ body{
   text-decoration: none;
 } */
 
-table.dataTable.display tbody tr td:first-child {
-  /* background-color: #fafafa;  */
+/* table.dataTable.display tbody tr td:first-child {
   box-shadow: inset 0 0 0 9999px rgba(var(--dt-column-ordering), 0.019);
-}
+} */
 
 /* table.dataTable.display tbody tr td:last-child {
   line-height: 30px;

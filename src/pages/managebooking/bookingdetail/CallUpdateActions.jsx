@@ -399,7 +399,7 @@ const [ratingQ1, setRatingQ1] = useState(0);
   };
 
   return (
-    <div className="bg-white border border-gray-200 rounded p-4 min-w-[60%]">
+    <div className="bg-white border border-gray-200 rounded p-4 max-w-[60%]">
       <div id="msgloader" className="text-center"></div>
 
       <div className="">
