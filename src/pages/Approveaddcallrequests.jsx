@@ -140,12 +140,12 @@ useEffect(() => {
           return `
             <div class="flex gap-2">
             <button 
-              class="edit-btn bg-green-500 hover:bg-green-600 text-white text-[11px] px-2 py-0.5 rounded whitespace-nowrap" 
+              class="edit-btn bg-green-500 hover:bg-green-600 text-white text-[11px] px-[6px] py-[4px] rounded whitespace-nowrap leading-none" 
               data-id="${row.id}" data-status="Approved">
               Approve <i class="fa fa-check" aria-hidden="true"></i>
             </button>
             <button 
-              class="edit-btn bg-red-500 hover:bg-red-600 text-white text-[11px] px-2 py-0.5 rounded whitespace-nowrap" 
+              class="edit-btn bg-red-500 hover:bg-red-600 text-white text-[11px] px-[6px] py-[4px] rounded whitespace-nowrap leading-none" 
               data-id="${row.id}" data-status="Rejected">
               Reject <i class="fa fa-times" aria-hidden="true"></i>
             </button>
@@ -237,7 +237,7 @@ useEffect(() => {
             <DataTable
               data={approveaddcallrequests}
               columns={columns}
-              className="display table table-auto w-full text-[12px] border border-gray-300 n-table-set dataTable"
+              className="table-auto w-full text-[12px] border border-gray-300 divide-y divide-gray-300 dataTable the-table-set"
               options={tableOptions}
             />
           )}

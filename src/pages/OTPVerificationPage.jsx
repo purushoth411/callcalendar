@@ -307,15 +307,15 @@ const handleSubmit = async () => {
       <>
         <div className="min-h-screen bg-gray-100 font-sans flex flex-col">
           {/* Navbar */}
-      <nav className="py-3" style={{ backgroundColor: "rgb(215, 215, 215)" }}>
-        <div className="container mx-auto px-4">
-          <div className="flex items-center">
-            <div className="text-xl font-semibold text-gray-800">
-              <img src={logo} alt="Logo" className="mx-auto w-50 ml-[-7px]" />
+          <nav className="py-3" style={{ backgroundColor: "rgb(215, 215, 215)" }}>
+            <div className="container mx-auto px-4">
+              <div className="flex items-center">
+                <div className="text-xl  text-gray-800">
+                  <img src={logo} alt="Logo" className="mx-auto w-50 ml-[-7px]" />
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      </nav>
+          </nav>
           <div className="container mx-auto px-4 py-8 flex-1 flex justify-center items-center">
             <div className="flex justify-center items-center">
               <div className="bg-white rounded-lg shadow-lg overflow-hidden max-w-md w-full">
@@ -332,7 +332,7 @@ const handleSubmit = async () => {
                   <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
                     <div className="flex items-center">
                       <AlertTriangle className="w-5 h-5 text-red-600 mr-2" />
-                      <span className="text-red-800 font-medium">Access Denied</span>
+                      <span className="text-red-800 ">Access Denied</span>
                     </div>
                     <p className="text-red-700 mt-2">
                       This verification link is no longer valid or has expired.
@@ -381,7 +381,7 @@ const handleSubmit = async () => {
       <nav className="py-3" style={{ backgroundColor: "rgb(215, 215, 215)" }}>
         <div className="container mx-auto px-4">
           <div className="flex items-center">
-            <div className="text-xl font-semibold text-gray-800">
+            <div className="text-xl  text-gray-800">
               <img src={logo} alt="Logo" className="mx-auto w-50 ml-[-7px]" />
             </div>
           </div>
@@ -403,7 +403,7 @@ const handleSubmit = async () => {
                     <div className="md:w-1/4 bg-gray-200 p-6 flex flex-col items-center justify-center relative min-h-44">
                       <Calendar className="w-16 h-16 text-gray-600 mb-2" />
                       <div className="absolute inset-0 flex flex-col items-center justify-center">
-                        <span className="text-white font-medium text-sm bg-red-500 px-2 py-1 rounded-t">
+                        <span className="text-white  text-sm bg-red-500 px-2 py-1 rounded-t">
                           {month}
                         </span>
                         <span className="text-2xl font-bold text-gray-800 bg-white px-4 py-2">
@@ -417,7 +417,7 @@ const handleSubmit = async () => {
 
                     {/* Meeting Details */}
                     <div className="md:w-1/2 p-6 border-x border-gray-200">
-                      <h3 className="font-semibold text-lg mb-4">{bookingData.callRegarding}</h3>
+                      <h3 className=" text-lg mb-4">{bookingData.callRegarding}</h3>
                       <div className="space-y-2 text-sm">
                         <div className="flex items-center">
                           <span className="text-gray-500 w-20">Timezone</span>
@@ -428,10 +428,10 @@ const handleSubmit = async () => {
 
                     {/* Agenda */}
                     <div className="md:w-1/2 p-6">
-                      <h3 className="font-semibold text-lg mb-2">Agenda</h3>
+                      <h3 className=" text-lg mb-2">Agenda</h3>
                       <p className="text-sm text-gray-600 mb-3">{formatDate(bookingData.bookingDate)}</p>
                       <p className="text-xs text-gray-500 italic mb-2">No Earlier Events</p>
-                      <p className="text-sm font-medium">{bookingData.bookingSlot} {bookingData.callRegarding}</p>
+                      <p className="text-sm ">{bookingData.bookingSlot} {bookingData.callRegarding}</p>
                       <p className="text-xs text-gray-500 italic">No Later Events</p>
                     </div>
                   </div>
@@ -441,22 +441,22 @@ const handleSubmit = async () => {
                 <div className="bg-white rounded-lg shadow-lg p-6">
                   <div className="bg-purple-800 h-4 rounded-t-lg -mx-6 -mt-6 mb-6"></div>
                   <div className="prose max-w-none">
-                    <p className="mb-4">Hi <strong>{bookingData.name}</strong>,</p>
+                    <p className="mb-4">Hi <span>{bookingData.name}</span>,</p>
                     <p className="mb-4">
-                      Your appointment ID: <strong>{bookingData.bookingCode}</strong> has been confirmed. 
+                      Your appointment ID: <span>{bookingData.bookingCode}</span> has been confirmed. 
                       Here are the details of your appointment:
                     </p>
                     <p className="mb-4">
-                      <em><strong>Topic - {bookingData.callRegarding}</strong></em>
+                      <em><span>Topic - {bookingData.callRegarding}</span></em>
                     </p>
                     <p className="mb-4">
-                      <em><strong>
+                      <em><span>
                         {getDayName(bookingData.bookingDate)} {formatDate(bookingData.bookingDate)}, {bookingData.bookingSlot}, {bookingData.timezone}
                         <br />
                         MEETING LINK: <a href={bookingData.joiningLink} className="text-blue-600 hover:underline">
                           {bookingData.joiningLink}
                         </a>
-                      </strong></em>
+                      </span></em>
                     </p>
                     <p>Thanks,<br />Rapid Collaborate.</p>
                   </div>
@@ -468,7 +468,7 @@ const handleSubmit = async () => {
             <div className="lg:w-1/3">
               <div className="bg-white rounded-lg shadow-lg p-6">
                 <div className="text-center">
-                  <h2 className="text-xl font-bold text-gray-800 mb-2">
+                  <h2 className="text-xl  text-gray-800 mb-2">
                     Securely Confirm Your Appointment with Our Expert
                   </h2>
                   <h3 className="text-red-600 text-sm mb-3">
@@ -486,7 +486,7 @@ const handleSubmit = async () => {
                           ref={inputRefs[index]}
                           type="tel"
                           maxLength="1"
-                          className="w-12 h-12 text-center border border-gray-300 rounded-lg text-lg font-semibold focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-200"
+                          className="w-12 h-12 text-center border border-gray-300 rounded-lg text-lg  focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-200"
                           value={digit}
                           onChange={(e) => handleOTPChange(index, e.target.value)}
                           onKeyDown={(e) => handleKeyDown(index, e)}

@@ -333,6 +333,21 @@ export default function Teams() {
             </button>
           </div>
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+<<<<<<< HEAD
+          {isLoading ? (
+            <SkeletonLoader
+              rows={6}
+              columns={["Team Name", "Added On", "Status", "Actions"]}
+            />
+          ) : (
+            <DataTable
+              data={teams}
+              columns={columns}
+              className="table-auto w-full text-[12px] border border-gray-300 divide-y divide-gray-300 dataTable the-table-set"
+              options={tableOptions}
+            />
+          )}
+=======
             {isLoading ? (
               <SkeletonLoader
                 rows={6}
@@ -346,6 +361,7 @@ export default function Teams() {
                 options={tableOptions}
               />
             )}
+>>>>>>> ce1f92c31d3ffa3a090b2073d53f41dd7a110b63
           </div>
         </div>
       </div>

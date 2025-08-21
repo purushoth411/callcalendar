@@ -598,32 +598,32 @@ export default function Users() {
                   {selectedUserType === "EXECUTIVE" && (
                     <DataTable
                       data={executiveUsers}
-                      columns={getColumns(selectedUserType)}
-                      className="display table table-auto w-full text-[12px] border border-gray-300 n-table-set"
+                      columns={columns}
+                      className="table-auto w-full text-[12px] border border-gray-300 divide-y divide-gray-300 dataTable the-table-set"
                       options={tableOptions}
                     />
                   )}
                   {selectedUserType === "SUBADMIN" && (
                     <DataTable
                       data={subadminUsers}
-                      columns={getColumns(selectedUserType)}
-                      className="display table table-auto w-full text-[12px] border border-gray-300 n-table-set"
+                      columns={columns}
+                      className="table-auto w-full text-[12px] border border-gray-300 divide-y divide-gray-300 dataTable the-table-set"
                       options={tableOptions}
                     />
                   )}
                   {selectedUserType === "CONSULTANT" && (
                     <DataTable
                       data={consultantUsers}
-                      columns={getColumns(selectedUserType)}
-                      className="display table table-auto w-full text-[12px] border border-gray-300 n-table-set"
+                      columns={columns}
+                      className="table-auto w-full text-[12px] border border-gray-300 divide-y divide-gray-300 dataTable the-table-set"
                       options={tableOptions}
                     />
                   )}
                   {selectedUserType === "OPERATIONSADMIN" && (
                     <DataTable
                       data={opsAdminUsers}
-                      columns={getColumns(selectedUserType)}
-                      className="display table table-auto w-full text-[12px] border border-gray-300 n-table-set"
+                      columns={columns}
+                      className="table-auto w-full text-[12px] border border-gray-300 divide-y divide-gray-300 dataTable the-table-set"
                       options={tableOptions}
                     />
                   )}
