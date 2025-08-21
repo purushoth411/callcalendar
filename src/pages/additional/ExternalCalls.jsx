@@ -92,7 +92,7 @@ export default function ExternalCalls() {
         if (list.some((booking) => booking.id == mappedBooking.id)) {
           return list;
         }
-        return [...list, mappedBooking];
+        return [ mappedBooking,...list];
       });
     };
 

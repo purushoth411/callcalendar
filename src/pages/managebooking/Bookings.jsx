@@ -121,7 +121,7 @@ export default function Bookings() {
         if (list.some((booking) => booking.id == mappedBooking.id)) {
           return list;
         }
-        return [...list, mappedBooking];
+        return [ mappedBooking,...list];
       });
       if (newBooking.fld_consultant_another_option === "TEAM") {
         setTeamBookings((prev) => {
