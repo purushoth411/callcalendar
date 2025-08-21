@@ -413,17 +413,17 @@ const [ratingQ1, setRatingQ1] = useState(0);
             {
               label: "Update Call Status",
               value: "Update Call Status",
-              icon: <UserCheck className="mr-1 mt-0.5" size={13} />,
+              // icon: <UserCheck className="mr-1 mt-0.5" size={13} />,
             },
             {
               label: "Reassign Call",
               value: "Reassign Call",
-              icon: <UserCheck className="mr-1 mt-0.5" size={13} />,
+              // icon: <UserCheck className="mr-1 mt-0.5" size={13} />,
             },
             {
               label: "Assign External",
               value: "Assign External",
-              icon: <ExternalLink className="mr-1 mt-0.5" size={13} />,
+              // icon: <ExternalLink className="mr-1 mt-0.5" size={13} />,
             },
           ].map((tab) => (
             <label
