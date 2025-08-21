@@ -15,7 +15,7 @@ export default function ClientBookingDetails() {
     const fetchBooking = async () => {
       try {
         const response = await fetch(
-          `http://localhost:5000/api/bookings/fetchBookingById`,
+          `https://callback-2suo.onrender.com/api/bookings/fetchBookingById`,
           {
             method: "POST",
             headers: {

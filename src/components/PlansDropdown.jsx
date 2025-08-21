@@ -14,7 +14,7 @@ export default function PlansDropdown() {
       
       try {
         const response = await fetch(
-          "http://localhost:5000/api/approveaddcallrequests/getAllPendingaddcallrequests"
+          "https://callback-2suo.onrender.com/api/approveaddcallrequests/getAllPendingaddcallrequests"
         );
         const result = await response.json();
 

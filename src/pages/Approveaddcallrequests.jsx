@@ -59,7 +59,7 @@ useEffect(() => {
     try {
       setIsLoading(true);
       const response = await fetch(
-        "http://localhost:5000/api/approveaddcallrequests/getAllApproveaddcallrequests"
+        "https://callback-2suo.onrender.com/api/approveaddcallrequests/getAllApproveaddcallrequests"
       );
       const result = await response.json();
       
@@ -79,7 +79,7 @@ useEffect(() => {
   const updateApproveaddcallrequestStatus = async (approveData, approveaddcallrequestId, status) => {
     try {
       const res = await fetch(
-        `http://localhost:5000/api/approveaddcallrequests/update-approveaddcallrequest-status/${approveaddcallrequestId}`,
+        `https://callback-2suo.onrender.com/api/approveaddcallrequests/update-approveaddcallrequest-status/${approveaddcallrequestId}`,
         {
           method: "PUT",
           headers: {

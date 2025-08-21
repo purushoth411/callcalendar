@@ -95,7 +95,7 @@ export default function Followers() {
     setIsLoading(true);
 
     const response = await fetch(
-      `http://localhost:5000/api/followers/getAllFollowers?usertype=${user?.fld_admin_type}&userid=${user?.id}`
+      `https://callback-2suo.onrender.com/api/followers/getAllFollowers?usertype=${user?.fld_admin_type}&userid=${user?.id}`
     );
 
     const result = await response.json();
@@ -123,7 +123,7 @@ export default function Followers() {
 
     try {
       const res = await fetch(
-        `http://localhost:5000/api/bookings/history/${bookingId}`
+        `https://callback-2suo.onrender.com/api/bookings/history/${bookingId}`
       );
       const result = await res.json();
 
@@ -202,7 +202,7 @@ export default function Followers() {
   const updateFollowersStatus = async (approveData, followerid, bookingid) => {
     try {
       const res = await fetch(
-        `http://localhost:5000/api/followers/followerclaimbooking/${followerid}/${bookingid}`,
+        `https://callback-2suo.onrender.com/api/followers/followerclaimbooking/${followerid}/${bookingid}`,
         {
           method: "PUT",
           headers: {

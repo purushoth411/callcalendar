@@ -50,7 +50,7 @@ useEffect(() => {
   const fetchPendingFollowerCallsCount = async () => {
   try {
     const response = await fetch(
-      `http://localhost:5000/api/followers/fetchPendingFollowerCallsCount?usertype=${user?.fld_admin_type}&userid=${user?.id}`
+      `https://callback-2suo.onrender.com/api/followers/fetchPendingFollowerCallsCount?usertype=${user?.fld_admin_type}&userid=${user?.id}`
     );
     const result = await response.json();
     if (result.status) {

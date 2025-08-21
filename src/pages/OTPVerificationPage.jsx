@@ -45,7 +45,7 @@ const OTPVerificationPage = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/api/helpers/verifyOtpUrl', {
+      const response = await fetch('https://callback-2suo.onrender.com/api/helpers/verifyOtpUrl', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -147,7 +147,7 @@ const handleSubmit = async () => {
   const loadingToast = toast.loading('Please Wait!');
 
   try {
-    const response = await fetch('http://localhost:5000/api/helpers/validateOtp', {
+    const response = await fetch('https://callback-2suo.onrender.com/api/helpers/validateOtp', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

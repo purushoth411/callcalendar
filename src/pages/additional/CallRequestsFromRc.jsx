@@ -54,7 +54,7 @@ function CallRequestsFromRc() {
     try {
       setLoading(true);
       const response = await fetch(
-        "http://localhost:5000/api/additional/callrequestrc",
+        "https://callback-2suo.onrender.com/api/additional/callrequestrc",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
