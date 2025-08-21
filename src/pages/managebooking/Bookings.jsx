@@ -124,8 +124,8 @@ export default function Bookings() {
 
   const isSuperadmin = user?.fld_admin_type === "SUPERADMIN";
 
-  const fromDate = isSuperadmin ? today : lastWeek;
-  const toDate = isSuperadmin ? today : today;
+  const fromDate = dashboard_status ? today : lastWeek;
+  const toDate = dashboard_status ? today : today;
 
   const [filters, setFilters] = useState({
     sale_type: "",
@@ -309,8 +309,9 @@ export default function Bookings() {
 
       const isSuperadmin = user?.fld_admin_type === "SUPERADMIN";
 
-      const fromDate = isSuperadmin ? today : lastWeek;
-      const toDate = isSuperadmin ? today : today;
+      const fromDate = dashboard_status ? today : lastWeek;
+      // const toDate = isSuperadmin ? today : today;
+      const toDate = dashboard_status ? today : today;
 
       const filtersToSend = {
         ...filters,
@@ -678,7 +679,7 @@ export default function Bookings() {
     const today = getCurrentDate("YYYY-MM-DD");
     const lastWeek = getDateBefore(7);
 
-    const isSuperadmin = user?.fld_admin_type === "SUPERADMIN";
+    const isSuperadmin = user?.fld_admin_type === "SUPERADMINFALSE";
 
     const fromDate = isSuperadmin ? today : lastWeek;
     const toDate = isSuperadmin ? today : today;

@@ -232,7 +232,7 @@ export default function Header() {
             )}
 
             {/* Call Ratings */}
-            {user?.fld_admin_type == "SUPERADMIN" && (
+            {/* {user?.fld_admin_type == "SUPERADMIN" && (
               <NavLink
                 to="/completedcallratings"
                 className={({ isActive }) =>
@@ -244,7 +244,7 @@ export default function Header() {
                 <BarChart2 className="mr-1" size={12} />
                 Call Ratings
               </NavLink>
-            )}
+            )} */}
             {(user?.fld_admin_type == "SUPERADMIN" ||
               (user?.fld_admin_type == "SUBADMIN" &&
                 canApproveCallRequest)) && <PlansDropdown />}

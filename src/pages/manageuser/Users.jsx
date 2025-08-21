@@ -31,7 +31,7 @@ export default function Users() {
     username: "",
     name: "",
     email: "",
-    phone: "",
+
     password: "",
     confirmPassword: "",
     consultant_type: "",
@@ -39,11 +39,10 @@ export default function Users() {
     permissions: [],
   });
 
-
   ///socket ////////
 
   useEffect(() => {
-      const socket = getSocket();
+    const socket = getSocket();
     const handleUserAdded = (newUser) => {
       console.log("Socket Called - User Added");
       setAllUsers((prev) => {
@@ -292,91 +291,89 @@ export default function Users() {
     setShowEditForm(true);
   };
 
-  const columns = [
-    {
-      title: "Name",
-      data: "fld_name",
-      orderable: true,
-      render: (data) =>
-        `<div class="font-medium text-gray-900">${data || ""}</div>`,
-    },
-    {
-      title: "Username",
-      data: "fld_username",
-      orderable: true,
-      render: (data) => `<div class="text-gray-600">${data || ""}</div>`,
-    },
-    {
-      title: "Password",
-      data: "fld_decrypt_password",
-      orderable: false,
-      render: (data) => `<div class="text-gray-600">${data || ""}</div>`,
-    },
-    {
-      title: "Email",
-      data: "fld_email",
-      orderable: true,
-      render: (data) => `<div class="text-blue-600">${data || ""}</div>`,
-    },
-    {
-      title: "Type",
-      data: "fld_admin_type",
-      orderable: true,
-      render: (data) =>
-        `<div class="px-2 py-1 text-[9px] font-semibold text-indigo-600 bg-indigo-50 rounded-md inline-block">${
-          data || ""
-        }</div>`,
-    },
-    {
-      title: "Added On",
-      data: "fld_addedon",
-      orderable: true,
-      render: (data) => `<div class="text-gray-500 ">${formatDate(data)}</div>`,
-    },
-
-    {
-      title: "Status",
-      data: "status",
-      orderable: false,
-      render: function (data, type, row) {
-        const checked = data === "Active" ? "checked" : "";
-        return `
-      <label class="custom-switch">
-        <input type="checkbox" class=" custom-checkbox custom-checkbox2" data-id="${row.id}" ${checked}>
-        <div class="custom-slider"></div>
-      </label>
-    `;
+  const getColumns = (selectedUserType) => {
+    const baseColumns = [
+      {
+        title: "Name",
+        data: "fld_name",
+        orderable: false,
+        render: (data) =>
+          `<div class="font-medium text-gray-900">${data || ""}</div>`,
       },
-    },
-    {
-      title: "Attendance",
-      data: "attendance",
-      orderable: false,
-      visible: true,
-      render: function (data, type, row) {
-        if (row.fld_admin_type !== "CONSULTANT") return "-";
-
-        const checked = data === "PRESENT" ? "checked" : "";
-        return `
-        <label class="custom-switch">
-          <input type="checkbox" class="custom-checkbox attendance-toggle" data-id="${row.id}" ${checked}>
-          <div class="custom-slider"></div>
-        </label>
-      `;
+      {
+        title: "Username",
+        data: "fld_username",
+        orderable: false,
+        render: (data) => `<div class="text-gray-600">${data || ""}</div>`,
       },
-    },
+      {
+        title: "Password",
+        data: "fld_decrypt_password",
+        orderable: false,
+        render: (data) => `<div class="text-gray-600">${data || ""}</div>`,
+      },
+      {
+        title: "Email",
+        data: "fld_email",
+        orderable: false,
+        render: (data) => `<div class="text-blue-600">${data || ""}</div>`,
+      },
 
-    {
+      {
+        title: "Added On",
+        data: "fld_addedon",
+        orderable: false,
+        render: (data) =>
+          `<div class="text-gray-500 ">${formatDate(data)}</div>`,
+      },
+      {
+        title: "Status",
+        data: "status",
+        orderable: false,
+        render: function (data, type, row) {
+          const checked = data === "Active" ? "checked" : "";
+          return `
+          <label class="custom-switch">
+            <input type="checkbox" class="custom-checkbox custom-checkbox2" data-id="${row.id}" ${checked}>
+            <div class="custom-slider"></div>
+          </label>
+        `;
+        },
+      },
+    ];
+
+    // Only add attendance column for CONSULTANT users
+    if (selectedUserType === "CONSULTANT") {
+      baseColumns.push({
+        title: "Attendance",
+        data: "attendance",
+        orderable: false,
+        render: function (data, type, row) {
+          const checked = data === "PRESENT" ? "checked" : "";
+          return `
+          <label class="custom-switch">
+            <input type="checkbox" class="custom-checkbox attendance-toggle" data-id="${row.id}" ${checked}>
+            <div class="custom-slider"></div>
+          </label>
+        `;
+        },
+      });
+    }
+
+    // Add Actions column at the end
+    baseColumns.push({
       title: "Actions",
       data: null,
       orderable: false,
       render: (data) => `
-        <button class="edit-btn bg-yellow-600 hover:bg-yellow-700 px-2 py-1 rounded text-white leading-none text-[11px] cursor-pointer"" data-id="${data.id}">
-            Edit
-        </button>
-      `,
-    },
-  ];
+      <button class="edit-btn bg-yellow-600 hover:bg-yellow-700 px-2 py-1 rounded text-white leading-none text-[11px] cursor-pointer" data-id="${data.id}">
+        Edit
+      </button>
+    `,
+    });
+
+    return baseColumns;
+  };
 
   const userTabs = [
     {
@@ -423,7 +420,8 @@ export default function Users() {
     responsive: true,
     pageLength: 25,
     lengthMenu: [5, 10, 25, 50, 100],
-    order: [[0, "asc"]],
+    order: false,
+    ordering: false,
     dom: '<"flex justify-between items-center mb-4 text-[13px]"lf>rt<"flex justify-between items-center mt-4"ip>',
     language: {
       search: "",

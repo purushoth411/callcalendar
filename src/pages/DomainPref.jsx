@@ -377,7 +377,8 @@ useEffect(() => {
     responsive: true,
     pageLength: 25,
     lengthMenu: [5, 10, 25, 50, 100],
-    order: [[0, "asc"]],
+     order: false,       
+    ordering: false,
     dom: '<"flex justify-between items-center mb-4"lf>rt<"flex justify-between items-center mt-4"ip>',
     language: {
       search: "",

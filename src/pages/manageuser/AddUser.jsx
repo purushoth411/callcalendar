@@ -19,7 +19,7 @@ const AddUser = ({
       username: "",
       name: "",
       email: "",
-      phone: "",
+     
       password: "",
       confirmPassword: "",
       consultant_type: "",
@@ -135,7 +135,7 @@ const AddUser = ({
           />
         </div>
 
-        <div className="">
+        {/* <div className="">
           <label className="block mb-1">Phone</label>
           <input
             type="text"
@@ -146,7 +146,7 @@ const AddUser = ({
               setFormData({ ...formData, phone: e.target.value })
             }
           />
-        </div>
+        </div> */}
 
         {/* Consultant Type */}
         {formType === "CONSULTANT" && (
