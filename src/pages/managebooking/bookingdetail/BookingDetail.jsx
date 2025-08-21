@@ -1490,10 +1490,10 @@ const resetBookingStates = () => {
                 getFollowerConsultant={getFollowerConsultant}
                 loadingFollowers={loadingFollowers}
               />
-               <div className="flex gap-4">
+               <div className="">
                 {/* Reassign to Consultant Form */}
                 {canShowReasignConsultant && (
-                  <div className=" flex-wrap gap-4 w-[50%] bg-white border border-gray-200 rounded p-4 ">
+                  <div className=" flex-wrap gap-4 bg-white border border-gray-200 rounded p-4 m-1">
                     <div className="w-full ">
                       <h2 className="text-[14px] font-semibold text-gray-900 mb-4 flex items-center border-b border-gray-300 pb-3 mb-3">
                         <Handshake size={16} className="mr-2" />
@@ -1559,7 +1559,7 @@ const resetBookingStates = () => {
                 {/* Cancel Booking Form */}
                 {canCancelCall && (
                   <>
-                    <div className=" flex-wrap gap-4 w-[50%] bg-white border border-gray-200 rounded p-4 ">
+                    <div className=" flex-wrap gap-4  bg-white border border-gray-200 rounded p-4 m-1 ">
                       <h2 className="text-[14px] font-semibold text-gray-900 mb-4 flex items-center border-b border-gray-300 pb-3 mb-3">
                         <PhoneMissed size={16} className="mr-2" />
                         Call Cancelled
