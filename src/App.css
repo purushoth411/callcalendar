@@ -377,7 +377,7 @@ table.dataTable.stripe>tbody>tr:nth-child(odd)>*, table.dataTable.display>tbody>
 
 /* hover effect */
 .dataTable tbody tr:hover {
-  background-color: #d7efff7d; /* soft orange */
+  background-color: unset; /* soft orange */
   /* cursor: pointer; */
 }
 

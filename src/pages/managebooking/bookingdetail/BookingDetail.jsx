@@ -1490,7 +1490,7 @@ const resetBookingStates = () => {
                 getFollowerConsultant={getFollowerConsultant}
                 loadingFollowers={loadingFollowers}
               />
-               <div className="">
+               
                 {/* Reassign to Consultant Form */}
                 {canShowReasignConsultant && (
                   <div className=" flex-wrap gap-4 bg-white border border-gray-200 rounded p-4 m-1">
@@ -1593,7 +1593,7 @@ const resetBookingStates = () => {
                     </div>
                   </>
                 )}
-              </div>
+              
             <OtherCalls
               bookingId={bookingId}
               clientId={bookingData.fld_client_id}
