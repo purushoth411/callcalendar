@@ -349,7 +349,7 @@ export default function Followers() {
         <div class="flex items-center gap-2">
           <div class="text-red-600 font-semibold">Pending</div>
           <button 
-            class="edit-btn bg-green-500 hover:bg-green-600 text-white text-sm px-3 py-1 rounded" 
+            class="edit-btn bg-yellow-600 hover:bg-yellow-700 px-2 py-1 rounded text-white leading-none text-[11px] cursor-pointer" 
             data-followerid="${row.followerid}" data-bookingid="${row.id}">
             Claim
           </button>
