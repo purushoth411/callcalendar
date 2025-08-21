@@ -47,7 +47,7 @@ export default function Followers() {
   useEffect(() => {
     const socket = getSocket();
 
-   const handleCallClaimed = (followerId) => {
+    const handleCallClaimed = (followerId) => {
       console.log("Socket Called - Call Claimed ");
       setFollowers((prev) => {
         const list = Array.isArray(prev) ? prev : [];
@@ -59,11 +59,34 @@ export default function Followers() {
       });
     };
 
+    const handleFollowerAdded = (followerData) => {
+      if (!user) return;
+
+      const { follower_consultant_id, consultantid } = followerData;
+
+      const isRelevant =
+        user.fld_admin_type === "SUPERADMIN" ||
+        String(user.id) === String(follower_consultant_id) ||
+        String(user.id) === String(consultantid);
+
+      if (isRelevant) {
+        setFollowers((prev) => {
+          const list = Array.isArray(prev) ? prev : [];
+          const alreadyExists = list.some(
+            (f) => String(f.followerid) === String(followerData.followerid)
+          );
+          if (alreadyExists) return list;
+          return [followerData, ...list];
+        });
+      }
+    };
 
     socket.on("callClaimed", handleCallClaimed);
+    socket.on("followerAdded", handleFollowerAdded);
 
     return () => {
       socket.off("callClaimed", handleCallClaimed);
+      socket.off("followerAdded", handleFollowerAdded);
     };
   }, [user.id]);
 
@@ -90,31 +113,31 @@ export default function Followers() {
     }
   }, [followers, isLoading]);
 
- const fetchAllFollowers = async () => {
-  try {
-    setIsLoading(true);
+  const fetchAllFollowers = async () => {
+    try {
+      setIsLoading(true);
 
-    const response = await fetch(
-      `https://callback-2suo.onrender.com/api/followers/getAllFollowers?usertype=${user?.fld_admin_type}&userid=${user?.id}`
-    );
+      const response = await fetch(
+        `https://callback-2suo.onrender.com/api/followers/getAllFollowers?usertype=${user?.fld_admin_type}&userid=${user?.id}`
+      );
 
-    const result = await response.json();
+      const result = await response.json();
 
-    if (result.status) {
-      setFollowers(result.data);
-      if (dashboard_status) {
-        navigate("/followers");
+      if (result.status) {
+        setFollowers(result.data);
+        if (dashboard_status) {
+          navigate("/followers");
+        }
+      } else {
+        setFollowers([]);
       }
-    } else {
+    } catch (error) {
+      console.error("Error fetching followers:", error);
       setFollowers([]);
+    } finally {
+      setIsLoading(false);
     }
-  } catch (error) {
-    console.error("Error fetching followers:", error);
-    setFollowers([]);
-  } finally {
-    setIsLoading(false);
-  }
-};
+  };
 
   const fetchBookingHistory = async (bookingId) => {
     if (historyData[bookingId]) return historyData[bookingId];
@@ -247,14 +270,18 @@ export default function Followers() {
       title: "Client",
       data: "user_name",
       render: (data, type, row) => {
-         const clientId = row.fld_client_id || "";
-    const isDeleted = row.delete_sts === "Yes";
-    const textStyle = isDeleted ? "line-through text-gray-400" : "";
-    const displayText = `${data} - ${clientId}`;
-    const shouldShowTooltip = displayText.length > 20;
+        const clientId = row.fld_client_id || "";
+        const isDeleted = row.delete_sts === "Yes";
+        const textStyle = isDeleted ? "line-through text-gray-400" : "";
+        const displayText = `${data} - ${clientId}`;
+        const shouldShowTooltip = displayText.length > 20;
         return `
        <button
-        ${shouldShowTooltip ? `data-tooltip-id="my-tooltip" data-tooltip-content="${displayText}"` : ""}
+        ${
+          shouldShowTooltip
+            ? `data-tooltip-id="my-tooltip" data-tooltip-content="${displayText}"`
+            : ""
+        }
         class="details-btn font-medium text-blue-600 hover:underline truncate w-[150px] text-left ${textStyle}"
         data-id="${row.id}">
         ${displayText}
@@ -302,23 +329,23 @@ export default function Followers() {
       },
     },
     {
-  title: "Action",
-  data: "followstatus",
-  orderable: false,
-  render: function (data, type, row) {
-    let bookingTime = new Date(
-      `${row.fld_booking_date} ${row.fld_booking_slot}`
-    );
-    let currentTime = new Date();
-    
-    // Show Claim button if conditions are met
-    if (
-      data === "Pending" &&
-      currentTime < bookingTime &&
-      (user.fld_admin_type == "SUBADMIN" ||
-        user.fld_admin_type == "CONSULTANT")
-    ) {
-      return `
+      title: "Action",
+      data: "followstatus",
+      orderable: false,
+      render: function (data, type, row) {
+        let bookingTime = new Date(
+          `${row.fld_booking_date} ${row.fld_booking_slot}`
+        );
+        let currentTime = new Date();
+
+        // Show Claim button if conditions are met
+        if (
+          data === "Pending" &&
+          currentTime < bookingTime &&
+          (user.fld_admin_type == "SUBADMIN" ||
+            user.fld_admin_type == "CONSULTANT")
+        ) {
+          return `
         <div class="flex items-center gap-2">
           <div class="text-red-600 font-semibold">Pending</div>
           <button 
@@ -328,16 +355,15 @@ export default function Followers() {
           </button>
         </div>
       `;
-    } 
-    // Show status only
-    else if (data === "Pending") {
-      return `<div class="text-red-600 font-semibold">Pending</div>`;
-    } 
-    else {
-      return `<div class="text-green-600 font-semibold">Claimed</div>`;
-    }
-  },
-},
+        }
+        // Show status only
+        else if (data === "Pending") {
+          return `<div class="text-red-600 font-semibold">Pending</div>`;
+        } else {
+          return `<div class="text-green-600 font-semibold">Claimed</div>`;
+        }
+      },
+    },
   ];
 
   const tableOptions = {
@@ -373,7 +399,7 @@ export default function Followers() {
           } else {
             if (historyData[bookingId]) {
               const html = generateHistoryHTML(historyData[bookingId]);
-              row.child(html , "hover:!bg-transparent").show();
+              row.child(html, "hover:!bg-transparent").show();
               tr.addClass("shown !hover:bg-transparent");
             } else {
               row
@@ -383,7 +409,7 @@ export default function Followers() {
                 .show();
               fetchBookingHistory(bookingId).then((data) => {
                 const html = generateHistoryHTML(data || []);
-                row.child(html , "hover:!bg-transparent").show();
+                row.child(html, "hover:!bg-transparent").show();
                 tr.addClass("shown !hover:bg-transparent");
               });
             }
@@ -446,10 +472,6 @@ export default function Followers() {
           </div>
         </div>
       </div>
-      
-
-      
-
     </div>
   );
 }

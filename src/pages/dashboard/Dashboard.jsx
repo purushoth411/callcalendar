@@ -4,6 +4,7 @@ import { useAuth } from "../../utils/idb";
 import { useNavigate } from "react-router-dom";
 import ConsultantTimings from "./ConsultantTimings";
 import BlockSlot from "./BlockSlot";
+import { getSocket } from "../../utils/Socket";
 
 function Dashboard() {
   const { user } = useAuth();
@@ -24,6 +25,32 @@ function Dashboard() {
     "Rescheduled",
     "Completed",
   ];
+
+    ///socket ////////
+  
+    useEffect(() => {
+      const socket = getSocket();
+  
+     
+  
+      const handleBookingUpdated = (updatedBooking) => {
+        console.log("Socket Called - Booking Updated");
+       fetchAllStatuses();
+      };
+  
+      
+     
+      socket.on("bookingUpdated", handleBookingUpdated);
+    
+  
+      return () => {
+      
+        socket.off("bookingUpdated", handleBookingUpdated);
+       
+      };
+    }, [user.id]);
+  
+    ////////socket////////
 
   const fetchParticularStatus = async (crmId, status) => {
     try {

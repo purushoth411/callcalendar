@@ -16,6 +16,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import logo from "../assets/images/callcalendar-logo.png";
 import Notification from "./Notification.jsx";
 import PlansDropdown from "./PlansDropdown.jsx";
+import { getSocket } from "../utils/Socket.jsx";
 
 export default function Header() {
   const { user, logout } = useAuth();
@@ -23,6 +24,39 @@ export default function Header() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const [followerCount, setFollowerCount] = useState(0);
+
+
+    ///socket ////////
+
+useEffect(() => {
+  const socket = getSocket();
+
+  const handleUpdateFollowerCount = (followerData) => {
+    if (!user) return;
+
+    const { follower_consultant_id, consultantid } = followerData;
+
+    if (user.fld_admin_type === "SUPERADMIN") {
+      // Always increment for SUPERADMIN
+      setFollowerCount((prev) => prev + 1);
+    } else if (
+      String(user.id) === String(follower_consultant_id) ||
+      String(user.id) === String(consultantid)
+    ) {
+      // Increment if logged-in user matches consultant IDs
+      setFollowerCount((prev) => prev + 1);
+    }
+  };
+
+  socket.on("followerAdded", handleUpdateFollowerCount);
+
+  return () => {
+    socket.off("followerAdded", handleUpdateFollowerCount);
+  };
+}, [user]);
+
+
+  ////////socket////////
 
 
   useEffect(() => {

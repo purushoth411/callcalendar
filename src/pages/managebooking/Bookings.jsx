@@ -4,7 +4,13 @@ import ReactDOMServer from "react-dom/server";
 import DT from "datatables.net-dt";
 import $ from "jquery";
 import { useAuth } from "../../utils/idb.jsx";
-import { ChevronDown, ChevronUp, PlusIcon, RefreshCcw, Users } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronUp,
+  PlusIcon,
+  RefreshCcw,
+  Users,
+} from "lucide-react";
 import {
   formatBookingDateTime,
   formatDate,
@@ -60,12 +66,55 @@ export default function Bookings() {
 
     const handleBookingAdded = (newBooking) => {
       console.log("Socket Called - Booking Added");
+
       const mappedBooking = {
         ...newBooking,
         client_name: newBooking.user_name,
         client_email: newBooking.user_email,
         client_phone: newBooking.user_phone,
       };
+
+      let canAdd = false;
+
+      if (user.fld_admin_type === "EXECUTIVE") {
+        canAdd = newBooking.fld_addedby == user.id;
+      } else if (user.fld_admin_type === "CONSULTANT") {
+        canAdd =
+          newBooking.fld_consultantid == user.id ||
+          newBooking.fld_secondary_consultant_id == user.id;
+      } else if (user.fld_admin_type === "SUBADMIN") {
+        const bookingTeams = Array.isArray(newBooking.fld_teamid)
+          ? newBooking.fld_teamid
+          : String(newBooking.fld_teamid)
+              .split(",")
+              .map((id) => id.trim());
+
+        const userTeams = Array.isArray(user.fld_team_id)
+          ? user.fld_team_id
+          : String(user.fld_team_id)
+              .split(",")
+              .map((id) => id.trim());
+
+        // check if any team id matches
+        const hasTeamMatch = bookingTeams.some((teamId) =>
+          userTeams.includes(teamId)
+        );
+
+        if (hasTeamMatch) {
+          // if (user.fld_subadmin_type === "consultant_sub") {
+          //   canAdd =
+          //     newBooking.fld_consultantid == user.id ||
+          //     newBooking.fld_secondary_consultant_id == user.id;
+          // } else {
+          //   canAdd = newBooking.fld_addedby == user.id;
+          // }
+          canAdd = true;
+        }
+      } else if (user.fld_admin_type === "SUPERADMIN") {
+        canAdd = true; // no condition
+      }
+
+      if (!canAdd) return; // skip adding
 
       setBookings((prev) => {
         const list = Array.isArray(prev) ? prev : [];
@@ -74,6 +123,17 @@ export default function Bookings() {
         }
         return [...list, mappedBooking];
       });
+      if (newBooking.fld_consultant_another_option === "TEAM") {
+        setTeamBookings((prev) => {
+          const list = Array.isArray(prev) ? prev : [];
+
+          if (list.some((booking) => booking.id == mappedBooking.id)) {
+            return list;
+          }
+
+          return [...list, mappedBooking];
+        });
+      }
     };
 
     const handleBookingUpdated = (updatedBooking) => {
@@ -429,9 +489,8 @@ export default function Bookings() {
   `;
   };
 
-    const handleToggleTeamBookings = async () => {
+  const handleToggleTeamBookings = async () => {
     if (!showTeamBookings) {
-      
       setLoadingTeamBookings(true);
       await fetchTeamBookings();
       setLoadingTeamBookings(false);
@@ -506,10 +565,14 @@ export default function Bookings() {
         const isDeleted = row.delete_sts === "Yes";
         const textStyle = isDeleted ? "line-through text-gray-400" : "";
         const displayText = `${data} - ${clientId}`;
-      const shouldShowTooltip = displayText.length > 20;
+        const shouldShowTooltip = displayText.length > 20;
         return `
        <button
-        ${shouldShowTooltip ? `data-tooltip-id="my-tooltip" data-tooltip-content="${displayText}"` : ""}
+        ${
+          shouldShowTooltip
+            ? `data-tooltip-id="my-tooltip" data-tooltip-content="${displayText}"`
+            : ""
+        }
         class="details-btn font-medium text-blue-600 hover:underline truncate w-[150px] text-left ${textStyle}"
         data-id="${row.id}">
         ${displayText}
@@ -621,7 +684,7 @@ export default function Bookings() {
                 .show();
               fetchBookingHistory(bookingId).then((data) => {
                 const html = generateHistoryHTML(data || []);
-                row.child(html , "hover:!bg-transparent").show();
+                row.child(html, "hover:!bg-transparent").show();
                 tr.addClass("shown");
               });
             }
@@ -726,23 +789,23 @@ export default function Bookings() {
               </button>
             </div>
             {user?.fld_admin_type === "CONSULTANT" && (
-        <button
-          onClick={handleToggleTeamBookings}
-          className="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700 transition-colors text-[11px] flex items-center gap-1"
-        >
-          <Users size={12} />
-          {loadingTeamBookings
-            ? "Loading..."
-            : showTeamBookings
-            ? "Hide Team Bookings"
-            : "Show Team Bookings"}
-          {showTeamBookings ? (
-            <ChevronUp size={12} />
-          ) : (
-            <ChevronDown size={12} />
-          )}
-        </button>
-      )}
+              <button
+                onClick={handleToggleTeamBookings}
+                className="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700 transition-colors text-[11px] flex items-center gap-1"
+              >
+                <Users size={12} />
+                {loadingTeamBookings
+                  ? "Loading..."
+                  : showTeamBookings
+                  ? "Hide Team Bookings"
+                  : "Show Team Bookings"}
+                {showTeamBookings ? (
+                  <ChevronUp size={12} />
+                ) : (
+                  <ChevronDown size={12} />
+                )}
+              </button>
+            )}
 
             {user.fld_admin_type == "EXECUTIVE" && (
               <button

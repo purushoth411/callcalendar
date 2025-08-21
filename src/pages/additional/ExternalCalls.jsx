@@ -12,6 +12,7 @@ import SkeletonLoader from "../../components/SkeletonLoader.jsx";
 import "react-datepicker/dist/react-datepicker.css";
 import { useNavigate, useParams } from "react-router-dom";
 import { RefreshCcw } from "lucide-react";
+import { getSocket } from "../../utils/Socket.jsx";
 
 export default function ExternalCalls() {
   const { user } = useAuth();
@@ -28,6 +29,100 @@ export default function ExternalCalls() {
   const navigate = useNavigate();
 
   const tableRef = useRef(null);
+
+  ///socket ////////
+
+  useEffect(() => {
+    const socket = getSocket();
+
+    const handleBookingAdded = (newBooking) => {
+      console.log("Socket Called - Booking Added");
+
+      const mappedBooking = {
+        ...newBooking,
+        client_name: newBooking.user_name,
+        client_email: newBooking.user_email,
+        client_phone: newBooking.user_phone,
+      };
+
+      let canAdd = false;
+
+      if (user.fld_admin_type === "EXECUTIVE") {
+        canAdd = newBooking.fld_addedby == user.id;
+      } else if (user.fld_admin_type === "CONSULTANT") {
+        canAdd =
+          newBooking.fld_consultantid == user.id ||
+          newBooking.fld_secondary_consultant_id == user.id;
+      } else if (user.fld_admin_type === "SUBADMIN") {
+        const bookingTeams = Array.isArray(newBooking.fld_teamid)
+          ? newBooking.fld_teamid
+          : String(newBooking.fld_teamid)
+              .split(",")
+              .map((id) => id.trim());
+
+        const userTeams = Array.isArray(user.fld_team_id)
+          ? user.fld_team_id
+          : String(user.fld_team_id)
+              .split(",")
+              .map((id) => id.trim());
+
+        // check if any team id matches
+        const hasTeamMatch = bookingTeams.some((teamId) =>
+          userTeams.includes(teamId)
+        );
+
+        if (hasTeamMatch) {
+          // if (user.fld_subadmin_type === "consultant_sub") {
+          //   canAdd =
+          //     newBooking.fld_consultantid == user.id ||
+          //     newBooking.fld_secondary_consultant_id == user.id;
+          // } else {
+          //   canAdd = newBooking.fld_addedby == user.id;
+          // }
+          canAdd = true;
+        }
+      } else if (user.fld_admin_type === "SUPERADMIN") {
+        canAdd = true; // no condition
+      }
+
+      if (!canAdd) return; // skip adding
+
+      setBookings((prev) => {
+        const list = Array.isArray(prev) ? prev : [];
+        if (list.some((booking) => booking.id == mappedBooking.id)) {
+          return list;
+        }
+        return [...list, mappedBooking];
+      });
+    };
+
+    const handleBookingUpdated = (updatedBooking) => {
+      console.log("Socket Called - Booking Updated");
+      const mappedBooking = {
+        ...updatedBooking,
+        client_name: updatedBooking.user_name,
+        client_email: updatedBooking.user_email,
+        client_phone: updatedBooking.user_phone,
+      };
+
+      setBookings((prev) => {
+        const list = Array.isArray(prev) ? prev : [];
+        return list.map((booking) =>
+          booking.id == mappedBooking.id ? mappedBooking : booking
+        );
+      });
+    };
+
+    socket.on("bookingUpdated", handleBookingUpdated);
+    socket.on("externalBookingAdded", handleBookingAdded);
+
+    return () => {
+      socket.off("bookingUpdated", handleBookingUpdated);
+      socket.off("externalBookingAdded", handleBookingAdded);
+    };
+  }, [user.id]);
+
+  ////////socket////////
 
   useEffect(() => {
     fetchAllBookings();
@@ -158,92 +253,97 @@ export default function ExternalCalls() {
   `;
   };
 
- let columns = [
-  {
-    title: "Client",
-    data: "user_name",
-    render: (data, type, row) => {
-       const clientId = row.fld_client_id || "";
-    const isDeleted = row.delete_sts === "Yes";
-    const textStyle = isDeleted ? "line-through text-gray-400" : "";
-    const displayText = `${data} - ${clientId}`;
-    const shouldShowTooltip = displayText.length > 20;
+  let columns = [
+    {
+      title: "Client",
+      data: "user_name",
+      render: (data, type, row) => {
+        const clientId = row.fld_client_id || "";
+        const isDeleted = row.delete_sts === "Yes";
+        const textStyle = isDeleted ? "line-through text-gray-400" : "";
+        const displayText = `${data} - ${clientId}`;
+        const shouldShowTooltip = displayText.length > 20;
         return `
        <button
-        ${shouldShowTooltip ? `data-tooltip-id="my-tooltip" data-tooltip-content="${displayText}"` : ""}
+        ${
+          shouldShowTooltip
+            ? `data-tooltip-id="my-tooltip" data-tooltip-content="${displayText}"`
+            : ""
+        }
         class="details-btn font-medium text-blue-600 hover:underline truncate w-[150px] text-left ${textStyle}"
-        data-id="${row.id}">
+        data-id="${row.bookingid}">
         ${displayText}
       </button>
       `;
+      },
     },
-  },
-  user.fld_admin_type == "SUPERADMIN" ||
-  user.fld_admin_type == "SUBADMIN" ||
-  user.fld_admin_type == "EXECUTIVE"
-    ? {
-        title: "Consultant",
-        data: "fld_consultant_name",
-        render: (data) => `<div class="text-gray-700">${data || "—"}</div>`,
-      }
-    : null,
-  user.fld_admin_type !== "EXECUTIVE"
-    ? {
-        title: "Added By",
-        data: "crm_name",
-        render: (data) => `<div class="text-gray-700">${data || "—"}</div>`,
-      }
-    : null,
-  {
-    title: "Booking Information",
-    data: null,
-    render: (data, type, row) => {
-      const hasBookingInfo =
-        row.fld_booking_date &&
-        row.fld_booking_slot &&
-        row.fld_booking_date != null &&
-        row.fld_booking_slot != null;
+    user.fld_admin_type == "SUPERADMIN" ||
+    user.fld_admin_type == "SUBADMIN" ||
+    user.fld_admin_type == "EXECUTIVE"
+      ? {
+          title: "Consultant",
+          data: "fld_consultant_name",
+          render: (data) => `<div class="text-gray-700">${data || "—"}</div>`,
+        }
+      : null,
+    user.fld_admin_type !== "EXECUTIVE"
+      ? {
+          title: "Added By",
+          data: "crm_name",
+          render: (data) => `<div class="text-gray-700">${data || "—"}</div>`,
+        }
+      : null,
+    {
+      title: "Booking Information",
+      data: null,
+      render: (data, type, row) => {
+        const hasBookingInfo =
+          row.fld_booking_date &&
+          row.fld_booking_slot &&
+          row.fld_booking_date != null &&
+          row.fld_booking_slot != null;
 
-      const formatted = hasBookingInfo
-        ? formatBookingDateTime(row.fld_booking_date, row.fld_booking_slot)
-        : "—";
+        const formatted = hasBookingInfo
+          ? formatBookingDateTime(row.fld_booking_date, row.fld_booking_slot)
+          : "—";
 
-      const historyButton = hasBookingInfo
-        ? `<button class="show-history-btn text-xs px-2 py-1 rounded" 
+        const historyButton = hasBookingInfo
+          ? `<button class="show-history-btn text-xs px-2 py-1 rounded" 
                 data-booking-id="${row.bookingid}">
               ⏳ 
            </button>`
-        : "";
+          : "";
 
-      return `
+        return `
         <div class="flex items-center gap-2 justify-between">
           <div class="text-gray-600">${formatted}</div>
           ${historyButton}
         </div>
       `;
+      },
     },
-  },
-  {
-    title: "Sale Type",
-    data: "fld_sale_type",
-    render: (data) =>
-      `<div class="text-indigo-700 font-medium ">${data || "—"}</div>`,
-  },
-  {
-    title: "Status",
-    data: "fld_consultation_sts",
-    render: (data) => {
-      const statusColor =
-        data === "Completed"
-          ? "text-green-600"
-          : data === "Pending"
-          ? "text-orange-600"
-          : "text-gray-600";
-      return `<span class="${statusColor} font-semibold">${data || "—"}</span>`;
+    {
+      title: "Sale Type",
+      data: "fld_sale_type",
+      render: (data) =>
+        `<div class="text-indigo-700 font-medium ">${data || "—"}</div>`,
     },
-  },
-].filter(Boolean); // <-- removes null/false entries
-
+    {
+      title: "Status",
+      data: "fld_consultation_sts",
+      render: (data) => {
+        const statusColor =
+          data === "Completed"
+            ? "text-green-600"
+            : data === "Pending"
+            ? "text-orange-600"
+            : "text-gray-600";
+        return `<span class="${statusColor} font-semibold">${
+          data || "—"
+        }</span>`;
+      },
+    },
+  ].filter(Boolean); // <-- removes null/false entries
 
   const tableOptions = {
     responsive: true,
@@ -278,7 +378,7 @@ export default function ExternalCalls() {
           } else {
             if (historyData[bookingId]) {
               const html = generateHistoryHTML(historyData[bookingId]);
-              row.child(html , "hover:!bg-transparent").show();
+              row.child(html, "hover:!bg-transparent").show();
               tr.addClass("shown");
             } else {
               row
@@ -288,7 +388,7 @@ export default function ExternalCalls() {
                 .show();
               fetchBookingHistory(bookingId).then((data) => {
                 const html = generateHistoryHTML(data || []);
-                row.child(html , "hover:!bg-transparent").show();
+                row.child(html, "hover:!bg-transparent").show();
                 tr.addClass("shown");
               });
             }
@@ -302,7 +402,7 @@ export default function ExternalCalls() {
           "border px-3 py-1 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600 !py-1 border-gray-300 text-[12px]"
         );
 
-        container
+      container
         .find(".details-btn")
         .off("click")
         .on("click", function () {
@@ -317,7 +417,9 @@ export default function ExternalCalls() {
       <div className="">
         <div className="">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-[16px] font-semibold text-gray-900">External Calls</h2>
+            <h2 className="text-[16px] font-semibold text-gray-900">
+              External Calls
+            </h2>
             <button
               className="border border-gray-500 text-gray-500 hover:text-white px-2 py-1 rounded hover:bg-gray-500 text-sm ml-3  "
               onClick={fetchAllBookings}

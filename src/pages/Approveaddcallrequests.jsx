@@ -33,6 +33,21 @@ export default function Approveaddcallrequests() {
 useEffect(() => {
   const socket = getSocket();
 
+  const handleAddCallRequestAdded = (addCall) => {
+  console.log("Socket Called - Add Call Request Added");
+
+  setApproveaddcallrequests((prev) => {
+    const list = Array.isArray(prev) ? prev : [];
+
+    // prevent duplicates
+    if (list.some((req) => req.id == addCall.id)) {
+      return list;
+    }
+
+    return [...list, addCall];
+  });
+};
+
   const handleUpdatedCallRequestStatus = ({ id, status }) => {
     console.log("Socket Called - Approved Call Request");
     setApproveaddcallrequests((prev) => {
@@ -45,9 +60,11 @@ useEffect(() => {
     });
   };
 
+  socket.on("addCallAdded", handleAddCallRequestAdded);
   socket.on("updatedCallRequestStatus", handleUpdatedCallRequestStatus);
 
   return () => {
+    socket.off("addCallAdded", handleAddCallRequestAdded);
     socket.off("updatedCallRequestStatus", handleUpdatedCallRequestStatus);
   };
 }, [user.id]);

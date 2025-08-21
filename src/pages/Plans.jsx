@@ -7,6 +7,7 @@ import $ from "jquery";
 import { PlusIcon, X, XIcon } from "lucide-react";
 import Select from "react-select";
 import SkeletonLoader from "../components/SkeletonLoader";
+import { getSocket } from "../utils/Socket";
 
 DataTable.use(DT);
 
@@ -23,6 +24,34 @@ export default function Plans() {
     plan: "",
   });
 
+  ///socket ////////
+
+  useEffect(() => {
+    const socket = getSocket();
+
+    const handleUpdatePlans = (updatedPlan) => {
+      console.log("Socket Called - Plan Updated", updatedPlan);
+
+      setPlans((prev) => {
+        if (!Array.isArray(prev)) return prev;
+
+        return prev.map((plan) =>
+          String(plan.id) === String(updatedPlan.id)
+            ? { ...plan, ...updatedPlan }
+            : plan
+        );
+      });
+    };
+
+    socket.on("planUpdated", handleUpdatePlans);
+
+    return () => {
+      socket.off("planUpdated", handleUpdatePlans);
+    };
+  }, []);
+
+  ///socket
+
   useEffect(() => {
     getAllPlans();
   }, []);
@@ -34,7 +63,7 @@ export default function Plans() {
         "https://callback-2suo.onrender.com/api/plans/getAllPlans"
       );
       const result = await response.json();
-      
+
       if (result.status) {
         setPlans(result.data);
       } else {
@@ -146,7 +175,7 @@ export default function Plans() {
     } catch (err) {
       console.error("Save error:", err);
       toast.error("Failed to save");
-    }finally{
+    } finally {
       setUpdating(false);
     }
   };
@@ -254,28 +283,28 @@ export default function Plans() {
       <div className="">
         <div className="">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-[16px] font-semibold text-gray-900">Plan Management</h2>
+            <h2 className="text-[16px] font-semibold text-gray-900">
+              Plan Management
+            </h2>
           </div>
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-          {isLoading ? (
-            <SkeletonLoader
-              rows={6}
-              columns={["Plan Name", "Allowed Calls", "Action"]}
-            />
-          ) : (
-            <DataTable
-              data={plans}
-              columns={columns}
-              className="table-auto w-full text-[12px] border border-gray-300 divide-y divide-gray-300 dataTable the-table-set"
-              options={tableOptions}
-            />
-          )}
+            {isLoading ? (
+              <SkeletonLoader
+                rows={6}
+                columns={["Plan Name", "Allowed Calls", "Action"]}
+              />
+            ) : (
+              <DataTable
+                data={plans}
+                columns={columns}
+                className="table-auto w-full text-[12px] border border-gray-300 divide-y divide-gray-300 dataTable the-table-set"
+                options={tableOptions}
+              />
+            )}
           </div>
         </div>
       </div>
       <AnimatePresence>
-        
-
         {/* EDIT Plan FORM */}
         {showEditForm && (
           <>
@@ -299,9 +328,7 @@ export default function Plans() {
             >
               <div className="">
                 <div className="flex justify-between items-center px-4 py-3 border-b bg-[#224d68] text-white">
-                  <h3 className="text-[15px] font-semibold">
-                    Edit Plan
-                  </h3>
+                  <h3 className="text-[15px] font-semibold">Edit Plan</h3>
                   <button
                     onClick={closeForm}
                     className="text-gray-100 hover:text-red-500 text-2xl cursor-pointer"
@@ -313,9 +340,7 @@ export default function Plans() {
                 <div className="p-4 space-y-4">
                   {/* Plan Name */}
                   <div>
-                    <label className="block mb-1">
-                      Plan Name *
-                    </label>
+                    <label className="block mb-1">Plan Name *</label>
                     <input
                       type="text"
                       placeholder="Enter plan name"
@@ -329,33 +354,31 @@ export default function Plans() {
                   </div>
                   {/* Plan Name */}
                   <div>
-                    <label className="block mb-1">
-                      Allowed Calls *
-                    </label>
+                    <label className="block mb-1">Allowed Calls *</label>
                     <input
                       type="text"
                       placeholder="Enter allowed calls"
                       value={formData.allowedCalls}
                       onChange={(e) =>
-                        setFormData({ ...formData, allowedCalls: e.target.value })
+                        setFormData({
+                          ...formData,
+                          allowedCalls: e.target.value,
+                        })
                       }
-                      
                       className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
                     />
                   </div>
-                
 
-                {/* Update Button */}
-                <div className="flex justify-end gap-3 ">
-                  <button
-                    onClick={handleUpdate}
-                    disabled={updating}
-                    className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-[11px] flex items-center gap-1 cursor-pointer"
-                  >
-                    {updating?"Updating...":"Update"}
-                  </button>
-                </div>
-
+                  {/* Update Button */}
+                  <div className="flex justify-end gap-3 ">
+                    <button
+                      onClick={handleUpdate}
+                      disabled={updating}
+                      className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-[11px] flex items-center gap-1 cursor-pointer"
+                    >
+                      {updating ? "Updating..." : "Update"}
+                    </button>
+                  </div>
                 </div>
               </div>
             </motion.div>
