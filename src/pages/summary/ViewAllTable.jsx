@@ -561,10 +561,10 @@ const ViewAllTable = () => {
 
     return (
       <tr className="bg-gray-50">
-        <td colSpan={6} className="px-4 py-3">
-          <div className="flex flex-col items-start w-full text-[10px]">
+        <td colSpan={6} className="px-4 py-3 border-b">
+          <div className="flex flex-col items-start w-full text-[12px]">
             {isLoading ? (
-              <div className="text-blue-500 text-sm flex items-center">
+              <div className="text-blue-500  flex items-center">
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500 mr-2"></div>
                 Loading booking history...
               </div>
@@ -576,7 +576,7 @@ const ViewAllTable = () => {
                     <div className="absolute -left-1.5 top-1 w-3 h-3 bg-blue-500 rounded-full border-2 border-white z-10" />
 
                     {/* Content */}
-                    <div className="text-sm pl-5">
+                    <div className=" pl-5">
                       <span className="font-medium text-gray-800">
                         {item.fld_comment}
                       </span>
@@ -1039,8 +1039,8 @@ const ViewAllTable = () => {
                             <React.Fragment key={row.id}>
                               <tr
                                 className={`group border-b border-gray-300 ${
-                                  index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                                } hover:bg-blue-50 transition-colors`}
+                                  index % 2 === 0 ? "bg-white" : ""
+                                } transition-colors`}
                               >
                                 <td
                                   className={`px-4 py-2 text-gray-600 border-r border-gray-300 ${deletedClass}`}

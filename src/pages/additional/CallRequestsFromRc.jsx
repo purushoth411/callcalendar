@@ -93,7 +93,7 @@ function CallRequestsFromRc() {
     },
     {
       title: "Milestone Name",
-      width: "100px",
+      width: "",
       data: "milestone_title",
       render: (data) => `<div class="text-gray-800">${data || "-"}</div>`,
     },
@@ -107,7 +107,7 @@ function CallRequestsFromRc() {
     {
       title: "Student Info.",
       data: null,
-      width: "100px",
+      width: "",
       render: (data, type, row) => {
         return `
       <div class="">
@@ -126,7 +126,7 @@ function CallRequestsFromRc() {
     {
       title: "Message",
       data: "points_for_discussion",
-      width: "200px",
+      width: "",
       render: (data) => `<div class="text-gray-700 ">${data || "-"}</div>`,
     },
     {
@@ -155,6 +155,7 @@ function CallRequestsFromRc() {
     },
     {
       title: "Status",
+      className:"!w-[100px]",
       data: "call_request_sts",
       render: (status, type, row) => {
         let cls = "secondary";
@@ -203,7 +204,8 @@ function CallRequestsFromRc() {
     },
     user?.fld_admin_type === "EXECUTIVE"
       ? {
-          title: "ACTION",
+          title: "Action",
+          className:"!w-[100px]",
           data: null,
           render: (data, type, row) => {
             if (!row.bookingid) {
