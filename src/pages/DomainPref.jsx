@@ -505,7 +505,7 @@ useEffect(() => {
                 damping: 30,
                 duration: 0.4,
               }}
-              className="fixed top-0 right-0 h-full w-[70%] bg-white shadow-2xl z-50 overflow-y-auto"
+              className="fixed top-0 right-0 h-full w-[25%] bg-white shadow-2xl z-50 overflow-y-auto"
             >
               <div className="p-0">
                 {/* Header */}
@@ -544,7 +544,7 @@ useEffect(() => {
                     <h4 className="text-lg font-medium text-gray-800 pb-2">
                       Consultant Preferences
                     </h4>
-                    <div className="grid grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 gap-4">
                       {[1, 2, 3, 4, 5, 6].map((n) => (
                         <div key={n}>
                           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -638,7 +638,7 @@ useEffect(() => {
                 damping: 30,
                 duration: 0.4,
               }}
-              className="fixed top-0 right-0 h-full w-[70%] bg-white shadow-2xl z-50 overflow-y-auto"
+              className="fixed top-0 right-0 h-full w-[25%] bg-white shadow-2xl z-50 overflow-y-auto"
             >
               <div className="p-0">
                 {/* Header */}
@@ -677,7 +677,7 @@ useEffect(() => {
                     <h4 className="text-lg font-medium text-gray-800 pb-2">
                       Consultant Preferences
                     </h4>
-                    <div className="grid grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 gap-4">
                       {[1, 2, 3, 4, 5, 6].map((n) => (
                         <div key={n}>
                           <label className="block text-sm font-medium text-gray-700 mb-2">
