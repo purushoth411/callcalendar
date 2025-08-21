@@ -259,7 +259,7 @@ function CallRequestsFromRc() {
               ref={tableRef}
               data={calls}
               columns={columns}
-              className="table-auto w-full text-[12px] border border-gray-300 divide-y divide-gray-300 dataTable the-table-set"
+              className="table-auto w-full text-[12px] border border-gray-300 divide-y divide-gray-300 dataTable the-table-set border-b-0"
               options={{
                 pageLength: 50,
                 ordering: false,

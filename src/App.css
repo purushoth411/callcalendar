@@ -394,7 +394,16 @@ table.dataTable.stripe>tbody>tr:nth-child(odd)>*, table.dataTable.display>tbody>
 /* ============================================== monish start*/
 
 .the-table-set thead th {
-  border-left: 1px solid #e2d9d9;
+  border-right: 1px solid #e2d9d9;
+}
+.the-table-set thead th:last-child {
+  border-right: 0px solid #e2d9d9;
+}
+.the-table-set tbody td {
+    border-right: 1px solid #ccc  !important;
+}
+.the-table-set tbody td:last-child {
+    border-right: 0px solid #ccc  !important;
 }
 
 .the-table-set thead {

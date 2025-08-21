@@ -599,7 +599,7 @@ export default function Users() {
                     <DataTable
                       data={executiveUsers}
                       columns={getColumns(selectedUserType)}
-                      className="table-auto w-full text-[12px] border border-gray-300 divide-y divide-gray-300 dataTable the-table-set"
+                      className="table-auto w-full text-[12px] border border-gray-300 divide-y divide-gray-300 dataTable the-table-set border-b-0"
                       options={tableOptions}
                     />
                   )}
@@ -607,7 +607,7 @@ export default function Users() {
                     <DataTable
                       data={subadminUsers}
                       columns={getColumns(selectedUserType)}
-                      className="table-auto w-full text-[12px] border border-gray-300 divide-y divide-gray-300 dataTable the-table-set"
+                      className="table-auto w-full text-[12px] border border-gray-300 divide-y divide-gray-300 dataTable the-table-set border-b-0"
                       options={tableOptions}
                     />
                   )}
@@ -615,7 +615,7 @@ export default function Users() {
                     <DataTable
                       data={consultantUsers}
                       columns={getColumns(selectedUserType)}
-                      className="table-auto w-full text-[12px] border border-gray-300 divide-y divide-gray-300 dataTable the-table-set"
+                      className="table-auto w-full text-[12px] border border-gray-300 divide-y divide-gray-300 dataTable the-table-set border-b-0"
                       options={tableOptions}
                     />
                   )}
@@ -623,7 +623,7 @@ export default function Users() {
                     <DataTable
                       data={opsAdminUsers}
                       columns={getColumns(selectedUserType)}
-                      className="table-auto w-full text-[12px] border border-gray-300 divide-y divide-gray-300 dataTable the-table-set"
+                      className="table-auto w-full text-[12px] border border-gray-300 divide-y divide-gray-300 dataTable the-table-set border-b-0"
                       options={tableOptions}
                     />
                   )}
