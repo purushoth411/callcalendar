@@ -22,6 +22,8 @@ export default function Header() {
   const navigate = useNavigate();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const [followerCount, setFollowerCount] = useState(0);
+
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -39,7 +41,28 @@ export default function Header() {
     navigate("/login");
     return null;
   }
-  console.log(user);
+  // console.log(user);
+useEffect(() => {
+  if (user) {
+    fetchPendingFollowerCallsCount();
+  }
+}, [user]);
+  const fetchPendingFollowerCallsCount = async () => {
+  try {
+    const response = await fetch(
+      `http://localhost:5000/api/followers/fetchPendingFollowerCallsCount?usertype=${user?.fld_admin_type}&userid=${user?.id}`
+    );
+    const result = await response.json();
+    if (result.status) {
+      setFollowerCount(result.data);
+    } else {
+      setFollowerCount(0);
+    }
+  } catch (error) {
+    console.error("Error fetching followers:", error);
+    setFollowerCount(0);
+  }
+};
 
   const isSubadmin = user.fld_admin_type == "SUBADMIN";
   const isAdmin = user.fld_admin_type == "SUPERADMIN";
@@ -219,16 +242,21 @@ export default function Header() {
               user?.fld_admin_type == "SUBADMIN" ||
               user?.fld_admin_type == "CONSULTANT") && (
               <NavLink
-                to="/followers"
-                className={({ isActive }) =>
-                  isActive
-                    ? "flex items-center  underline text-orange-500 font-semibold"
-                    : "flex items-center text-white hover:text-gray-300"
-                }
-              >
-                <Users2 className="mr-1" size={12} />
-                Follower Calls
-              </NavLink>
+  to="/followers"
+  className={({ isActive }) =>
+    isActive
+      ? "flex items-center underline text-orange-500 font-semibold relative"
+      : "flex items-center text-white hover:text-gray-300 relative"
+  }
+>
+  <Users2 className="mr-1" size={12} />
+  Follower Calls
+  {followerCount > 0 && (
+    <span className="ml-1 bg-red-500 text-white text-[10px] px-2 py-[1px] rounded-full">
+      {followerCount}
+    </span>
+  )}
+</NavLink>
             )}
 
             {/* Call Ratings */}

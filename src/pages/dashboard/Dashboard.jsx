@@ -28,7 +28,7 @@ function Dashboard() {
   const fetchParticularStatus = async (crmId, status) => {
     try {
       const response = await fetch(
-        "https://callback-2suo.onrender.com/api/dashboard/getparticularstatuscalls",
+        "http://localhost:5000/api/dashboard/getparticularstatuscalls",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -84,7 +84,7 @@ function Dashboard() {
         <div className="w-full">
           <div className="flex justify-between items-center flex-1 mb-4">
             <h4 className="text-[16px] font-semibold text-gray-900">
-              Call Status Summary
+              Call Status Summary - Today
             </h4>
             <button
               onClick={fetchAllStatuses}
@@ -96,54 +96,53 @@ function Dashboard() {
           </div>
 
           <div className="grid grid-cols-5 gap-2 justify-center">
-  {statuses.map((status) => (
-    <div
-      key={status}
-      onClick={() => submitAndRedirect(status)}
-      className={`cursor-pointer text-center p-7 rounded shadow border transition-colors
+            {statuses.map((status) => (
+              <div
+                key={status}
+                onClick={() => submitAndRedirect(status)}
+                className={`cursor-pointer text-center p-7 rounded shadow border transition-colors
         ${
           status === "Accept"
             ? "bg-emerald-50 hover:bg-emerald-100 border-emerald-200"
-          : status === "Reject"
+            : status === "Reject"
             ? "bg-rose-50 hover:bg-rose-100 border-rose-200"
-          : status === "Cancelled"
+            : status === "Cancelled"
             ? "bg-purple-50 hover:bg-purple-100 border-purple-200"
-          : status === "Rescheduled"
+            : status === "Rescheduled"
             ? "bg-amber-50 hover:bg-amber-100 border-amber-200"
-          : /* Completed */
-            "bg-blue-50 hover:bg-blue-100 border-blue-200"
+            : /* Completed */
+              "bg-blue-50 hover:bg-blue-100 border-blue-200"
         }`}
-    >
-      <div
-        className={`font-semibold
+              >
+                <div
+                  className={`font-semibold
           ${
             status === "Accept"
               ? "text-emerald-700"
-            : status === "Reject"
+              : status === "Reject"
               ? "text-rose-700"
-            : status === "Cancelled"
+              : status === "Cancelled"
               ? "text-purple-700"
-            : status === "Rescheduled"
+              : status === "Rescheduled"
               ? "text-amber-700"
-            : "text-blue-700"
+              : "text-blue-700"
           }`}
-      >
-        {status}
-      </div>
+                >
+                  {status}
+                </div>
 
-      <div className="mt-1 text-xl font-bold flex justify-center items-center">
-        {loading ? (
-          <div className="w-5 h-5 animate-pulse bg-orange-500 rounded" />
-        ) : (
-          <p className="bg-orange-500 text-white px-2 py-1 rounded text-sm">
-            {callCounts[status]}
-          </p>
-        )}
-      </div>
-    </div>
-  ))}
-</div>
-
+                <div className="mt-1 text-xl font-bold flex justify-center items-center">
+                  {loading ? (
+                    <div className="w-5 h-5 animate-pulse bg-orange-500 rounded" />
+                  ) : (
+                    <p className="bg-orange-500 text-white px-2 py-1 rounded text-sm">
+                      {callCounts[status]}
+                    </p>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
       {(user?.fld_admin_type === "SUBADMIN" ||

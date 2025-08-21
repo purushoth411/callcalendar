@@ -55,7 +55,7 @@ export default function ExternalCalls() {
       setIsLoading(true);
 
       const response = await fetch(
-        "https://callback-2suo.onrender.com/api/additional/getexternalcalls",
+        "http://localhost:5000/api/additional/getexternalcalls",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -90,7 +90,7 @@ export default function ExternalCalls() {
 
     try {
       const res = await fetch(
-        `https://callback-2suo.onrender.com/api/bookings/history/${bookingId}`
+        `http://localhost:5000/api/bookings/history/${bookingId}`
       );
       const result = await res.json();
 
@@ -163,14 +163,18 @@ export default function ExternalCalls() {
     title: "Client",
     data: "user_name",
     render: (data, type, row) => {
-      const bookingId = row.bookingid || row.fld_booking_id || "";
-      return `
-        <button
-          data-tooltip-id="my-tooltip"
-      data-tooltip-content="${data || "N/A"} - ${row.fld_client_id}"
-         class="details-btn font-medium text-blue-600 hover:underline  truncate w-[150px] text-left cursor-pointer" data-id="${bookingId}">
-          ${data || "N/A"} - ${row.fld_client_id}
-        </button>
+       const clientId = row.fld_client_id || "";
+    const isDeleted = row.delete_sts === "Yes";
+    const textStyle = isDeleted ? "line-through text-gray-400" : "";
+    const displayText = `${data} - ${clientId}`;
+    const shouldShowTooltip = displayText.length > 20;
+        return `
+       <button
+        ${shouldShowTooltip ? `data-tooltip-id="my-tooltip" data-tooltip-content="${displayText}"` : ""}
+        class="details-btn font-medium text-blue-600 hover:underline truncate w-[150px] text-left ${textStyle}"
+        data-id="${row.id}">
+        ${displayText}
+      </button>
       `;
     },
   },

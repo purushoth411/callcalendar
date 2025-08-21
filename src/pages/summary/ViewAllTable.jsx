@@ -311,7 +311,7 @@ const ViewAllTable = () => {
     try {
       // Fetch consultants first
       const consultantRes = await fetch(
-        "https://callback-2suo.onrender.com/api/helpers/getUsersByRole",
+        "http://localhost:5000/api/helpers/getUsersByRole",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -322,7 +322,7 @@ const ViewAllTable = () => {
 
       // Then fetch CRMs
       const crmRes = await fetch(
-        "https://callback-2suo.onrender.com/api/helpers/getUsersByRole",
+        "http://localhost:5000/api/helpers/getUsersByRole",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -345,7 +345,7 @@ const ViewAllTable = () => {
 
     try {
       const res = await fetch(
-        "https://callback-2suo.onrender.com/api/helpers/getUsersByRole",
+        "http://localhost:5000/api/helpers/getUsersByRole",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -407,7 +407,7 @@ const ViewAllTable = () => {
 
     try {
       const response = await fetch(
-        `https://callback-2suo.onrender.com/api/bookings/fetchSummaryBookings`,
+        `http://localhost:5000/api/bookings/fetchSummaryBookings`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -529,7 +529,7 @@ const ViewAllTable = () => {
 
     try {
       const res = await fetch(
-        `https://callback-2suo.onrender.com/api/bookings/history/${bookingId}`
+        `http://localhost:5000/api/bookings/history/${bookingId}`
       );
 
       if (!res.ok) {
@@ -940,15 +940,29 @@ const ViewAllTable = () => {
                             } hover:bg-blue-50 transition-colors`}
                           >
                             <td
-                              className={`px-4 py-2 text-gray-600 border-r border-gray-300 ${deletedClass}`}
-                            >
-                              <span
-                                onClick={() => handleNavigate(row.id)}
-                                className="hover:underline text-blue-600 font-medium cursor-pointer"
-                              >
-                                {row.user_name} - {row.fld_client_id}
-                              </span>
-                            </td>
+  className={`px-4 py-2 text-gray-600 border-r border-gray-300 ${deletedClass}`}
+>
+  {(() => {
+    const clientId = row.fld_client_id || "";
+    const displayText = `${row.user_name} - ${clientId}`;
+    const shouldShowTooltip = displayText.length > 20;
+
+    return (
+      <span
+        onClick={() => handleNavigate(row.id)}
+        className="hover:underline text-blue-600 font-medium cursor-pointer truncate block w-[150px]"
+        {...(shouldShowTooltip && {
+          "data-tooltip-id": "my-tooltip",
+          "data-tooltip-content": displayText,
+        })}
+      >
+        {displayText}
+      </span>
+    );
+  })()}
+</td>
+
+
                             <td
                               className={`px-4 py-2 text-gray-600 border-r border-gray-300 ${deletedClass}`}
                             >

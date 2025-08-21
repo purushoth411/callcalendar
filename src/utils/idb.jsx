@@ -55,10 +55,21 @@ const login = async (userData) => {
       return updatedUser;
     });
   };
+  const setUserArray = async (userArray) => {
+  setUser((prev) => {
+    const updatedUser = {
+      ...prev,
+      ...userArray, 
+    };
+    console.log("Updated User Array:", updatedUser);
+    set("LoggedInUser", updatedUser); 
+    return updatedUser;
+  });
+};
 
   return (
     <AuthContext.Provider
-      value={{ user, login, logout, loading, setFavourites,priceDiscoutUsernames }}
+      value={{ user,setUser, login, logout, loading, setFavourites,setUserArray,priceDiscoutUsernames }}
     >
       {children}
     </AuthContext.Provider>

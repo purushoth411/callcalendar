@@ -12,7 +12,7 @@ const OtherCalls = ({ bookingId, clientId, fetchBookingById }) => {
       setLoading(true);
       try {
         const response = await fetch(
-          `https://callback-2suo.onrender.com/api/bookings/getAllClientBookingData?clientId=${clientId}`
+          `http://localhost:5000/api/bookings/getAllClientBookingData?clientId=${clientId}`
         );
 
         const result = await response.json();

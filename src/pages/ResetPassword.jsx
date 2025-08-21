@@ -15,7 +15,7 @@ export default function ResetPassword() {
   const handleSendOtp = async () => {
     setLoadingSendOtp(true);
     try {
-      const res = await fetch("https://callback-2suo.onrender.com/api/users/sendOtpVerification", {
+      const res = await fetch("http://localhost:5000/api/users/sendOtpVerification", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username }),
@@ -52,7 +52,7 @@ export default function ResetPassword() {
     const enteredOtp = otp.join("");
 
     try {
-      const res = await fetch("https://callback-2suo.onrender.com/api/users/verifyOtp", {
+      const res = await fetch("http://localhost:5000/api/users/verifyOtp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, otp: enteredOtp }),

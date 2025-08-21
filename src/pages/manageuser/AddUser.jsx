@@ -15,7 +15,7 @@ const AddUser = ({
 }) => {
   useEffect(() => {
     setFormData({
-      team_id: formType === "EXECUTIVE" ? "" : [],
+      team_id: [],
       username: "",
       name: "",
       email: "",
@@ -52,54 +52,41 @@ const AddUser = ({
       </div>
 
       <div className="p-4 space-y-4 ">
-        {(formType === "EXECUTIVE" ||
-          formType === "CONSULTANT" ||
-          formType === "SUBADMIN") && (
-          <div className="">
-            <label className="block mb-1">Select Team</label>
-            <Select
-              className="react-select-container"
-              classNamePrefix="react-select"
-              options={teams.map((team) => ({
-                value: team.id,
-                label: team.fld_title,
-              }))}
-              value={
-                formType === "EXECUTIVE"
-                  ? teams
-                      .map((team) => ({
-                        value: team.id,
-                        label: team.fld_title,
-                      }))
-                      .find((option) => option.value === formData.team_id) ||
-                    null
-                  : teams
-                      .map((team) => ({
-                        value: team.id,
-                        label: team.fld_title,
-                      }))
-                      .filter((option) =>
-                        formData.team_id.includes(option.value)
-                      )
-              }
-              isMulti={formType !== "EXECUTIVE"} // Single select only for EXECUTIVE
-              onChange={(selected) => {
-                if (formType === "EXECUTIVE") {
-                  setFormData({
-                    ...formData,
-                    team_id: selected ? selected.value : "",
-                  });
-                } else {
+    
+          {(formType === "EXECUTIVE" ||
+            formType === "CONSULTANT" ||
+            formType === "SUBADMIN") && (
+            <div className="">
+              <label className="block mb-1">Select Team</label>
+              <Select
+                className="react-select-container"
+                classNamePrefix="react-select"
+                isMulti={true} // Enable multi-select
+                options={teams.map((team) => ({
+                  value: team.id,
+                  label: team.fld_title,
+                }))}
+                value={
+                  teams
+                    .map((team) => ({
+                      value: team.id,
+                      label: team.fld_title,
+                    }))
+                    .filter((option) =>
+                      formData.team_id.includes(option.value)
+                    )
+                }
+                onChange={(selected) => {
                   setFormData({
                     ...formData,
                     team_id: selected ? selected.map((s) => s.value) : [],
                   });
-                }
-              }}
-              placeholder="Select Team"
-            />
-          </div>
-        )}
+                }}
+                placeholder="Select Team(s)"
+                closeMenuOnSelect={false}
+              />
+            </div>
+          )}
 
         <div className="">
           <label className="block mb-1">Username</label>

@@ -14,7 +14,7 @@ import { getSocket } from "../../utils/Socket.jsx";
 import SocketHandler from "../../hooks/SocketHandler.jsx";
 
 export default function Users() {
-  const { user, logout } = useAuth();
+  const { user, logout,setUserArray } = useAuth();
   const [allUsers, setAllUsers] = useState([]);
   DataTable.use(DT);
   const [filteredUsers, setFilteredUsers] = useState([]);
@@ -27,7 +27,7 @@ export default function Users() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const tableRef = useRef(null);
   const [formData, setFormData] = useState({
-    team_id: formType === "EXECUTIVE" ? "" : [],
+    team_id:  [],
     username: "",
     name: "",
     email: "",
@@ -54,15 +54,22 @@ export default function Users() {
       });
     };
 
-    const handleUserUpdated = (updatedUser) => {
-      console.log("Socket Called - User Updated");
-      setAllUsers((prev) => {
-        const list = Array.isArray(prev) ? prev : [];
-        return list.map((user) =>
-          user.id == updatedUser.id ? updatedUser : user
-        );
-      });
-    };
+
+
+  const handleUserUpdated = (updatedUser) => {
+    console.log("Socket Called - User Updated");
+
+    // Update allUsers
+    setAllUsers((prev) => {
+      const list = Array.isArray(prev) ? prev : [];
+      return list.map((u) => (u.id === updatedUser.id ? updatedUser : u));
+    });
+
+    
+     if (user?.id === updatedUser.id) {
+      setUserArray(updatedUser); 
+    }
+  };
 
     socket.on("userAdded", handleUserAdded);
     socket.on("userUpdated", handleUserUpdated);
@@ -98,7 +105,7 @@ export default function Users() {
       };
 
       const response = await fetch(
-        "https://callback-2suo.onrender.com/api/users/getallusers",
+        "http://localhost:5000/api/users/getallusers",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -123,7 +130,7 @@ export default function Users() {
   const getAllTeams = async () => {
     try {
       const response = await fetch(
-        "https://callback-2suo.onrender.com/api/helpers/getAllActiveTeams",
+        "http://localhost:5000/api/helpers/getAllActiveTeams",
         {
           method: "GET",
           headers: { "Content-Type": "application/json" },
@@ -144,17 +151,12 @@ export default function Users() {
 
   const handleSave = async () => {
     // Validation
-    if (
-      (formType === "EXECUTIVE" ||
-        formType === "SUBADMIN" ||
-        formType === "CONSULTANT") &&
-      ((formType === "EXECUTIVE" && !formData.team_id) ||
-        ((formType === "SUBADMIN" || formType === "CONSULTANT") &&
-          (!formData.team_id || formData.team_id.length === 0))) // empty array
-    ) {
-      toast.error("Please select Team.");
-      return;
-    }
+     if (((formType === "SUBADMIN" || formType === "CONSULTANT" || formType === "EXECUTIVE"  ) &&
+              (!formData.team_id || formData.team_id.length === 0))) // empty array
+         {
+          toast.error("Please select Team.");
+          return;
+        }
 
     if (
       !formData.username ||
@@ -188,7 +190,7 @@ export default function Users() {
 
     try {
       setIsSubmitting(true);
-      const response = await fetch("https://callback-2suo.onrender.com/api/users/addUser", {
+      const response = await fetch("http://localhost:5000/api/users/addUser", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -215,7 +217,7 @@ export default function Users() {
   const getUserCount = async () => {
     try {
       const response = await fetch(
-        "https://callback-2suo.onrender.com/api/users/getusercount",
+        "http://localhost:5000/api/users/getusercount",
         {
           method: "GET",
           headers: { "Content-Type": "application/json" },
@@ -236,7 +238,7 @@ export default function Users() {
   const updateUserStatus = async (userId, status) => {
     try {
       const res = await fetch(
-        `https://callback-2suo.onrender.com/api/users/update-status/${userId}`,
+        `http://localhost:5000/api/users/update-status/${userId}`,
         {
           method: "PUT",
           headers: {
@@ -261,7 +263,7 @@ export default function Users() {
   const updateUserAttendance = async (userId, attendance) => {
     try {
       const res = await fetch(
-        `https://callback-2suo.onrender.com/api/users/updateAttendance/${userId}`,
+        `http://localhost:5000/api/users/updateAttendance/${userId}`,
         {
           method: "PUT",
           headers: {
@@ -515,7 +517,7 @@ export default function Users() {
               <div className="flex justify-between items-center">
                 <h2 className="text-[14px] font-semibold text-gray-900">
                   {userTabs.find((tab) => tab.key === selectedUserType)?.label}{" "}
-                  Users
+                  
                 </h2>
                 {/* <div className="flex items-center space-x-2">
                 <span className="text-sm text-gray-500">Total:</span>

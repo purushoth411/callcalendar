@@ -90,31 +90,31 @@ export default function Followers() {
     }
   }, [followers, isLoading]);
 
-  const fetchAllFollowers = async () => {
-    try {
-      setIsLoading(true);
+ const fetchAllFollowers = async () => {
+  try {
+    setIsLoading(true);
 
-      const response = await fetch(
-        "https://callback-2suo.onrender.com/api/followers/getAllFollowers"
-      );
+    const response = await fetch(
+      `http://localhost:5000/api/followers/getAllFollowers?usertype=${user?.fld_admin_type}&userid=${user?.id}`
+    );
 
-      const result = await response.json();
+    const result = await response.json();
 
-      if (result.status) {
-        setFollowers(result.data);
-        if (dashboard_status) {
-          navigate("/followers");
-        }
-      } else {
-        setFollowers([]);
+    if (result.status) {
+      setFollowers(result.data);
+      if (dashboard_status) {
+        navigate("/followers");
       }
-    } catch (error) {
-      console.error("Error fetching followers:", error);
+    } else {
       setFollowers([]);
-    } finally {
-      setIsLoading(false);
     }
-  };
+  } catch (error) {
+    console.error("Error fetching followers:", error);
+    setFollowers([]);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const fetchBookingHistory = async (bookingId) => {
     if (historyData[bookingId]) return historyData[bookingId];
@@ -123,7 +123,7 @@ export default function Followers() {
 
     try {
       const res = await fetch(
-        `https://callback-2suo.onrender.com/api/bookings/history/${bookingId}`
+        `http://localhost:5000/api/bookings/history/${bookingId}`
       );
       const result = await res.json();
 
@@ -202,7 +202,7 @@ export default function Followers() {
   const updateFollowersStatus = async (approveData, followerid, bookingid) => {
     try {
       const res = await fetch(
-        `https://callback-2suo.onrender.com/api/followers/followerclaimbooking/${followerid}/${bookingid}`,
+        `http://localhost:5000/api/followers/followerclaimbooking/${followerid}/${bookingid}`,
         {
           method: "PUT",
           headers: {
@@ -247,17 +247,18 @@ export default function Followers() {
       title: "Client",
       data: "user_name",
       render: (data, type, row) => {
-        const clientId = row.fld_client_id || "";
-        const isDeleted = row.delete_sts === "Yes";
-        const textStyle = isDeleted ? "line-through text-gray-400" : "";
-
+         const clientId = row.fld_client_id || "";
+    const isDeleted = row.delete_sts === "Yes";
+    const textStyle = isDeleted ? "line-through text-gray-400" : "";
+    const displayText = `${data} - ${clientId}`;
+    const shouldShowTooltip = displayText.length > 20;
         return `
-          <button
-          data-tooltip-id="my-tooltip"
-          data-tooltip-content="${data} - ${clientId}"
-           class="details-btn font-medium text-blue-600 hover:underline  truncate w-[150px] text-left ${textStyle}" data-id="${row.id}">
-            ${data} - ${clientId}
-          </button>
+       <button
+        ${shouldShowTooltip ? `data-tooltip-id="my-tooltip" data-tooltip-content="${displayText}"` : ""}
+        class="details-btn font-medium text-blue-600 hover:underline truncate w-[150px] text-left ${textStyle}"
+        data-id="${row.id}">
+        ${displayText}
+      </button>
         `;
       },
     },

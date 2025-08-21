@@ -18,7 +18,7 @@ const EditUser = ({
   const [isUpdating,setisUpdating]=useState(false);
   const [formData, setFormData] = useState({
     user_id: editData.id || null,
-    team_id: formType === "EXECUTIVE" ? "" : [],
+    team_id:  [],
     username: "",
     name: "",
     email: "",
@@ -38,10 +38,7 @@ const EditUser = ({
 
       setFormData({
         user_id: editData.id || null,
-        team_id:
-          formType === "EXECUTIVE"
-            ? editData.fld_team_id || ""
-            : (editData.fld_team_id || "").split(",").map((id) => parseInt(id)),
+        team_id: (editData.fld_team_id || "").split(",").map((id) => parseInt(id)),
         username: editData.fld_username || "",
         name: editData.fld_name || "",
         email: editData.fld_email || "",
@@ -76,14 +73,9 @@ const EditUser = ({
       return;
     }
 
-    if (
-      (formType === "EXECUTIVE" ||
-        formType === "SUBADMIN" ||
-        formType === "CONSULTANT") &&
-      ((formType === "EXECUTIVE" && !team_id) ||
-        ((formType === "SUBADMIN" || formType === "CONSULTANT") &&
+    if (((formType === "SUBADMIN" || formType === "CONSULTANT" || formType === "EXECUTIVE"  ) &&
           (!team_id || team_id.length === 0))) // empty array
-    ) {
+     {
       toast.error("Please select Team.");
       return;
     }
@@ -105,7 +97,7 @@ const EditUser = ({
 
     const payload = {
       user_id,
-      team_id: formType === "EXECUTIVE" ? team_id : team_id.join(","),
+      team_id: team_id.join(","),
       username,
       name,
       email,
@@ -118,7 +110,7 @@ const EditUser = ({
     try {
       setisUpdating(true);
       const res = await fetch(
-        `https://callback-2suo.onrender.com/api/users/update/${user_id}`,
+        `http://localhost:5000/api/users/update/${user_id}`,
         {
           method: "PUT",
           headers: {
@@ -177,22 +169,13 @@ const EditUser = ({
             <Select
               className="react-select-container"
               classNamePrefix="react-select"
+                isMulti={true} 
               options={teams.map((team) => ({
                 value: team.id,
                 label: team.fld_title,
               }))}
               value={
-                formType === "EXECUTIVE"
-                  ? teams
-                      .map((team) => ({
-                        value: team.id,
-                        label: team.fld_title,
-                      }))
-                      .find(
-                        (option) =>
-                          String(option.value) === String(formData.team_id)
-                      ) || null
-                  : teams
+               teams
                       .map((team) => ({
                         value: team.id,
                         label: team.fld_title,
@@ -203,19 +186,14 @@ const EditUser = ({
                           .includes(String(option.value))
                       )
               }
-              isMulti={formType !== "EXECUTIVE"}
+             
               onChange={(selected) => {
-                if (formType === "EXECUTIVE") {
-                  setFormData({
-                    ...formData,
-                    team_id: selected ? selected.value : "",
-                  });
-                } else {
+               
                   setFormData({
                     ...formData,
                     team_id: selected ? selected.map((s) => s.value) : [],
                   });
-                }
+                
               }}
               placeholder="Select Team"
             />
