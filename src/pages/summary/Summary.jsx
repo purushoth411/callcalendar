@@ -11,6 +11,7 @@ import SkeletonLoader from "../../components/SkeletonLoader";
 import moment from "moment-timezone";
 import { RefreshCcw } from "lucide-react";
 import SocketHandler from "../../hooks/SocketHandler";
+import { getSocket } from "../../utils/Socket";
 // import ViewAllTable from "./ViewAllTable";
 
 
@@ -55,6 +56,165 @@ const Summary = () => {
   const [filteredConsultants, setFilteredConsultants] = useState([]);
   const [crms, setCrms] = useState([]);
   const [consultantType, setConsultantType] = useState("ACTIVE");
+
+
+// Replace the existing socket useEffect in your Summary component with this:
+
+useEffect(() => {
+  const socket = getSocket();
+
+  // Helper function to determine which state setter to use based on status
+  const getStateSetterByStatus = (callRequestStatus, callConfirmationStatus) => {
+    if (callRequestStatus === "Call Scheduled") {
+      return setCallScheduledData;
+    } else if (callRequestStatus === "Accept" && callConfirmationStatus === "Call Confirmation Pending at Client End") {
+      return setAcceptedPendingData;
+    } else if (callRequestStatus === "Consultant Assigned") {
+      return setAddedNotScheduledData;
+    } else if (callRequestStatus === "Accept" && callConfirmationStatus === "Call Confirmed by Client") {
+      return setAcceptedConfirmedData;
+    } else if (callRequestStatus === "Reject") {
+      return setConsultantRejectedData;
+    } else if (callRequestStatus === "Completed") {
+      return setCallCompletedData;
+    } else if (callRequestStatus === "Rescheduled") {
+      return setRescheduledCall;
+    } else if (callRequestStatus === "Reassign Request") {
+      return setReassignCallData;
+    } else if (callRequestStatus === "External") {
+      return setExternalCallData;
+    } else if (callRequestStatus === "Cancelled") {
+      return setCallCancelledData;
+    } else if (callRequestStatus === "Client did not join") {
+      return setClientNotJoinedData;
+    }
+    return null;
+  };
+
+  // Helper function to remove booking from all states
+  const removeBookingFromAllStates = (bookingId) => {
+    const allSetters = [
+      setCallScheduledData,
+      setAcceptedPendingData,
+      setAddedNotScheduledData,
+      setAcceptedConfirmedData,
+      setConsultantRejectedData,
+      setCallCompletedData,
+      setRescheduledCall,
+      setReassignCallData,
+      setExternalCallData,
+      setCallCancelledData,
+      setClientNotJoinedData,
+    ];
+
+    allSetters.forEach(setter => {
+      setter(prev => {
+        const list = Array.isArray(prev) ? prev : [];
+        return list.filter(booking => booking.id !== bookingId);
+      });
+    });
+  };
+
+  const handleBookingAdded = (newBooking) => {
+    console.log("Socket Called - Booking Added");
+
+    const mappedBooking = {
+      ...newBooking,
+      client_name: newBooking.user_name,
+      client_email: newBooking.user_email,
+      client_phone: newBooking.user_phone,
+    };
+
+    let canAdd = false;
+
+    // Your existing permission logic
+    if (user.fld_admin_type === "EXECUTIVE") {
+      canAdd = newBooking.fld_addedby == user.id;
+    } else if (user.fld_admin_type === "CONSULTANT") {
+      canAdd =
+        newBooking.fld_consultantid == user.id ||
+        newBooking.fld_secondary_consultant_id == user.id;
+    } else if (user.fld_admin_type === "SUBADMIN") {
+      const bookingTeams = Array.isArray(newBooking.fld_teamid)
+        ? newBooking.fld_teamid
+        : String(newBooking.fld_teamid)
+            .split(",")
+            .map((id) => id.trim());
+
+      const userTeams = Array.isArray(user.fld_team_id)
+        ? user.fld_team_id
+        : String(user.fld_team_id)
+            .split(",")
+            .map((id) => id.trim());
+
+      const hasTeamMatch = bookingTeams.some((teamId) =>
+        userTeams.includes(teamId)
+      );
+
+      if (hasTeamMatch) {
+        canAdd = true;
+      }
+    } else if (user.fld_admin_type === "SUPERADMIN") {
+      canAdd = true;
+    }
+
+    if (!canAdd) return;
+
+    // Get the appropriate state setter based on status
+    const stateSetter = getStateSetterByStatus(
+      newBooking.fld_call_request_sts,
+      newBooking.fld_call_confirmation_status
+    );
+
+    if (stateSetter) {
+      stateSetter(prev => {
+        const list = Array.isArray(prev) ? prev : [];
+        // Check if booking already exists
+        if (list.some(booking => booking.id == mappedBooking.id)) {
+          return list;
+        }
+        // Add new booking at the top
+        return [mappedBooking, ...list];
+      });
+    }
+  };
+
+  const handleBookingUpdated = (updatedBooking) => {
+    console.log("Socket Called - Booking Updated");
+    
+    const mappedBooking = {
+      ...updatedBooking,
+      client_name: updatedBooking.user_name,
+      client_email: updatedBooking.user_email,
+      client_phone: updatedBooking.user_phone,
+    };
+
+    // First, remove the booking from all states
+    removeBookingFromAllStates(mappedBooking.id);
+
+    // Then add it to the correct state based on new status
+    const stateSetter = getStateSetterByStatus(
+      updatedBooking.fld_call_request_sts,
+      updatedBooking.fld_call_confirmation_status
+    );
+
+    if (stateSetter) {
+      stateSetter(prev => {
+        const list = Array.isArray(prev) ? prev : [];
+        // Add updated booking at the top
+        return [mappedBooking, ...list];
+      });
+    }
+  };
+
+  socket.on("bookingAdded", handleBookingAdded);
+  socket.on("bookingUpdated", handleBookingUpdated);
+
+  return () => {
+    socket.off("bookingAdded", handleBookingAdded);
+    socket.off("bookingUpdated", handleBookingUpdated);
+  };
+}, [user.id, user.fld_admin_type, user.fld_team_id, user.fld_subadmin_type]);
 
   const fetchConsultantsAndCrms = async () => {
     try {

@@ -27,6 +27,7 @@ import {
   EyeIcon,
 } from "lucide-react";
 import SocketHandler from "../../hooks/SocketHandler";
+import { getSocket } from "../../utils/Socket";
 
 const badgeMeta = {
   "Call Scheduled": {
@@ -612,6 +613,122 @@ const ViewAllTable = () => {
     );
   });
 
+  useEffect(() => {
+    const socket = getSocket();
+
+    // Helper function to check if booking matches this table's criteria
+    const matchesTableCriteria = (booking) => {
+      const requestStatus = booking.fld_call_request_sts;
+      const bookingConfirmation = booking.fld_call_confirmation_status;
+
+      if (selectedStatus === "Accept") {
+        return (
+          requestStatus === selectedStatus &&
+          bookingConfirmation === confirmationStatus
+        );
+      } else {
+        return requestStatus === selectedStatus;
+      }
+    };
+
+    // Helper function to check user permissions
+    const hasPermission = (booking) => {
+      if (user.fld_admin_type === "EXECUTIVE") {
+        return booking.fld_addedby == user.id;
+      } else if (user.fld_admin_type === "CONSULTANT") {
+        return (
+          booking.fld_consultantid == user.id ||
+          booking.fld_secondary_consultant_id == user.id
+        );
+      } else if (user.fld_admin_type === "SUBADMIN") {
+        const bookingTeams = Array.isArray(booking.fld_teamid)
+          ? booking.fld_teamid
+          : String(booking.fld_teamid)
+              .split(",")
+              .map((id) => id.trim());
+
+        const userTeams = Array.isArray(user.fld_team_id)
+          ? user.fld_team_id
+          : String(user.fld_team_id)
+              .split(",")
+              .map((id) => id.trim());
+
+        return bookingTeams.some((teamId) => userTeams.includes(teamId));
+      } else if (user.fld_admin_type === "SUPERADMIN") {
+        return true;
+      }
+      return false;
+    };
+
+    const handleBookingAdded = (newBooking) => {
+      if (!hasPermission(newBooking) || !matchesTableCriteria(newBooking)) {
+        return;
+      }
+
+      const mappedBooking = {
+        ...newBooking,
+        client_name: newBooking.user_name,
+        client_email: newBooking.user_email,
+        client_phone: newBooking.user_phone,
+      };
+
+      setAllData((prev) => {
+        const list = Array.isArray(prev) ? prev : [];
+        if (list.some((booking) => booking.id == mappedBooking.id)) {
+          return list;
+        }
+        return [mappedBooking, ...list]; // add at top
+      });
+    };
+
+    const handleBookingUpdated = (updatedBooking) => {
+      const mappedBooking = {
+        ...updatedBooking,
+        client_name: updatedBooking.user_name,
+        client_email: updatedBooking.user_email,
+        client_phone: updatedBooking.user_phone,
+      };
+
+      setAllData((prev) => {
+        const list = Array.isArray(prev) ? prev : [];
+        const existingIndex = list.findIndex(
+          (booking) => booking.id == mappedBooking.id
+        );
+
+        if (
+          matchesTableCriteria(updatedBooking) &&
+          hasPermission(updatedBooking)
+        ) {
+          // Booking should be in this table
+          if (existingIndex >= 0) {
+            // Update existing booking
+            const newList = [...list];
+            newList[existingIndex] = mappedBooking;
+            return newList;
+          } else {
+            // Add new booking at the top
+            return [mappedBooking, ...list];
+          }
+        } else {
+          // Booking should not be in this table, remove it if it exists
+          if (existingIndex >= 0) {
+            return list.filter((booking) => booking.id != mappedBooking.id);
+          }
+        }
+
+        return list;
+      });
+    };
+
+    socket.on("bookingAdded", handleBookingAdded);
+    socket.on("bookingUpdated", handleBookingUpdated);
+
+    return () => {
+      socket.off("bookingAdded", handleBookingAdded);
+      socket.off("bookingUpdated", handleBookingUpdated);
+    };
+  }, [user.id]);
+
   return (
     <div className="">
       <SocketHandler
@@ -676,9 +793,7 @@ const ViewAllTable = () => {
           >
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <div>
-                <label className="block mb-1">
-                  Call Type
-                </label>
+                <label className="block mb-1">Call Type</label>
                 <select
                   className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
                   value={filters.sale_type}
@@ -693,9 +808,7 @@ const ViewAllTable = () => {
               </div>
 
               <div>
-                <label className="block mb-1">
-                  Recording Status
-                </label>
+                <label className="block mb-1">Recording Status</label>
                 <select
                   className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
                   value={filters.call_rcrd_status}
@@ -713,9 +826,7 @@ const ViewAllTable = () => {
               </div>
 
               <div>
-                <label className="block mb-1">
-                  Select CRM
-                </label>
+                <label className="block mb-1">Select CRM</label>
                 <Select
                   options={crms.map((c) => ({
                     value: c.id,
@@ -743,9 +854,7 @@ const ViewAllTable = () => {
               </div>
 
               <div>
-                <label className="block mb-1">
-                  Consultant Type
-                </label>
+                <label className="block mb-1">Consultant Type</label>
                 <select
                   className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
                   value={filters.consultant_type}
@@ -764,9 +873,7 @@ const ViewAllTable = () => {
               </div>
 
               <div>
-                <label className="block mb-1">
-                  Select Consultant
-                </label>
+                <label className="block mb-1">Select Consultant</label>
                 <Select
                   options={filteredConsultants.map((c) => ({
                     value: c.id,
@@ -795,9 +902,7 @@ const ViewAllTable = () => {
               </div>
 
               <div>
-                <label className="block mb-1">
-                  Keyword Search
-                </label>
+                <label className="block mb-1">Keyword Search</label>
                 <input
                   type="text"
                   className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
@@ -813,9 +918,7 @@ const ViewAllTable = () => {
               </div>
 
               <div>
-                <label className="block mb-1">
-                  Filter Type
-                </label>
+                <label className="block mb-1">Filter Type</label>
                 <select
                   className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
                   value={filters.filter_type}
@@ -829,9 +932,7 @@ const ViewAllTable = () => {
               </div>
 
               <div>
-                <label className="block mb-1">
-                  Date Range
-                </label>
+                <label className="block mb-1">Date Range</label>
                 <DatePicker
                   className="w-full border px-3 py-2 rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
                   selectsRange
@@ -866,210 +967,214 @@ const ViewAllTable = () => {
       </AnimatePresence>
       <div className="bg-white rounded-lg shadow-sm border border-gray-200">
         <div className="px-3 py-2 bg-[#d7efff7d]">
-            <div className="flex justify-between items-center">
-              <h2 className="text-[16px] font-semibold text-gray-900">
-                {" "} {selectedStatus}
-              </h2>
-                {/* Search Bar */}
-                {allData.length > 0 && (
-                    <input
-                      type="text"
-                      className="w-[16%] border px-3 py-1 bg-white rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
-                      placeholder="Search in current page results..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                )}
-            </div>
-        </div>
-        <div className="p-4"> 
-            {/* Loading State */}
-      {loading ? (
-        <SkeletonLoader
-          rows={6}
-          columns={[
-            "Client",
-            "Consultant",
-            "Added By",
-            "Booking Info",
-            "Call Type",
-            "Status",
-          ]}
-        />
-      ) : (
-        <>
-          {/* Table */}
-          <div className="bg-white rounded shadow overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="min-w-full border border-gray-200 bg-white n-table-set">
-                <thead className="sticky top-0 bg-gray-100 shadow text-gray-700">
-                  <tr>
-                    {[
-                      "Client",
-                      "Consultant",
-                      "Added By",
-                      "Booking Info",
-                      "Call Type",
-                      "Status",
-                    ].map((col) => (
-                      <th
-                        key={col}
-                        className="px-4 py-2 text-left text-sm font-semibold border-b"
-                      >
-                        {col}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredData.length > 0 ? (
-                    filteredData.map((row, index) => {
-                      const deletedClass =
-                        row.delete_sts === "Yes"
-                          ? "line-through opacity-50"
-                          : "";
-                      const badge =
-                        badgeMeta[row.fld_call_request_sts] || badgeMeta["_"];
-                      const isExpanded = expandedRow === row.id;
-
-                      return (
-                        <React.Fragment key={row.id}>
-                          <tr
-                            className={`group border-b border-gray-300 ${
-                              index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                            } hover:bg-blue-50 transition-colors`}
-                          >
-                            <td
-  className={`px-4 py-2 text-gray-600 border-r border-gray-300 ${deletedClass}`}
->
-  {(() => {
-    const clientId = row.fld_client_id || "";
-    const displayText = `${row.user_name} - ${clientId}`;
-    const shouldShowTooltip = displayText.length > 20;
-
-    return (
-      <span
-        onClick={() => handleNavigate(row.id)}
-        className="hover:underline text-blue-600 font-medium cursor-pointer truncate block w-[150px]"
-        {...(shouldShowTooltip && {
-          "data-tooltip-id": "my-tooltip",
-          "data-tooltip-content": displayText,
-        })}
-      >
-        {displayText}
-      </span>
-    );
-  })()}
-</td>
-
-
-                            <td
-                              className={`px-4 py-2 text-gray-600 border-r border-gray-300 ${deletedClass}`}
-                            >
-                              <div className="font-medium">
-                                {row.admin_name}
-                              </div>
-                            </td>
-                            <td
-                              className={`px-4 py-2 text-gray-600 border-r border-gray-300 ${deletedClass}`}
-                            >
-                              <div className="font-medium">{row.crm_name}</div>
-                            </td>
-                            <td
-                              className={`px-4 py-2 text-gray-600 border-r border-gray-300 ${deletedClass}`}
-                            >
-                              <div className="flex justify-between">
-                                <span className="font-medium">
-                                  {formatBookingDateTime(
-                                    row.fld_booking_date,
-                                    row.fld_booking_slot
-                                  )}
-                                </span>
-                                <button
-                                  className="ml-2 text-gray-500 hover:text-blue-600 transition-colors"
-                                  onClick={async () => {
-                                    if (isExpanded) {
-                                      setExpandedRow(null);
-                                    } else {
-                                      setExpandedRow(row.id);
-                                      await fetchBookingHistory(row.id);
-                                    }
-                                  }}
-                                  title="View booking history"
-                                >
-                                  <EyeIcon className="bg-green-600 hover:bg-green-700 cursor-pointer text-white p-1 rounded" size={20} />
-                                </button>
-                              </div>
-                            </td>
-                            <td
-                              className={`px-4 py-2 text-gray-600 border-r border-gray-300 ${deletedClass}`}
-                            >
-                              <span className="font-medium">
-                                {row.fld_sale_type}
-                              </span>
-                            </td>
-                            <td className="px-4 py-2 text-gray-600 border-r border-gray-300">
-                              <div
-                                className={`py-[1px] px-[6px] inline-flex items-center gap-1 rounded text-[10px] font-medium ${badge.bg} ${badge.text} ${deletedClass}`}
-                              >
-                                {badge.icon}
-                                {row.fld_call_request_sts}
-                              </div>
-                              {row.fld_call_request_sts === "Accept" && (
-                                <>
-                                  {row.fld_call_confirmation_status ===
-                                    "Call Confirmation Pending at Client End" && (
-                                    <span className="inline-flex items-center gap-1 py-[1px] px-[6px] ml-1 rounded text-[10px] bg-blue-100 text-blue-800">
-                                      <Clock size={10} />{" "}
-                                      {row.fld_call_confirmation_status}
-                                    </span>
-                                  )}
-                                  {row.fld_call_confirmation_status ===
-                                    "Call Confirmed by Client" && (
-                                    <span className="inline-flex items-center gap-1 py-[1px] px-[6px] ml-1 rounded text-[10px] bg-green-100 text-green-800">
-                                      <CheckCircle size={8} />{" "}
-                                      {row.fld_call_confirmation_status}
-                                    </span>
-                                  )}
-                                </>
-                              )}
-                            </td>
-                          </tr>
-
-                          {isExpanded && renderHistoryRow(row.id)}
-                        </React.Fragment>
-                      );
-                    })
-                  ) : (
-                    <td
-                      colSpan="6"
-                      className="px-4 py-4 text-center text-gray-500"
-                    >
-                      <div className="bg-yellow-100 border border-yellow-300 text-yellow-700 px-4 py-2 rounded">
-                        No bookings found.
-                      </div>
-                    </td>
-                  )}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Pagination Component */}
-            <Pagination
-              currentPage={currentPage}
-              totalPages={pagination.totalPages}
-              totalRecords={pagination.totalRecords}
-              onPageChange={handlePageChange}
-              loading={loading}
-            />
+          <div className="flex justify-between items-center">
+            <h2 className="text-[16px] font-semibold text-gray-900">
+              {" "}
+              {selectedStatus}
+            </h2>
+            {/* Search Bar */}
+            {allData.length > 0 && (
+              <input
+                type="text"
+                className="w-[16%] border px-3 py-1 bg-white rounded border-[#cccccc] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 active:border-blue-600"
+                placeholder="Search in current page results..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            )}
           </div>
-        </>
-      )}
         </div>
-        </div>
-      
+        <div className="p-4">
+          {/* Loading State */}
+          {loading ? (
+            <SkeletonLoader
+              rows={6}
+              columns={[
+                "Client",
+                "Consultant",
+                "Added By",
+                "Booking Info",
+                "Call Type",
+                "Status",
+              ]}
+            />
+          ) : (
+            <>
+              {/* Table */}
+              <div className="bg-white rounded shadow overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="min-w-full border border-gray-200 bg-white n-table-set">
+                    <thead className="sticky top-0 bg-gray-100 shadow text-gray-700">
+                      <tr>
+                        {[
+                          "Client",
+                          "Consultant",
+                          "Added By",
+                          "Booking Info",
+                          "Call Type",
+                          "Status",
+                        ].map((col) => (
+                          <th
+                            key={col}
+                            className="px-4 py-2 text-left text-sm font-semibold border-b"
+                          >
+                            {col}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredData.length > 0 ? (
+                        filteredData.map((row, index) => {
+                          const deletedClass =
+                            row.delete_sts === "Yes"
+                              ? "line-through opacity-50"
+                              : "";
+                          const badge =
+                            badgeMeta[row.fld_call_request_sts] ||
+                            badgeMeta["_"];
+                          const isExpanded = expandedRow === row.id;
 
-      
+                          return (
+                            <React.Fragment key={row.id}>
+                              <tr
+                                className={`group border-b border-gray-300 ${
+                                  index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                                } hover:bg-blue-50 transition-colors`}
+                              >
+                                <td
+                                  className={`px-4 py-2 text-gray-600 border-r border-gray-300 ${deletedClass}`}
+                                >
+                                  {(() => {
+                                    const clientId = row.fld_client_id || "";
+                                    const displayText = `${row.user_name} - ${clientId}`;
+                                    const shouldShowTooltip =
+                                      displayText.length > 20;
+
+                                    return (
+                                      <span
+                                        onClick={() => handleNavigate(row.id)}
+                                        className="hover:underline text-blue-600 font-medium cursor-pointer truncate block w-[150px]"
+                                        {...(shouldShowTooltip && {
+                                          "data-tooltip-id": "my-tooltip",
+                                          "data-tooltip-content": displayText,
+                                        })}
+                                      >
+                                        {displayText}
+                                      </span>
+                                    );
+                                  })()}
+                                </td>
+
+                                <td
+                                  className={`px-4 py-2 text-gray-600 border-r border-gray-300 ${deletedClass}`}
+                                >
+                                  <div className="font-medium">
+                                    {row.admin_name}
+                                  </div>
+                                </td>
+                                <td
+                                  className={`px-4 py-2 text-gray-600 border-r border-gray-300 ${deletedClass}`}
+                                >
+                                  <div className="font-medium">
+                                    {row.crm_name}
+                                  </div>
+                                </td>
+                                <td
+                                  className={`px-4 py-2 text-gray-600 border-r border-gray-300 ${deletedClass}`}
+                                >
+                                  <div className="flex justify-between">
+                                    <span className="font-medium">
+                                      {formatBookingDateTime(
+                                        row.fld_booking_date,
+                                        row.fld_booking_slot
+                                      )}
+                                    </span>
+                                    <button
+                                      className="ml-2 text-gray-500 hover:text-blue-600 transition-colors"
+                                      onClick={async () => {
+                                        if (isExpanded) {
+                                          setExpandedRow(null);
+                                        } else {
+                                          setExpandedRow(row.id);
+                                          await fetchBookingHistory(row.id);
+                                        }
+                                      }}
+                                      title="View booking history"
+                                    >
+                                      <EyeIcon
+                                        className="bg-green-600 hover:bg-green-700 cursor-pointer text-white p-1 rounded"
+                                        size={20}
+                                      />
+                                    </button>
+                                  </div>
+                                </td>
+                                <td
+                                  className={`px-4 py-2 text-gray-600 border-r border-gray-300 ${deletedClass}`}
+                                >
+                                  <span className="font-medium">
+                                    {row.fld_sale_type}
+                                  </span>
+                                </td>
+                                <td className="px-4 py-2 text-gray-600 border-r border-gray-300">
+                                  <div
+                                    className={`py-[1px] px-[6px] inline-flex items-center gap-1 rounded text-[10px] font-medium ${badge.bg} ${badge.text} ${deletedClass}`}
+                                  >
+                                    {badge.icon}
+                                    {row.fld_call_request_sts}
+                                  </div>
+                                  {row.fld_call_request_sts === "Accept" && (
+                                    <>
+                                      {row.fld_call_confirmation_status ===
+                                        "Call Confirmation Pending at Client End" && (
+                                        <span className="inline-flex items-center gap-1 py-[1px] px-[6px] ml-1 rounded text-[10px] bg-blue-100 text-blue-800">
+                                          <Clock size={10} />{" "}
+                                          {row.fld_call_confirmation_status}
+                                        </span>
+                                      )}
+                                      {row.fld_call_confirmation_status ===
+                                        "Call Confirmed by Client" && (
+                                        <span className="inline-flex items-center gap-1 py-[1px] px-[6px] ml-1 rounded text-[10px] bg-green-100 text-green-800">
+                                          <CheckCircle size={8} />{" "}
+                                          {row.fld_call_confirmation_status}
+                                        </span>
+                                      )}
+                                    </>
+                                  )}
+                                </td>
+                              </tr>
+
+                              {isExpanded && renderHistoryRow(row.id)}
+                            </React.Fragment>
+                          );
+                        })
+                      ) : (
+                        <td
+                          colSpan="6"
+                          className="px-4 py-4 text-center text-gray-500"
+                        >
+                          <div className="bg-yellow-100 border border-yellow-300 text-yellow-700 px-4 py-2 rounded">
+                            No bookings found.
+                          </div>
+                        </td>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Pagination Component */}
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={pagination.totalPages}
+                  totalRecords={pagination.totalRecords}
+                  onPageChange={handlePageChange}
+                  loading={loading}
+                />
+              </div>
+            </>
+          )}
+        </div>
+      </div>
     </div>
   );
 };
