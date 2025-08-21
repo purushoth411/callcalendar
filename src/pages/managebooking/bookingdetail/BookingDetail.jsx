@@ -1458,7 +1458,17 @@ const resetBookingStates = () => {
                 bgColor={getStatusColor(bookingData?.fld_call_request_sts)}
                 externalCallInfo={externalCallInfo}
               />
-              <CallUpdateActions
+              
+             <ChatBox
+              user={user}
+              messageData={messageData}
+              onSend={(message) => sendMessage(message)}
+              isMsgSending={isMsgSending}
+            />
+            </div>
+          </div>
+          <div className="space-y-3">
+            <CallUpdateActions
                 bookingData={bookingData}
                 user={user}
                 consultantList={consultantList}
@@ -1480,7 +1490,7 @@ const resetBookingStates = () => {
                 getFollowerConsultant={getFollowerConsultant}
                 loadingFollowers={loadingFollowers}
               />
-              <div className="flex gap-4">
+               <div className="flex gap-4">
                 {/* Reassign to Consultant Form */}
                 {canShowReasignConsultant && (
                   <div className=" flex-wrap gap-4 w-[50%] bg-white border border-gray-200 rounded p-4 ">
@@ -1584,15 +1594,6 @@ const resetBookingStates = () => {
                   </>
                 )}
               </div>
-            </div>
-          </div>
-          <div className="space-y-3">
-            <ChatBox
-              user={user}
-              messageData={messageData}
-              onSend={(message) => sendMessage(message)}
-              isMsgSending={isMsgSending}
-            />
             <OtherCalls
               bookingId={bookingId}
               clientId={bookingData.fld_client_id}
