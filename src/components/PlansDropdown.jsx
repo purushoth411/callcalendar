@@ -69,7 +69,7 @@ export default function PlansDropdown() {
       </button>
 
       {open && (
-        <div className="absolute bg-white shadow-lg mt-1 rounded w-56 z-50 top-7 right-0 border border-gray-300">
+        <div className="absolute bg-white shadow-lg mt-1 rounded w-52 z-50 top-7 right-[-3px] border border-gray-300">
           <NavLink
             to="/plans"
             className="block px-4 py-2 text-gray-900 border-b border-gray-200 hover:bg-[#2d6689] hover:text-white"
@@ -85,7 +85,7 @@ export default function PlansDropdown() {
           >
             <span>Approved Call Request</span>
             {pendingCount > 0 && (
-              <span className="ml-2 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+              <span className="ml-2 bg-red-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full">
                 {pendingCount}
               </span>
             )}
