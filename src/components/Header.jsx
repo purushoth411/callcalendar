@@ -311,7 +311,6 @@ export default function Header() {
               user?.fld_admin_type == "SUBADMIN" ||
               user?.fld_admin_type == "CONSULTANT") && (
               <NavLink
-<<<<<<< HEAD
                 to="/followers"
                 className={({ isActive }) =>
                   isActive
@@ -331,23 +330,6 @@ export default function Header() {
                   </span>
                 )}
               </NavLink>
-=======
-  to="/followers"
-  className={({ isActive }) =>
-    isActive
-      ? "flex items-center underline text-orange-500 font-semibold relative"
-      : "flex items-center text-white hover:text-gray-300 relative"
-  }
->
-  <Users2 className="mr-1" size={12} />
-  Follower Calls
-  {followerCount > 0 && (
-    <span className="ml-1 bg-red-500 text-white text-[9px] px-2 py-[1px] rounded-full">
-      {followerCount}
-    </span>
-  )}
-</NavLink>
->>>>>>> 07b4d9679eb9c5268f28ef37209c3b79741d1216
             )}
 
             {/* Call Ratings */}
