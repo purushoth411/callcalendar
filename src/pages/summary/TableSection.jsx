@@ -132,7 +132,7 @@ const TableSection = ({
 
     return (
       <tr className="bg-white">
-        <td colSpan={6} className="px-4 py-3 !border !border-gray-400">
+        <td colSpan={6} className="px-4 py-3 border border-gray-300">
           <div className="flex flex-col items-start w-full text-[10px]">
             {isLoading ? (
               <div className="text-blue-500 ">
