@@ -1,24 +1,24 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { NavLink } from "react-router-dom";
 import { BarChart2 } from "lucide-react";
 
 export default function PlansDropdown() {
   const [open, setOpen] = useState(false);
   const [pendingCount, setPendingCount] = useState(0);
+  const dropdownRef = useRef(null);
 
   const handleToggle = async () => {
     const newOpen = !open;
     setOpen(newOpen);
 
     if (newOpen) {
-      
       try {
         const response = await fetch(
           "https://callback-2suo.onrender.com/api/approveaddcallrequests/getAllPendingaddcallrequests"
         );
         const result = await response.json();
 
-        if (result.status ) {
+        if (result.status) {
           setPendingCount(result.count || 0);
         } else {
           setPendingCount(0);
@@ -30,8 +30,21 @@ export default function PlansDropdown() {
     }
   };
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
-    <div className="relative">
+    <div className="relative" ref={dropdownRef}>
       <button
         onClick={handleToggle}
         className="flex items-center text-white hover:text-gray-300 focus:outline-none"
@@ -39,7 +52,9 @@ export default function PlansDropdown() {
         <BarChart2 className="mr-1" size={14} />
         Plans & Requests
         <svg
-          className="ml-1 w-4 h-4"
+          className={`ml-1 w-4 h-4 transition-transform ${
+            open ? "rotate-180" : ""
+          }`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -54,10 +69,10 @@ export default function PlansDropdown() {
       </button>
 
       {open && (
-        <div className="absolute bg-[#fff] shadow-lg mt-1 rounded w-50 z-50 top-7 right-0 border border-gray-400">
+        <div className="absolute bg-white shadow-lg mt-1 rounded w-56 z-50 top-7 right-0 border border-gray-300">
           <NavLink
             to="/plans"
-            className="block px-4 py-2 text-gray-900 border-b border-gray-400 hover:bg-[#2d6689] hover:text-white"
+            className="block px-4 py-2 text-gray-900 border-b border-gray-200 hover:bg-[#2d6689] hover:text-white"
             onClick={() => setOpen(false)}
           >
             Plans
@@ -69,7 +84,7 @@ export default function PlansDropdown() {
             onClick={() => setOpen(false)}
           >
             <span>Approved Call Request</span>
-            {pendingCount >= 0 && (
+            {pendingCount > 0 && (
               <span className="ml-2 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
                 {pendingCount}
               </span>
