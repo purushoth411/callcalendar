@@ -119,7 +119,7 @@ useEffect(() => {
     <>
       {/* Top Header */}
       <header className="">
-        <div className="max-w-[85rem] mx-auto flex items-center justify-between px-2 py-2 ">
+        <div className="max-w-[85rem] mx-auto flex items-center justify-between px-2 py-2  pr-5">
           {/* Logo */}
           <div
             className="flex items-center cursor-pointer"
