@@ -223,7 +223,7 @@ const TableSection = ({
                   "Call Type",
                   "Status",
                 ].map((col) => (
-                  <th key={col} className="px-2 py-2 border border-gray-400 font-medium whitespace-nowrap text-left">
+                  <th key={col} className="px-2 py-2 border border-gray-300 font-medium whitespace-nowrap text-left">
                     {col}
                   </th>
                 ))}
@@ -257,7 +257,7 @@ const TableSection = ({
                             index % 2 === 0 ? "bg-white" : "bg-gray-50"
                           } hover:bg-blue-50 transition`}
                         >
-                          <td className={`px-2 py-2 border border-gray-400 ${deletedClass}`}>
+                          <td className={`px-2 py-2 border border-gray-300 ${deletedClass}`}>
                             <a
                               href={`/admin/booking_detail/${row.id}`}
                               className="hover:underline text-blue-600"
@@ -265,13 +265,13 @@ const TableSection = ({
                               {row.user_name} - {row.fld_client_id}
                             </a>
                           </td>
-                          <td className={`px-2 py-2 border border-gray-400  ${deletedClass}`}>
+                          <td className={`px-2 py-2 border border-gray-300  ${deletedClass}`}>
                             {row.admin_name}
                           </td>
-                          <td className={`px-2 py-2 border border-gray-400  ${deletedClass}`}>
+                          <td className={`px-2 py-2 border border-gray-300  ${deletedClass}`}>
                             {row.crm_name}
                           </td>
-                          <td className={`px-2 py-2 border border-gray-400 ${deletedClass}`}>
+                          <td className={`px-2 py-2 border border-gray-300 ${deletedClass}`}>
                             <div className="flex items-center whitespace-nowrap">
                               {formatBookingDateTime(
                               row.fld_booking_date,
@@ -293,10 +293,10 @@ const TableSection = ({
                             </button>
                             </div>
                           </td>
-                          <td className={`px-2 py-2 border border-gray-400 ${deletedClass}`}>
+                          <td className={`px-2 py-2 border border-gray-300 ${deletedClass}`}>
                             {row.fld_sale_type}
                           </td>
-                          <td className="px-2 py-2 border border-gray-400">
+                          <td className="px-2 py-2 border border-gray-300">
                             <div className="flex gap-2 flex-wrap">
                             <div
                               className={`py-[1px] px-[6px] inline-flex items-center whitespace-nowrap gap-1 rounded  font-medium ${badge.bg} ${badge.text} ${deletedClass}`}
@@ -334,7 +334,7 @@ const TableSection = ({
                 <tr>
                   <td
                     colSpan="6"
-                    className="px-2 py-2 border border-gray-400 text-center"
+                    className="px-2 py-2 border border-gray-300 text-center"
                   >
                     <div className="bg-yellow-100 border border-yellow-300 text-yellow-700 px-4 py-2 rounded">
                       No bookings found.

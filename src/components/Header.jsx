@@ -286,7 +286,7 @@ useEffect(() => {
   <Users2 className="mr-1" size={12} />
   Follower Calls
   {followerCount > 0 && (
-    <span className="ml-1 bg-red-500 text-white text-[10px] px-2 py-[1px] rounded-full">
+    <span className="ml-1 bg-red-500 text-white text-[9px] px-2 py-[1px] rounded-full">
       {followerCount}
     </span>
   )}
