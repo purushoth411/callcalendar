@@ -131,27 +131,27 @@ const TableSection = ({
     const isLoading = loadingRows.has(bookingId);
 
     return (
-      <tr className="bg-gray-50">
-        <td colSpan={6} className="px-4 py-3">
+      <tr className="bg-white">
+        <td colSpan={6} className="px-4 py-3 border border-gray-300">
           <div className="flex flex-col items-start w-full text-[10px]">
             {isLoading ? (
               <div className="text-blue-500 ">
                 Loading booking history...
               </div>
             ) : data && data.length > 0 ? (
-              <ol className="relative border-l-2 border-blue-200 space-y-3 w-full">
+              <ol className="relative border-l-2 border-blue-200 space-y-2 w-full">
                 {data.map((item, idx) => (
                   <li key={idx} className="relative ">
                     {/* Dot */}
-                    <div className="absolute -left-1.5 top-1 w-3 h-3 bg-blue-500 rounded-full border-2 border-white z-10" />
+                    <div className="absolute left-[-7px] top-0 w-3 h-3 bg-blue-500 rounded-full border-2 border-white z-10" />
 
                     {/* Content */}
-                    <div className=" pl-5 ">
+                    <div className=" pl-4 pt-0.5">
                       <span className="font-medium text-gray-800">
                         {item.fld_comment}
                       </span>
-                      <span className="flex items-center text-gray-500 text-xs mt-1 gap-1">
-                        <Clock size={12} className="text-blue-600" />
+                      <span className="flex items-center text-gray-500 text-[10px] mt-1 gap-1  border-b border-gray-300 pb-2 last-child:border-0">
+                        <Clock size={11} className="text-blue-600" />
                         {formatDate(item.fld_addedon)}
                       </span>
                     </div>
@@ -211,9 +211,9 @@ const TableSection = ({
       </div>
 
       <div className="overflow-hidden px-3">
-        <div className="overflow-y-auto" style={{ height: "300px" }}>
+        <div className="overflow-y-auto pr-0.5" style={{ height: "300px" }}>
           <table className="w-full text-[10px]">
-            <thead className="sticky top-0 bg-gray-100 shadow text-gray-700 z-99">
+            <thead className="sticky top-0 bg-gray-100 text-gray-700 z-99">
               <tr>
                 {[
                   "Client",
@@ -223,7 +223,7 @@ const TableSection = ({
                   "Call Type",
                   "Status",
                 ].map((col) => (
-                  <th key={col} className="px-4 py-2 border-b font-medium whitespace-nowrap text-left">
+                  <th key={col} className="px-2 py-2 border border-gray-300 font-medium whitespace-nowrap text-left">
                     {col}
                   </th>
                 ))}
@@ -257,7 +257,7 @@ const TableSection = ({
                             index % 2 === 0 ? "bg-white" : "bg-gray-50"
                           } hover:bg-blue-50 transition`}
                         >
-                          <td className={`px-4 py-2 border-b ${deletedClass}`}>
+                          <td className={`px-2 py-2 border border-gray-300 ${deletedClass}`}>
                             <a
                               href={`/admin/booking_detail/${row.id}`}
                               className="hover:underline text-blue-600"
@@ -265,19 +265,20 @@ const TableSection = ({
                               {row.user_name} - {row.fld_client_id}
                             </a>
                           </td>
-                          <td className={`px-4 py-2 border-b  ${deletedClass}`}>
+                          <td className={`px-2 py-2 border border-gray-300  ${deletedClass}`}>
                             {row.admin_name}
                           </td>
-                          <td className={`px-4 py-2 border-b  ${deletedClass}`}>
+                          <td className={`px-2 py-2 border border-gray-300  ${deletedClass}`}>
                             {row.crm_name}
                           </td>
-                          <td className={`px-4 py-2 border-b ${deletedClass}`}>
-                            {formatBookingDateTime(
+                          <td className={`px-2 py-2 border border-gray-300 ${deletedClass}`}>
+                            <div className="flex items-center whitespace-nowrap">
+                              {formatBookingDateTime(
                               row.fld_booking_date,
                               row.fld_booking_slot
                             )}
                             <button
-                              className="ml-2 text-gray-500 hover:text-blue-600 show-history-btn "
+                              className="ml-1 text-gray-500 hover:text-blue-600 show-history-btn "
                               onClick={async () => {
                                 if (isExpanded) {
                                   setExpandedRow(null);
@@ -290,11 +291,12 @@ const TableSection = ({
                             >
                               ⏳
                             </button>
+                            </div>
                           </td>
-                          <td className={`px-4 py-2 border-b ${deletedClass}`}>
+                          <td className={`px-2 py-2 border border-gray-300 ${deletedClass}`}>
                             {row.fld_sale_type}
                           </td>
-                          <td className="px-4 py-2 border-b">
+                          <td className="px-2 py-2 border border-gray-300">
                             <div className="flex gap-2 flex-wrap">
                             <div
                               className={`py-[1px] px-[6px] inline-flex items-center whitespace-nowrap gap-1 rounded  font-medium ${badge.bg} ${badge.text} ${deletedClass}`}
@@ -307,14 +309,14 @@ const TableSection = ({
                                 {row.fld_call_confirmation_status ===
                                   "Call Confirmation Pending at Client End" && (
                                   <span className="inline-flex items-start gap-1 py-[1px] px-[6px] rounded  bg-blue-100 text-blue-800">
-                                    <Clock size={15} />{" "}
+                                    <Clock size={14} />{" "}
                                     {row.fld_call_confirmation_status}
                                   </span>
                                 )}
                                 {row.fld_call_confirmation_status ===
                                   "Call Confirmed by Client" && (
-                                  <span className="inline-flex items-start gap-1 py-[1px] px-[6px] rounded  bg-green-100 text-green-800">
-                                    <CheckCircle size={15} />{" "}
+                                  <span className="inline-flex items-center gap-1 py-[1px] px-[6px] rounded  bg-green-100 text-green-800">
+                                    <CheckCircle size={10} />{" "}
                                     {row.fld_call_confirmation_status}
                                   </span>
                                 )}
@@ -332,7 +334,7 @@ const TableSection = ({
                 <tr>
                   <td
                     colSpan="6"
-                    className="px-4 py-4 text-center text-gray-500"
+                    className="px-2 py-2 border border-gray-300 text-center"
                   >
                     <div className="bg-yellow-100 border border-yellow-300 text-yellow-700 px-4 py-2 rounded">
                       No bookings found.

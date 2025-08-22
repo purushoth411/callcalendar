@@ -106,11 +106,12 @@ function Dashboard() {
 
   return (
     <div className="">
+      <div className="flex gap-2 items-center mb-4"><h2 class="text-[16px] font-semibold text-gray-900">Dashboard</h2></div>
       {(user?.fld_admin_type === "SUPERADMIN" ||
         user?.fld_admin_type === "EXECUTIVE") && (
-        <div className="w-full">
+        <div className="w-full bg-white p-4  rounded">
           <div className="flex justify-between items-center flex-1 mb-4">
-            <h4 className="text-[16px] font-semibold text-gray-900">
+            <h4 className="text-[15px] font-semibold text-gray-900">
               Call Status Summary - Today
             </h4>
             <button

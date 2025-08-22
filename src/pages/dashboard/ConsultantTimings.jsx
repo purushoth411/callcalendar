@@ -365,7 +365,7 @@ function ConsultantTimings() {
 
   return (
     <div className="">
-      <h4 className="text-[16px] font-semibold text-gray-900 mb-4">
+      <h4 className="text-[15px] font-semibold text-gray-900 mb-4">
         Change Consultant Timings
       </h4>
       <SocketHandler
