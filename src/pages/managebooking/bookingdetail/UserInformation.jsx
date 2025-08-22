@@ -94,7 +94,7 @@ const UserInformation = ({ data, user, bgColor,externalCallInfo}) => {
             <div className="text-[12px] font-semibold text-gray-700 !mb-2">
               Topic of Research
             </div>
-            <p className="text-gray-900 break-words">
+            <p className="text-gray-900 break-all">
               {data.fld_topic_of_research}
             </p>
           </div>
