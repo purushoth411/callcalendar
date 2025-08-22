@@ -111,6 +111,44 @@ export function getDateBefore(days = 0, format = "YYYY-MM-DD") {
   return moment().tz("Asia/Kolkata").subtract(days, "days").format(format);
 } 
 
+export function getConsultationStatusClass(row) {
+  let statusClass = "";
+
+//  switch (row.fld_consultation_sts) {
+    // case "Completed":
+    //   statusClass = "!bg-green-100 !text-green-700"; 
+    //   break;
+    // case "Reject":
+    //   statusClass = "!bg-red-100 !text-red-700"; 
+    //   break;
+    // case "Accept":
+    //   statusClass = "!bg-blue-100 !text-blue-700"; 
+    //   break;
+    // case "Rescheduled":
+    //   statusClass = "bg-indigo-100 text-indigo-700"; 
+    //   break;
+  //  default:
+   //   statusClass = "";
+//  }
+
+
+  if (row.fld_consultation_sts === "Accept") {
+    
+    const bookingDateTime = moment.tz(`${row.fld_booking_date} ${row.fld_booking_slot}`, "YYYY-MM-DD HH:mm:ss", "Asia/Kolkata");
+
+   
+    const callEndTime = bookingDateTime.clone().add(90, "minutes");
+
+    const now = moment.tz("Asia/Kolkata");
+
+    if (bookingDateTime.isBefore(now, "day") || now.isSameOrAfter(callEndTime)) {
+      statusClass += " !bg-red-100 !text-red-700"; // pending
+    }
+  }
+
+  return statusClass;
+}
+
 
 
 

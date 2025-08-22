@@ -14,6 +14,7 @@ import {
 import {
   formatBookingDateTime,
   formatDate,
+  getConsultationStatusClass,
   getCurrentDate,
   getDateBefore,
 } from "../../helpers/CommonHelper.jsx";
@@ -737,6 +738,12 @@ export default function Bookings() {
           setShowEditSubjectForm(true);
         });
     },
+    createdRow: function (row, data, dataIndex) {
+      const rowClass = getConsultationStatusClass(data);
+      if (rowClass) {
+        $(row).addClass(rowClass);
+      }
+    },
   };
 
   const handleClearFilters = () => {
@@ -755,6 +762,9 @@ export default function Bookings() {
       filter_type: "Booking",
       date_range: [fromDate, toDate],
     });
+    setSelectedCRM(null);
+  setConsultantType("ACTIVE"); 
+  setSelectedConsultant(null);
   };
   return (
     <div className="">

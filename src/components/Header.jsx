@@ -25,39 +25,36 @@ export default function Header() {
   const dropdownRef = useRef(null);
   const [followerCount, setFollowerCount] = useState(0);
 
+  ///socket ////////
 
-    ///socket ////////
+  useEffect(() => {
+    const socket = getSocket();
 
-useEffect(() => {
-  const socket = getSocket();
+    const handleUpdateFollowerCount = (followerData) => {
+      if (!user) return;
 
-  const handleUpdateFollowerCount = (followerData) => {
-    if (!user) return;
+      const { follower_consultant_id, consultantid } = followerData;
 
-    const { follower_consultant_id, consultantid } = followerData;
+      if (user.fld_admin_type === "SUPERADMIN") {
+        // Always increment for SUPERADMIN
+        setFollowerCount((prev) => prev + 1);
+      } else if (
+        String(user.id) === String(follower_consultant_id) ||
+        String(user.id) === String(consultantid)
+      ) {
+        // Increment if logged-in user matches consultant IDs
+        setFollowerCount((prev) => prev + 1);
+      }
+    };
 
-    if (user.fld_admin_type === "SUPERADMIN") {
-      // Always increment for SUPERADMIN
-      setFollowerCount((prev) => prev + 1);
-    } else if (
-      String(user.id) === String(follower_consultant_id) ||
-      String(user.id) === String(consultantid)
-    ) {
-      // Increment if logged-in user matches consultant IDs
-      setFollowerCount((prev) => prev + 1);
-    }
-  };
+    socket.on("followerAdded", handleUpdateFollowerCount);
 
-  socket.on("followerAdded", handleUpdateFollowerCount);
-
-  return () => {
-    socket.off("followerAdded", handleUpdateFollowerCount);
-  };
-}, [user]);
-
+    return () => {
+      socket.off("followerAdded", handleUpdateFollowerCount);
+    };
+  }, [user]);
 
   ////////socket////////
-
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -76,27 +73,27 @@ useEffect(() => {
     return null;
   }
   // console.log(user);
-useEffect(() => {
-  if (user) {
-    fetchPendingFollowerCallsCount();
-  }
-}, [user]);
+  useEffect(() => {
+    if (user) {
+      fetchPendingFollowerCallsCount();
+    }
+  }, [user]);
   const fetchPendingFollowerCallsCount = async () => {
-  try {
-    const response = await fetch(
-      `https://callback-2suo.onrender.com/api/followers/fetchPendingFollowerCallsCount?usertype=${user?.fld_admin_type}&userid=${user?.id}`
-    );
-    const result = await response.json();
-    if (result.status) {
-      setFollowerCount(result.data);
-    } else {
+    try {
+      const response = await fetch(
+        `https://callback-2suo.onrender.com/api/followers/fetchPendingFollowerCallsCount?usertype=${user?.fld_admin_type}&userid=${user?.id}`
+      );
+      const result = await response.json();
+      if (result.status) {
+        setFollowerCount(result.data);
+      } else {
+        setFollowerCount(0);
+      }
+    } catch (error) {
+      console.error("Error fetching followers:", error);
       setFollowerCount(0);
     }
-  } catch (error) {
-    console.error("Error fetching followers:", error);
-    setFollowerCount(0);
-  }
-};
+  };
 
   const isSubadmin = user.fld_admin_type == "SUBADMIN";
   const isAdmin = user.fld_admin_type == "SUPERADMIN";
@@ -164,14 +161,24 @@ useEffect(() => {
       </header>
 
       {/* Navbar below header */}
-      <nav className="bg-gradient-to-r from-[#224d68] to-[#3c7ca5] text-white">
+      <nav
+        className={
+          isConsultant
+            ? "bg-gradient-to-r from-[#ffa505] to-[#FFC905] !text-black"
+            : "bg-gradient-to-r from-[#224d68] to-[#3c7ca5] text-white"
+        }
+      >
         <div className="max-w-[85rem] mx-auto px-3 py-3">
           <div className="flex space-x-6 text-[12px]">
             <NavLink
               to="/"
               className={({ isActive }) =>
                 isActive
-                  ? "flex items-center  underline text-orange-500 font-semibold"
+                  ? isConsultant
+                    ? "flex items-center underline text-black font-semibold"
+                    : "flex items-center underline text-orange-500 font-semibold"
+                  : isConsultant
+                  ? "flex items-center text-black hover:text-gray-600"
                   : "flex items-center text-white hover:text-gray-300"
               }
             >
@@ -183,7 +190,11 @@ useEffect(() => {
                 to="/summary"
                 className={({ isActive }) =>
                   isActive
-                    ? "flex items-center  underline text-orange-500 font-semibold"
+                    ? isConsultant
+                      ? "flex items-center underline text-black font-semibold"
+                      : "flex items-center underline text-orange-500 font-semibold"
+                    : isConsultant
+                    ? "flex items-center text-black hover:text-gray-600"
                     : "flex items-center text-white hover:text-gray-300"
                 }
               >
@@ -196,7 +207,11 @@ useEffect(() => {
                 to="/users"
                 className={({ isActive }) =>
                   isActive
-                    ? "flex items-center  underline text-orange-500 font-semibold"
+                    ? isConsultant
+                      ? "flex items-center underline text-black font-semibold"
+                      : "flex items-center underline text-orange-500 font-semibold"
+                    : isConsultant
+                    ? "flex items-center text-black hover:text-gray-600"
                     : "flex items-center text-white hover:text-gray-300"
                 }
               >
@@ -209,7 +224,11 @@ useEffect(() => {
                 to="/teams"
                 className={({ isActive }) =>
                   isActive
-                    ? "flex items-center  underline text-orange-500 font-semibold"
+                    ? isConsultant
+                      ? "flex items-center underline text-black font-semibold"
+                      : "flex items-center underline text-orange-500 font-semibold"
+                    : isConsultant
+                    ? "flex items-center text-black hover:text-gray-600"
                     : "flex items-center text-white hover:text-gray-300"
                 }
               >
@@ -221,7 +240,11 @@ useEffect(() => {
               to="/bookings"
               className={({ isActive }) =>
                 isActive
-                  ? "flex items-center  underline text-orange-500 font-semibold"
+                  ? isConsultant
+                    ? "flex items-center underline text-black font-semibold"
+                    : "flex items-center underline text-orange-500 font-semibold"
+                  : isConsultant
+                  ? "flex items-center text-black hover:text-gray-600"
                   : "flex items-center text-white hover:text-gray-300"
               }
             >
@@ -237,7 +260,11 @@ useEffect(() => {
                 to="/external_calls"
                 className={({ isActive }) =>
                   isActive
-                    ? "flex items-center  underline text-orange-500 font-semibold"
+                    ? isConsultant
+                      ? "flex items-center underline text-black font-semibold"
+                      : "flex items-center underline text-orange-500 font-semibold"
+                    : isConsultant
+                    ? "flex items-center text-black hover:text-gray-600"
                     : "flex items-center text-white hover:text-gray-300"
                 }
               >
@@ -251,7 +278,11 @@ useEffect(() => {
                 to="/call_request_from_rc"
                 className={({ isActive }) =>
                   isActive
-                    ? "flex items-center  underline text-orange-500 font-semibold"
+                    ? isConsultant
+                      ? "flex items-center underline text-black font-semibold"
+                      : "flex items-center underline text-orange-500 font-semibold"
+                    : isConsultant
+                    ? "flex items-center text-black hover:text-gray-600"
                     : "flex items-center text-white hover:text-gray-300"
                 }
               >
@@ -264,7 +295,11 @@ useEffect(() => {
                 to="/domain_pref"
                 className={({ isActive }) =>
                   isActive
-                    ? "flex items-center  underline text-orange-500 font-semibold"
+                    ? isConsultant
+                      ? "flex items-center underline text-black font-semibold"
+                      : "flex items-center underline text-orange-500 font-semibold"
+                    : isConsultant
+                    ? "flex items-center text-black hover:text-gray-600"
                     : "flex items-center text-white hover:text-gray-300"
                 }
               >
@@ -276,21 +311,25 @@ useEffect(() => {
               user?.fld_admin_type == "SUBADMIN" ||
               user?.fld_admin_type == "CONSULTANT") && (
               <NavLink
-  to="/followers"
-  className={({ isActive }) =>
-    isActive
-      ? "flex items-center underline text-orange-500 font-semibold relative"
-      : "flex items-center text-white hover:text-gray-300 relative"
-  }
->
-  <Users2 className="mr-1" size={12} />
-  Follower Calls
-  {followerCount > 0 && (
-    <span className="ml-1 bg-red-500 text-white text-[10px] px-2 py-[1px] rounded-full">
-      {followerCount}
-    </span>
-  )}
-</NavLink>
+                to="/followers"
+                className={({ isActive }) =>
+                  isActive
+                    ? isConsultant
+                      ? "flex items-center underline text-black font-semibold"
+                      : "flex items-center underline text-orange-500 font-semibold"
+                    : isConsultant
+                    ? "flex items-center text-black hover:text-gray-600"
+                    : "flex items-center text-white hover:text-gray-300"
+                }
+              >
+                <Users2 className="mr-1" size={12} />
+                Follower Calls
+                {followerCount > 0 && (
+                  <span className="ml-1 bg-red-500 text-white text-[10px] px-2 py-[1px] rounded-full">
+                    {followerCount}
+                  </span>
+                )}
+              </NavLink>
             )}
 
             {/* Call Ratings */}

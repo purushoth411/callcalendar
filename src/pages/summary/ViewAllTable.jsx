@@ -613,6 +613,8 @@ const ViewAllTable = () => {
     );
   });
 
+  ////////socket start/////////////
+
   useEffect(() => {
     const socket = getSocket();
 
@@ -728,6 +730,8 @@ const ViewAllTable = () => {
       socket.off("bookingUpdated", handleBookingUpdated);
     };
   }, [user.id]);
+
+  //////socket end///////////
 
   return (
     <div className="">

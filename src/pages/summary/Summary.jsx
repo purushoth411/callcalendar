@@ -58,12 +58,12 @@ const Summary = () => {
   const [consultantType, setConsultantType] = useState("ACTIVE");
 
 
-// Replace the existing socket useEffect in your Summary component with this:
+// socket start///////
 
 useEffect(() => {
   const socket = getSocket();
 
-  // Helper function to determine which state setter to use based on status
+  
   const getStateSetterByStatus = (callRequestStatus, callConfirmationStatus) => {
     if (callRequestStatus === "Call Scheduled") {
       return setCallScheduledData;
@@ -91,7 +91,7 @@ useEffect(() => {
     return null;
   };
 
-  // Helper function to remove booking from all states
+
   const removeBookingFromAllStates = (bookingId) => {
     const allSetters = [
       setCallScheduledData,
@@ -215,6 +215,8 @@ useEffect(() => {
     socket.off("bookingUpdated", handleBookingUpdated);
   };
 }, [user.id, user.fld_admin_type, user.fld_team_id, user.fld_subadmin_type]);
+
+//////socket end//////////
 
   const fetchConsultantsAndCrms = async () => {
     try {
