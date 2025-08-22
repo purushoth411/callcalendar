@@ -9,7 +9,9 @@ const CustomCalendar = ({ consultantSettings, onDateClick,selectedDateState }) =
   selectedDateState ? new Date(selectedDateState) : null
 );
   
-
+if (!consultantSettings) {
+    return <div className="text-gray-500">Loading calendar...</div>;
+  }
 
   // Extract exclusions and selected weekdays
   const excludedDates = consultantSettings.fld_days_exclusion

@@ -31,6 +31,17 @@ const EditBooking = () => {
 
   const fetchBookingDetailsWithRc = async () => {
   try {
+     setBookingDetails(null);
+    setConsultantSettings(null);
+    setConsultantName("");
+    setSelectedDate("");
+    setSelectedSlot("");
+    setAvailableSlots([]);
+    setCallLink("");
+    setSelectedTimezone("Asia/Kolkata"); 
+    setError("");
+    setSubmitMessage("");
+    setQuestionData({ count: 0, questions: "" });
     const response = await fetch(
       `https://callback-2suo.onrender.com/api/helpers/getBookingDetailsWithRc?id=${bookingId}`
     );
@@ -87,11 +98,27 @@ const EditBooking = () => {
           fetchBookingDetailsWithRc();
         }
       };
+
+       const handleConsultantSlots = (data) => {
+      console.log("Socket Called - Slot Changed");
+
+    //  const selectedDateFormatted = selectedDate.tz("Asia/Kolkata").format("YYYY-MM-DD");
+    //   const eventDateFormatted = moment.tz(date, "YYYY-MM-DD", "Asia/Kolkata").format("YYYY-MM-DD");
+
+      if (bookingDetails?.fld_consultantid == data.consultantid) {
+        console.log(
+          "Refreshing booking details due to matching bookingConfirmed event"
+        );
+        fetchBookingDetailsWithRc();
+      }
+    };
   
       socket.on("bookingConfirmed", handleBookingConfirmed);
+       socket.on("slotChanged", handleConsultantSlots);
   
       return () => {
         socket.off("bookingConfirmed", handleBookingConfirmed);
+        socket.off("slotChanged", handleConsultantSlots);
       };
     }, [user.id, bookingDetails?.fld_consultantid]);
   
