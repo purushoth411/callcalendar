@@ -92,10 +92,10 @@ const OtherCalls = ({ bookingId, clientId, fetchBookingById }) => {
       </h2>
 
       {allbookingData.length === 0 ? (
-        <div className="text-center py-8 text-gray-500">
-          <Phone className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-          <p className="text-lg font-medium">No previous calls available</p>
-          <p className="text-sm">This client has no call history</p>
+        <div className="text-center py-2 text-gray-500">
+          <Phone className="w-7 h-7 mx-auto mb-3 text-gray-300" />
+          <p className="text-[14px] font-medium">No previous calls available</p>
+          <p className="text-[12px]">This client has no call history</p>
         </div>
       ) : (
         <div className="overflow-hidden rounded border border-gray-200">
